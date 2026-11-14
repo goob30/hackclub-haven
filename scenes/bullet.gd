@@ -15,16 +15,29 @@ var _ignore_time: float = 0.0
 var _life_left: float = 0.0
 var _homing_blend: float = 1.0   # 0 = no steering, 1 = full steering
 
+var _home_pos: Vector3
+
 func _ready() -> void:
+	_home_pos = global_position
 	player = get_tree().get_first_node_in_group("player") as Node3D
+
+	if player == null:
+		push_error("Projectile3D: no node in group 'player'")
+	else:
+		player.justShot.connect(_on_player_just_shot)
+
 	body_entered.connect(_on_hit)
 	area_entered.connect(_on_hit)
 	deactivate()
 
 func get_player_pos() -> Vector3:
 	if is_instance_valid(player):
-		return player.global_position
+		return player.global_position + Vector3.UP * 1.0   # aim at the body, not the feet
 	return Vector3.ZERO
+
+func _on_player_just_shot() -> void:
+	if not isShot:
+		activate(_home_pos)
 
 # Call this to fire the bullet (from the player, a manager, or the signal)
 func activate(from_pos: Vector3) -> void:
@@ -43,11 +56,9 @@ func deactivate() -> void:
 	isShot = false
 	visible = false
 	velocity = Vector3.ZERO
+	global_position = _home_pos
 	set_deferred("monitoring", false)
 
-func _on_player_just_shot() -> void:
-	if not isShot:
-		activate(global_position)   # launches from wherever this bullet is parked
 
 func _physics_process(delta: float) -> void:
 	if not isShot:
@@ -88,7 +99,8 @@ func _on_hit(other: Node) -> void:
 		return
 
 	if other == player:
-		# TODO: damage player, e.g. player.take_damage(1)
+		if other.has_method("damage"):
+			other.damage(10)
 		deactivate()
 	elif other.is_in_group("enemy"):
 		if _ignore_time <= 0.0:

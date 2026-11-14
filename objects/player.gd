@@ -191,7 +191,7 @@ func action_shoot():
 		
 		# Shoot the weapon, amount based on shot count
 		
-		
+		justShot.emit()
 		
 		for n in weapon.shot_count:
 			raycast.target_position.x = randf_range(-weapon.spread, weapon.spread)
