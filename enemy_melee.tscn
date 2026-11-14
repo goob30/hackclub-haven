@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://biesfmpex3v4t"]
+
+[ext_resource type="PackedScene" uid="uid://lde2xq3vq635" path="res://models/enemy-flying.glb" id="1_et1yx"]
+[ext_resource type="SpriteFrames" uid="uid://dbv3sy5qjatnl" path="res://sprites/burst_animation.tres" id="2_gtsv1"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ltxy4"]
+radius = 0.75
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_myfey"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jc8hi"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_myfey"]
+
+[sub_resource type="Skin" id="Skin_ntn57"]
+
+[node name="enemy-melee" type="CharacterBody3D" unique_id=855226502]
+
+[node name="enemy-melee" parent="." unique_id=2006148622 instance=ExtResource("1_et1yx")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1895854340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("SphereShape3D_ltxy4")
+
+[node name="RayCast" type="RayCast3D" parent="." unique_id=1555265173]
+target_position = Vector3(0, 0, 5)
+
+[node name="MuzzleA" type="AnimatedSprite3D" parent="." unique_id=33751163]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.45, 0.3, 0.4)
+sprite_frames = ExtResource("2_gtsv1")
+frame = 2
+
+[node name="MuzzleB" type="AnimatedSprite3D" parent="." unique_id=2009782550]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.45, 0.3, 0.4)
+sprite_frames = ExtResource("2_gtsv1")
+frame = 2
+
+[node name="Timer" type="Timer" parent="." unique_id=1364276729]
+wait_time = 0.25
+autostart = true
+
+[node name="AttackArea" type="Area3D" parent="." unique_id=944241590]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackArea" unique_id=1545782288]
+shape = SubResource("SphereShape3D_myfey")
+disabled = true
+
+[node name="SlashParticles" type="GPUParticles3D" parent="." unique_id=1011624581]
+emitting = false
+one_shot = true
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_jc8hi")
+draw_pass_1 = SubResource("QuadMesh_myfey")
+draw_skin = SubResource("Skin_ntn57")

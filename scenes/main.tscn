@@ -7,9 +7,11 @@
 [ext_resource type="PackedScene" uid="uid://dpm3l05d7fu35" path="res://objects/platform.tscn" id="5_3s40e"]
 [ext_resource type="PackedScene" uid="uid://r7rt7pth4u7o" path="res://objects/wall_low.tscn" id="5_6vel1"]
 [ext_resource type="PackedScene" uid="uid://dg6h5uopjapqr" path="res://scenes/EnemyBullet.tscn" id="5_eb6dy"]
+[ext_resource type="PackedScene" uid="uid://biesfmpex3v4t" path="res://enemy_melee.tscn" id="7_a8y0u"]
 [ext_resource type="PackedScene" uid="uid://c71evdjblk5wp" path="res://objects/wall_high.tscn" id="7_cabne"]
 [ext_resource type="PackedScene" uid="uid://bvx5cvigosg0s" path="res://objects/platform_large_grass.tscn" id="7_wggef"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
+[ext_resource type="Script" uid="uid://jlhojqkjxnol" path="res://enemy_melee.gd" id="8_jkv2x"]
 [ext_resource type="PackedScene" uid="uid://oqfhfp1a80qd" path="res://objects/cloud.tscn" id="10_5ksau"]
 [ext_resource type="Script" uid="uid://gw7nm87hies2" path="res://scenes/bullet.gd" id="11_ya4ey"]
 
@@ -76,20 +78,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 2.5, -6)
 player = NodePath("../../Player")
 bullet_scene = ExtResource("5_eb6dy")
 
-[node name="enemy-flying2" parent="Enemies" unique_id=342903539 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -9.5, 2.5, 1.5)
+[node name="enemy-melee" parent="Enemies" unique_id=855226502 node_paths=PackedStringArray("player") instance=ExtResource("7_a8y0u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5238014)
+script = ExtResource("8_jkv2x")
 player = NodePath("../../Player")
-bullet_scene = ExtResource("5_eb6dy")
-
-[node name="enemy-flying3" parent="Enemies" unique_id=1201559634 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 5.5, 3.5, 9)
-player = NodePath("../../Player")
-bullet_scene = ExtResource("5_eb6dy")
-
-[node name="enemy-flying4" parent="Enemies" unique_id=816910819 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 15.5, 4, -7.5)
-player = NodePath("../../Player")
-bullet_scene = ExtResource("5_eb6dy")
 
 [node name="Level" type="Node" parent="." unique_id=1748836644]
 
