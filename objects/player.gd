@@ -202,9 +202,22 @@ func action_shoot():
 		
 		var new_bullet: Projectile3D = BULLET_SCENE.instantiate()
 		get_tree().current_scene.add_child(new_bullet)
-		new_bullet.launch(
-			camera.global_position - camera.global_transform.basis.z * 0.5,
-			-camera.global_transform.basis.z)
+		
+		# The gun is drawn by a second camera (narrower FOV), so convert the muzzle's
+		# on-screen position into a point in front of the main camera.
+		var item_fov_tan: float = tan(deg_to_rad(muzzle.get_viewport().get_camera_3d().fov * 0.5))
+		var main_fov_tan: float = tan(deg_to_rad(camera.fov * 0.5))
+		var m: Vector3 = muzzle.position
+		var depth := 1.5
+		var local_spawn := Vector3(
+			m.x / -m.z / item_fov_tan * main_fov_tan * depth,
+			m.y / -m.z / item_fov_tan * main_fov_tan * depth,
+			-depth)
+		var spawn_pos: Vector3 = camera.global_transform * local_spawn
+		
+		# Fly toward whatever the crosshair points at
+		var aim_point: Vector3 = camera.global_position - camera.global_transform.basis.z * 100.0
+		new_bullet.launch(spawn_pos, aim_point - spawn_pos)
 		bullet = new_bullet
 		
 		var knockback = random_vec2(weapon.min_knockback, weapon.max_knockback)

@@ -62,7 +62,14 @@ const MODEL_CENTER_X := -1.5
 var _dirty := false
 
 func _ready() -> void:
+	add_to_group("arena")
 	_rebuild()
+
+# True while a world position is inside the arena: within the wall ring and below the wall tops.
+func is_inside_bounds(world_pos: Vector3) -> bool:
+	var p := to_local(world_pos)
+	var outer := get_inner_radius() / cos(PI / segment_count)
+	return Vector2(p.x, p.z).length() <= outer 		and p.y <= MODEL_HEIGHT * wall_scale 		and p.y >= -ground_thickness
 
 func _queue_rebuild() -> void:
 	if not is_inside_tree() or _dirty:

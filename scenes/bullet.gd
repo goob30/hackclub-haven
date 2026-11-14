@@ -8,7 +8,6 @@ extends Area3D
 enum State { OUTBOUND, RETURNING }
 
 @export var outbound_speed: float = 45.0   # fast, but still readable by the eye
-@export var return_speed: float = 35.0
 @export var hit_damage: float = 25.0       # damage dealt to an enemy
 @export var player_damage: int = 10        # damage dealt to the player on return
 @export var hit_player_radius: float = 0.9 # distance at which the returning bullet "reaches" the player
@@ -18,11 +17,15 @@ enum State { OUTBOUND, RETURNING }
 var state: State = State.OUTBOUND
 var direction: Vector3 = Vector3.FORWARD
 var player: Node3D
+var arena: Coliseum
 
 var _life_left: float = 0.0
+var _age: float = 0.0
+var _fire: GPUParticles3D
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player") as Node3D
+	arena = get_tree().get_first_node_in_group("arena") as Coliseum
 	_life_left = lifetime
 	area_entered.connect(_on_hit)
 	_build_visuals()
@@ -35,10 +38,21 @@ func launch(from_pos: Vector3, dir: Vector3) -> void:
 	_face(direction)
 
 func _physics_process(delta: float) -> void:
-	_life_left -= delta
-	if _life_left <= 0.0:
-		queue_free()
-		return
+	# Start the trail a moment after firing so it isn't in your face
+	_age += delta
+	if _fire and not _fire.emitting and _age >= trail_delay:
+		_fire.emitting = true
+
+	if state == State.OUTBOUND:
+		_life_left -= delta
+		if _life_left <= 0.0:
+			queue_free()
+			return
+
+		# Left the arena (over the walls, off the edge, below the floor): delete
+		if is_instance_valid(arena) and not arena.is_inside_bounds(global_position):
+			queue_free()
+			return
 
 	match state:
 		State.OUTBOUND:
@@ -74,7 +88,8 @@ func _move_returning(delta: float) -> void:
 	var target := player.global_position + Vector3.UP * 1.0
 	var to_target := target - global_position
 
-	if to_target.length() <= hit_player_radius:
+	var step := outbound_speed * delta
+	if to_target.length() <= maxf(hit_player_radius, step):
 		if player.has_method("damage"):
 			player.damage(player_damage)
 		_lose_bullet()
@@ -82,7 +97,7 @@ func _move_returning(delta: float) -> void:
 
 	direction = to_target.normalized()
 	_face(direction)
-	global_position += direction * return_speed * delta
+	global_position += direction * outbound_speed * delta
 
 func _on_hit(other: Area3D) -> void:
 	# Only enemies are Area3Ds that matter; only react while flying outward.
@@ -90,7 +105,7 @@ func _on_hit(other: Area3D) -> void:
 		return
 	if other.is_in_group("enemy") and other.has_method("damage"):
 		other.damage(hit_damage)
-		queue_free() # For now the bullet just disappears. Later: state = State.RETURNING
+		state = State.RETURNING # comes back to the player no matter what
 
 func _lose_bullet() -> void:
 	# Later: Run.bullet_lost() goes here
@@ -141,12 +156,8 @@ func _build_visuals() -> void:
 	nose.position.y = 0.3
 	visual.add_child(nose)
 
-	var fire := _make_fire_trail()
-	add_child(fire)
-	# Start the trail a moment after firing so it isn't in your face
-	get_tree().create_timer(trail_delay).timeout.connect(func():
-		if is_instance_valid(fire):
-			fire.emitting = true)
+	_fire = _make_fire_trail()
+	add_child(_fire)
 
 func _make_fire_trail() -> GPUParticles3D:
 	# Soft round sprite
