@@ -1,0 +1,144 @@
+@tool
+class_name Coliseum
+extends Node3D
+
+# Builds a ring-shaped coliseum out of plackard wall segments, plus a round ground.
+# Select the Coliseum node and change the values in the Inspector: it rebuilds live in the editor.
+
+const WALL_SCENE := preload("res://arena/assets/plackard_wall/plackard_closed_full.glb")
+
+# Size of the unscaled model (measured from the .glb): its pivot is NOT at its center.
+const MODEL_WIDTH := 3.2
+const MODEL_HEIGHT := 2.5
+const MODEL_THICKNESS := 0.2
+const MODEL_CENTER_X := -1.5
+
+@export_group("Walls")
+## Uniform scale of each wall segment (6 = six times the original size).
+@export_range(0.5, 20.0, 0.1) var wall_scale: float = 6.0:
+	set(v):
+		wall_scale = v
+		_queue_rebuild()
+## How many wall segments make up the ring. More = rounder.
+@export_range(3, 64, 1) var segment_count: int = 16:
+	set(v):
+		segment_count = v
+		_queue_rebuild()
+## Distance from the center to the inside of the walls. 0 = automatic (segments touch edge to edge).
+## Any other value stretches/shrinks each segment's width so the ring still closes.
+@export_range(0.0, 500.0, 0.5) var radius: float = 0.0:
+	set(v):
+		radius = v
+		_queue_rebuild()
+## Turn on if the decorated side of the walls faces outward instead of inward.
+@export var flip_walls: bool = false:
+	set(v):
+		flip_walls = v
+		_queue_rebuild()
+@export var walls_have_collision: bool = true:
+	set(v):
+		walls_have_collision = v
+		_queue_rebuild()
+
+@export_group("Ground")
+@export var ground_enabled: bool = true:
+	set(v):
+		ground_enabled = v
+		_queue_rebuild()
+## How far the ground extends past the walls.
+@export_range(0.0, 100.0, 0.5) var ground_margin: float = 2.0:
+	set(v):
+		ground_margin = v
+		_queue_rebuild()
+@export_range(0.1, 20.0, 0.1) var ground_thickness: float = 1.0:
+	set(v):
+		ground_thickness = v
+		_queue_rebuild()
+@export var ground_color: Color = Color(0.45, 0.42, 0.38):
+	set(v):
+		ground_color = v
+		_queue_rebuild()
+
+var _dirty := false
+
+func _ready() -> void:
+	_rebuild()
+
+func _queue_rebuild() -> void:
+	if not is_inside_tree() or _dirty:
+		return
+	_dirty = true
+	_rebuild.call_deferred()
+
+# Distance from center to the middle of a wall (the apothem of the polygon)
+func get_inner_radius() -> float:
+	if radius > 0.0:
+		return radius
+	var width := MODEL_WIDTH * wall_scale
+	return width / (2.0 * tan(PI / segment_count))
+
+func _rebuild() -> void:
+	_dirty = false
+	for child in get_children():
+		child.free()
+
+	var inner := get_inner_radius()
+	# Width each segment needs so neighbours meet exactly at the polygon corners
+	var seg_width := 2.0 * inner * tan(PI / segment_count)
+	var width_scale := seg_width / MODEL_WIDTH
+
+	var walls := Node3D.new()
+	walls.name = "Walls"
+	add_child(walls)
+
+	for i in segment_count:
+		var angle := TAU * i / segment_count
+		var wall := Node3D.new()
+		wall.name = "Wall%d" % i
+		walls.add_child(wall)
+		wall.position = Vector3(sin(angle), 0.0, cos(angle)) * inner
+		wall.rotation.y = angle + (PI if flip_walls else 0.0)
+
+		# Model: scaled, and shifted so the segment is centered on the wall node
+		var model := WALL_SCENE.instantiate() as Node3D
+		model.scale = Vector3(width_scale, wall_scale, wall_scale)
+		model.position.x = -MODEL_CENTER_X * width_scale
+		wall.add_child(model)
+
+		if walls_have_collision:
+			var body := StaticBody3D.new()
+			var shape := CollisionShape3D.new()
+			var box := BoxShape3D.new()
+			box.size = Vector3(seg_width, MODEL_HEIGHT * wall_scale, MODEL_THICKNESS * wall_scale)
+			shape.shape = box
+			shape.position.y = box.size.y * 0.5
+			body.add_child(shape)
+			wall.add_child(body)
+
+	if ground_enabled:
+		var ground_radius := inner / cos(PI / segment_count) + ground_margin # reach the polygon corners
+		var ground := StaticBody3D.new()
+		ground.name = "Ground"
+		add_child(ground)
+
+		var mesh_instance := MeshInstance3D.new()
+		var cylinder := CylinderMesh.new()
+		cylinder.top_radius = ground_radius
+		cylinder.bottom_radius = ground_radius
+		cylinder.height = ground_thickness
+		cylinder.radial_segments = 96
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = ground_color
+		cylinder.material = mat
+		mesh_instance.mesh = cylinder
+		ground.add_child(mesh_instance)
+
+		var col := CollisionShape3D.new()
+		var cyl_shape := CylinderShape3D.new()
+		cyl_shape.radius = ground_radius
+		cyl_shape.height = ground_thickness
+		col.shape = cyl_shape
+		ground.add_child(col)
+
+		# Top surface sits at y = 0
+		ground.position.y = -ground_thickness * 0.5

@@ -14,6 +14,7 @@ var destroyed := false
 # When ready, save the initial position
 
 func _ready():
+	add_to_group("enemy")
 	target_position = position
 
 

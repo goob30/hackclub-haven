@@ -34,6 +34,9 @@ var container_offset = Vector3(1.2, -1.1, -2.75)
 
 var tween: Tween
 
+const BULLET_SCENE := preload("res://scenes/bullet.tscn")
+var bullet: Projectile3D
+
 signal health_updated
 
 @onready var camera = $Head/Camera
@@ -48,6 +51,7 @@ signal health_updated
 # Functions
 
 func _ready():
+	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 	weapon = weapons[weapon_index] # Weapon must never be nil
@@ -175,6 +179,7 @@ func action_jump():
 
 func action_shoot():
 	if Input.is_action_pressed("shoot"):
+		if is_instance_valid(bullet): return # Only one bullet in flight at a time
 		if !blaster_cooldown.is_stopped(): return # Cooldown for shooting
 		
 		Audio.play(weapon.sound_shoot)
@@ -193,33 +198,15 @@ func action_shoot():
 		
 		justShot.emit()
 		
-		for n in weapon.shot_count:
-			raycast.target_position.x = randf_range(-weapon.spread, weapon.spread)
-			raycast.target_position.y = randf_range(-weapon.spread, weapon.spread)
-			
-			raycast.force_raycast_update()
-			
-			if !raycast.is_colliding(): continue # Don't create impact when raycast didn't hit
-			
-			var collider = raycast.get_collider()
-			
-			# Hitting an enemy
-			
-			if collider.has_method("damage"):
-				collider.damage(weapon.damage)
-			
-			# Creating an impact animation
-			
-			var impact = preload("res://objects/impact.tscn")
-			var impact_instance = impact.instantiate()
-			
-			impact_instance.play("shot")
-			
-			get_tree().root.add_child(impact_instance)
-			
-			impact_instance.position = raycast.get_collision_point() + (raycast.get_collision_normal() / 10)
-			impact_instance.look_at(camera.global_transform.origin, Vector3.UP, true)
-			
+		# Spawn the bullet: an Area3D that flies from the camera along the crosshair
+		
+		var new_bullet: Projectile3D = BULLET_SCENE.instantiate()
+		get_tree().current_scene.add_child(new_bullet)
+		new_bullet.launch(
+			camera.global_position - camera.global_transform.basis.z * 0.5,
+			-camera.global_transform.basis.z)
+		bullet = new_bullet
+		
 		var knockback = random_vec2(weapon.min_knockback, weapon.max_knockback)
 		# print('knockback', knockback)
 		container.position.z += 0.25 # Knockback of weapon visual
