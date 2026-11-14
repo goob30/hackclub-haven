@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b73y0nhbt21j7"]
+
+[ext_resource type="PackedScene" uid="uid://drdi2fbx1k2bm" path="res://arena/assets/Buildings Prebuild/flat_Lshape_large_alt.glb" id="1_iuixh"]
+
+[node name="flat_Lshape_large_alt2" unique_id=1541876156 instance=ExtResource("1_iuixh")]
+
+[node name="flat_Lshape_large_alt" parent="." index="0" unique_id=471792853]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

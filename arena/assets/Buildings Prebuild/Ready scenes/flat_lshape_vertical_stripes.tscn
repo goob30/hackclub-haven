@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bpwde75ssif0y"]
+
+[ext_resource type="PackedScene" uid="uid://vsap763b8b04" path="res://arena/assets/Buildings Prebuild/flat_Lshape_vertical_stripes.glb" id="1_jjo03"]
+
+[node name="flat_Lshape_vertical_stripes2" unique_id=1771935474 instance=ExtResource("1_jjo03")]
+
+[node name="flat_Lshape_vertical_stripes" parent="." index="0" unique_id=1001668799]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

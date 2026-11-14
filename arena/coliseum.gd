@@ -12,6 +12,7 @@ const MODEL_CENTER_X := -1.5
 
 const BUILDING_DEADZONE_X: Array = [0, 25, 0, 0, 0, 0, 0, 0, 0]
 const BUILDING_DEADZONE_Y: Array = [0, 32, 0, 0, 0, 0, 0, 0, 0]
+const BUILDING_MAX_Y: Array = []
 
 
 enum buildingTypes {
@@ -28,7 +29,7 @@ enum buildingTypes {
 
 
 var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
-
+	"res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn"
 ]
 
 
@@ -77,13 +78,9 @@ var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
 
 var _dirty := false
 
-func randomize_buildings() -> void:
+func randomize_building_heights() -> void:
 	pass
 
-
-func _ready() -> void:
-	add_to_group("arena")
-	_rebuild()
 
 func is_inside_bounds(world_pos: Vector3) -> bool:
 	var p := to_local(world_pos)
