@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cb4bfj6rexuv2"]
+
+[ext_resource type="PackedScene" uid="uid://bphq0b250vgbo" path="res://arena/assets/Buildings Prebuild/flat_Lshape_brick.glb" id="1_84fjy"]
+
+[node name="flat_Lshape_brick2" unique_id=598248252 instance=ExtResource("1_84fjy")]
+
+[node name="flat_Lshape_brick" parent="." index="0" unique_id=2079870976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

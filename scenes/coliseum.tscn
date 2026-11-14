@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://btftbios0gv8"]
+
+[ext_resource type="Script" uid="uid://br361ke8qrs4e" path="res://arena/coliseum.gd" id="1_3r8uy"]
+[ext_resource type="PackedScene" uid="uid://bphq0b250vgbo" path="res://arena/assets/Buildings Prebuild/flat_Lshape_brick.glb" id="2_1a3q4"]
+
+[node name="Coliseum" type="Node3D" unique_id=791044948]
+script = ExtResource("1_3r8uy")
+
+[node name="flat_Lshape_brick2" parent="." unique_id=598248252 instance=ExtResource("2_1a3q4")]
