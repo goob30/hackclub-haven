@@ -5,7 +5,9 @@
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" uid="uid://biqtga8moh7ah" path="res://fonts/lilita_one_regular.ttf" id="3_w27de"]
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
+[ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
+[ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpmwk"]
 font = ExtResource("3_w27de")
@@ -74,5 +76,11 @@ transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 
 player = NodePath("../../Player")
 
 [node name="Coliseum" parent="." unique_id=791044948 instance=ExtResource("6_tefeu")]
+
+[node name="flat_Lshape_brick" parent="." unique_id=598248252 instance=ExtResource("7_o6xl0")]
+transform = Transform3D(0.505, 0, 0, 0, 0.505, 0, 0, 0, 0.505, 16.925539, 0, -0.35552216)
+
+[node name="flat_Lshape2" parent="." unique_id=1799452888 instance=ExtResource("8_tipki")]
+transform = Transform3D(-0.5, 0, -4.371139e-08, 0, 0.5, 0, 4.371139e-08, 0, -0.5, -17.278116, 0, 3.4742746)
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]

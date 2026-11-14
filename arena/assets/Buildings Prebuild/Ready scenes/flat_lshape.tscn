@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://chylygj11gwii"]
+
+[ext_resource type="PackedScene" uid="uid://bpg1vnv2lkohf" path="res://arena/assets/Buildings Prebuild/flat_Lshape.glb" id="1_lmrsr"]
+
+[node name="flat_Lshape2" unique_id=1799452888 instance=ExtResource("1_lmrsr")]
+
+[node name="flat_Lshape" parent="." index="0" unique_id=559793517]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

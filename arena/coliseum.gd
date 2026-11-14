@@ -10,6 +10,28 @@ const MODEL_HEIGHT := 2.5
 const MODEL_THICKNESS := 0.2
 const MODEL_CENTER_X := -1.5
 
+const BUILDING_DEADZONE_X: Array = [0, 25, 0, 0, 0, 0, 0, 0, 0]
+const BUILDING_DEADZONE_Y: Array = [0, 32, 0, 0, 0, 0, 0, 0, 0]
+
+
+enum buildingTypes {
+	FLAT_LSHAPE,
+	FLAT_LSHAPE_BRICK,
+	FLAT_LSHAPE_LARGE_ALT,
+	FLAT_LSHAPE_VERTICAL_STRIPES,
+	FLAT_SQUARE_BRICK,
+	FLAT_SQUARE_BRICK_ALT,
+	FLAT_SQUARE_CONCRETE,
+	FLAT_SQUARE_CONCRETE_ALT,
+	HANGAR1
+}
+
+
+var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
+
+]
+
+
 @export_group("Walls")
 @export_range(0.5, 20.0, 0.1) var wall_scale: float = 6.0:
 	set(v):
@@ -57,6 +79,7 @@ var _dirty := false
 
 func randomize_buildings() -> void:
 	pass
+
 
 func _ready() -> void:
 	add_to_group("arena")
