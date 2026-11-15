@@ -21,7 +21,7 @@ var _vignette: ColorRect
 var _vignette_tween: Tween
 var _impact: ColorRect
 
-const VIGNETTE_STRENGTH := 0.7
+const VIGNETTE_STRENGTH := 1.0
 const PARRY_FREEZE_TIME := 0.3
 const IMPACT_THRESHOLD := 0.55
 const PARRY_SHAKE := 2.0
@@ -40,8 +40,8 @@ void fragment() {
 const VIGNETTE_SHADER := """
 shader_type canvas_item;
 uniform float strength : hint_range(0.0, 1.0) = 0.0;
-uniform float edge_start = 0.25;
-uniform float edge_end = 0.85;
+uniform float edge_start = 0.1;
+uniform float edge_end = 0.7;
 void fragment() {
 	float d = distance(UV, vec2(0.5)) * 1.41421;
 	float v = smoothstep(edge_start, edge_end, d);

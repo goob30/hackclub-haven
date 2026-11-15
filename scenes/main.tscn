@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dl2ed4gkybggf" path="res://objects/player.tscn" id="2_elriq"]
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" uid="uid://b2tyb5oleohda" path="res://fonts/shadow_of_xizor.ttf" id="3_w27de"]
-[ext_resource type="Shader" uid="uid://dcivx1w1peqi1" path="res://fonts/text_gradient.gdshader" id="4_grad"]
+[ext_resource type="Shader" path="res://fonts/text_gradient.gdshader" id="4_grad"]
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
@@ -20,10 +20,17 @@
 [ext_resource type="PackedScene" uid="uid://cvua5c1tqqlui" path="res://arena/assets/Road type 1/road_1_straight.glb" id="19_gqmmt"]
 [ext_resource type="PackedScene" uid="uid://bu4wp5vmqvxa6" path="res://arena/assets/Cones/Traffic_cone_round_rubber.fbx" id="20_gqmmt"]
 [ext_resource type="PackedScene" uid="uid://bm6un6dk7cgh1" path="res://arena/assets/Traffic lights/traffic_light_L.glb" id="21_yc10j"]
-[ext_resource type="PackedScene" uid="uid://d064amwx6tkfo" path="res://arena/assets/Concrete Barriers/Jersey_barrier.glb" id="22_jscy8"]
 [ext_resource type="PackedScene" uid="uid://b3kj3f2fid8sd" path="res://arena/assets/Traffic lights/street_light_clean.fbx" id="24_y6deb"]
-[ext_resource type="Shader" path="res://shaders/light_steps.gdshader" id="ls_shader"]
 [ext_resource type="Script" uid="uid://xi4r57ncbv3e" path="res://scripts/auto_collision.gd" id="25_autocol"]
+[ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
+[ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
+[ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
+
+[sub_resource type="ShaderMaterial" id="LightSteps_mat"]
+shader = ExtResource("ls_shader")
+shader_parameter/light_levels = 12
+shader_parameter/color_levels = 32
+shader_parameter/floor_light = 0.02
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grad"]
 shader = ExtResource("4_grad")
@@ -36,9 +43,6 @@ font = ExtResource("3_w27de")
 font_size = 72
 outline_size = 16
 outline_color = Color(0, 0, 0, 0.470588)
-
-[sub_resource type="ShaderMaterial" id="LightSteps_mat"]
-shader = ExtResource("ls_shader")
 
 [node name="Main" type="Node3D" unique_id=1176673032]
 
@@ -59,10 +63,10 @@ directional_shadow_mode = 0
 directional_shadow_split_1 = 0.2
 directional_shadow_max_distance = 60.0
 
-[node name="LightSteps" type="CanvasLayer" parent="."]
+[node name="LightSteps" type="CanvasLayer" parent="." unique_id=1229088307]
 layer = -1
 
-[node name="Rect" type="ColorRect" parent="LightSteps"]
+[node name="Rect" type="ColorRect" parent="LightSteps" unique_id=144261333]
 material = SubResource("LightSteps_mat")
 anchors_preset = 15
 anchor_right = 1.0
@@ -187,7 +191,7 @@ transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, 15.1
 script = ExtResource("25_autocol")
 
 [node name="Lamp" type="OmniLight3D" parent="traffic_light_L2/traffic_light_L2" unique_id=653989524]
-transform = Transform3D(1.3333334, 0, 0, 0, 1.3333334, 0, 0, 0, 1.3333334, 18.424347, 8.074713, -6.900796)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.424347, 8.074713, -6.900796)
 light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 4.0
 distance_fade_enabled = true
@@ -200,7 +204,7 @@ transform = Transform3D(1.3113417e-07, 0, -1, 0, 1, 0, 1, 0, 1.3113417e-07, -10.
 script = ExtResource("25_autocol")
 
 [node name="Lamp" type="OmniLight3D" parent="traffic_light_L2/traffic_light_L3" unique_id=346548252]
-transform = Transform3D(1.3333334, 0, 0, 0, 1.3333334, 0, 0, 0, 1.3333334, 19.5517, 8.263897, -17.882193)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5517, 8.263897, -17.882193)
 light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 4.0
 distance_fade_enabled = true
@@ -209,21 +213,13 @@ distance_fade_shadow = 25.0
 omni_range = 14.0
 
 [node name="Lamp" type="OmniLight3D" parent="traffic_light_L2" unique_id=1717493706]
-transform = Transform3D(1.3333334, 0, 9.947598e-14, 0, 1.3333334, 0, -9.947598e-14, 0, 1.3333334, 27.477179, 7.9840307, -18.502403)
+transform = Transform3D(1, 0, 7.460699e-14, 0, 1, 0, -7.460699e-14, 0, 1, 27.477179, 7.9840307, -18.502403)
 light_color = Color(1, 0.75, 0.4, 1)
 light_energy = 4.0
 distance_fade_enabled = true
 distance_fade_begin = 45.0
 distance_fade_shadow = 25.0
 omni_range = 14.0
-
-[node name="Jersey_barrier2" parent="." unique_id=1041344225 instance=ExtResource("22_jscy8")]
-transform = Transform3D(0.36703682, 0, -0.65405196, 0, 0.75, 0, 0.65405196, 0, 0.36703682, 9, 0, -0.99999714)
-script = ExtResource("25_autocol")
-
-[node name="Jersey_barrier2" parent="Jersey_barrier2" unique_id=540595293 instance=ExtResource("22_jscy8")]
-transform = Transform3D(0.88941634, 0, 0.45709816, 0, 1, 0, -0.45709816, 0, 0.88941634, -4.0843563, 0, 1.148057)
-script = ExtResource("25_autocol")
 
 [node name="street_light_clean" parent="." unique_id=544773511 instance=ExtResource("24_y6deb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 23)
@@ -235,6 +231,16 @@ script = ExtResource("25_autocol")
 
 [node name="street_light_clean2" parent="street_light_clean/street_light_clean2" unique_id=1724179972 instance=ExtResource("24_y6deb")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 16)
+script = ExtResource("25_autocol")
+
+[node name="Car2" type="MeshInstance3D" parent="." unique_id=401990619]
+transform = Transform3D(-0.08703655, 0.05062654, 0.48975667, 0.04341204, 0.49620196, -0.04357787, -0.4904488, 0.034936942, -0.09077101, 0.39715683, 0.124709636, 5.2259903)
+mesh = ExtResource("26_2wyq8")
+script = ExtResource("25_autocol")
+
+[node name="Car" type="MeshInstance3D" parent="." unique_id=412330681]
+transform = Transform3D(-0.48604566, 0.051767744, 0.1052603, 0.04341204, 0.49620196, -0.04357787, -0.10897259, -0.03322254, -0.4868483, -7.8955956, -0.12168181, -13.573565)
+mesh = ExtResource("26_vxglm")
 script = ExtResource("25_autocol")
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]

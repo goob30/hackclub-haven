@@ -5,6 +5,8 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_myfey"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_myfey"]
+radial_segments = 16
+rings = 8
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1823632028]
 transform = Transform3D(0.105, 0, 0, 0, 0.105, 0, 0, 0, 0.105, 0, 0, 0)

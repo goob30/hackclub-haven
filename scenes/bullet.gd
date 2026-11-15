@@ -4,6 +4,7 @@ extends Area3D
 enum State { OUTBOUND, RETURNING }
 
 @export var outbound_speed: float = 45.0
+@export var return_speed_mult: float = 0.5
 @export var hit_damage: float = 25.0
 @export var player_damage: int = 10
 @export var hit_player_radius: float = 0.9
@@ -85,7 +86,8 @@ func _move_returning(delta: float) -> void:
 	var target := player.global_position + Vector3.UP * 1.0
 	var to_target := target - global_position
 
-	var step := outbound_speed * delta
+	var return_speed := outbound_speed * return_speed_mult
+	var step := return_speed * delta
 	var distance := to_target.length()
 	if distance <= maxf(hit_player_radius, step):
 		if player.has_method("damage"):
@@ -93,13 +95,14 @@ func _move_returning(delta: float) -> void:
 		_lose_bullet()
 		return
 
-	var time_to_impact := distance / outbound_speed
+	# Measured to the hit radius, not the player centre
+	var time_to_impact := (distance - hit_player_radius) / return_speed
 	if not _slowmo_on and time_to_impact <= slow_trigger_time:
 		_start_slowmo()
 
 	direction = to_target.normalized()
 	_face(direction)
-	global_position += direction * outbound_speed * delta
+	global_position += direction * return_speed * delta
 
 func _on_hit(other: Area3D) -> void:
 	if state != State.OUTBOUND:

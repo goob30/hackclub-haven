@@ -322,6 +322,8 @@ func get_auto_aim_point(default_point: Variant = null) -> Vector3:
 # Toggle between available weapons (listed in 'weapons')
 
 func action_weapon_toggle():
+	if weapons.size() < 2:
+		return
 	if Input.is_action_just_pressed("weapon_toggle"):
 		weapon_index = wrap(weapon_index + 1, 0, weapons.size())
 		initiate_change_weapon(weapon_index)
