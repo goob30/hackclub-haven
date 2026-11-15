@@ -9,7 +9,8 @@ static var _mist_process: ShaderMaterial
 @export var bullet_scene: PackedScene
 @export var attack_range := 30.0
 @export var attack_damage := 5
-@export var fire_interval := 2.5
+@export var fire_interval := 2.0
+@export var fire_jitter := 0.5
 
 @export var hover_height := 0.2
 @export var hover_speed := 2.0
@@ -60,7 +61,7 @@ func _physics_process(delta: float) -> void:
 
 	_fire_cooldown -= delta
 	if _fire_cooldown <= 0.0:
-		_fire_cooldown += _fire_wait
+		_fire_cooldown += maxf(randf_range(fire_interval - fire_jitter, fire_interval + fire_jitter), 0.1)
 		_try_fire()
 
 

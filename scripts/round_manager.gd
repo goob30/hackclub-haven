@@ -2,14 +2,18 @@ extends Node
 
 const DRONE := preload("res://DroneFly.tscn")
 const SPIDER := preload("res://SpiderEnemy.tscn")
+const DEMON := preload("res://DemonGround.tscn")
 const ENEMY_BULLET := preload("res://scenes/EnemyBullet.tscn")
 
 # Health units each enemy counts for in the round budget
 const DRONE_HEALTH := 1
 const SPIDER_HEALTH := 2
+const DEMON_HEALTH := 2
+
+enum Kind { DRONE, SPIDER, DEMON }
 
 const BASE_BUDGET := 5
-const DRONE_SCALE := 0.5
+const DRONE_SCALE := 0.4
 const ROUND_DELAY := 1.0
 const BANNER_TIME := 2.0
 const SPAWN_SHAKE := 0.8
@@ -57,19 +61,30 @@ func _start_round() -> void:
 	_banner.visible = false
 	var budget := round_number + BASE_BUDGET
 	while budget > 0:
-		var spider := budget >= SPIDER_HEALTH and randf() < 0.4
-		_spawn(spider)
-		budget -= SPIDER_HEALTH if spider else DRONE_HEALTH
+		var roll := randf()
+		var kind := Kind.DRONE
+		if budget >= 2 and roll < 0.25:
+			kind = Kind.SPIDER
+		elif budget >= 2 and roll < 0.5:
+			kind = Kind.DEMON
+		_spawn(kind)
+		budget -= DRONE_HEALTH if kind == Kind.DRONE else 2
 	if player:
 		player.shake = SPAWN_SHAKE
 	_waiting = false
 
 
-func _spawn(spider: bool) -> void:
-	var spot := _find_spot()
-	var enemy := (SPIDER if spider else DRONE).instantiate() as Node3D
-	if not spider:
+func _spawn(kind: Kind) -> void:
+	var spot = _find_spot(kind == Kind.DEMON)
+	if spot == null:
+		_spawn(Kind.SPIDER)
+		return
+	var enemy := [DRONE, SPIDER, DEMON][kind].instantiate() as Node3D
+	if kind == Kind.DEMON:
 		enemy.set("bullet_scene", ENEMY_BULLET)
+	elif kind == Kind.DRONE:
+		enemy.set("bullet_scene", ENEMY_BULLET)
+		enemy.set("attack_range", INF)
 		enemy.scale = Vector3.ONE * DRONE_SCALE
 		spot.y += 1.5
 	enemy.position = spot
@@ -81,6 +96,8 @@ func _spawn(spider: bool) -> void:
 func _add_arrow(enemy: Node3D) -> void:
 	var top := -INF
 	for mi in enemy.find_children("*", "MeshInstance3D", true, false):
+		if mi.name.begins_with("WGT_"):
+			continue
 		var t := Transform3D.IDENTITY
 		var n: Node = mi
 		while n != enemy:
@@ -125,21 +142,24 @@ func _get_arrow_texture() -> ImageTexture:
 
 
 # Rays come from above, so a hit is either a roof or the open floor, never a building interior
-func _find_spot() -> Vector3:
+func _find_spot(roof_only := false) -> Variant:
 	var arena := get_tree().get_first_node_in_group("arena") as Coliseum
 	var player := get_tree().get_first_node_in_group("player") as Node3D
 	var space := get_viewport().world_3d.direct_space_state
 	var sphere := SphereShape3D.new()
 	sphere.radius = CLEARANCE_RADIUS
 	var fallback := Vector3.ZERO
+	var buildings: Array = arena.BUILDING_NODES
 
-	for i in SPAWN_ATTEMPTS:
+	for i in SPAWN_ATTEMPTS * (4 if roof_only else 1):
 		var r := arena.get_inner_radius() * sqrt(randf()) * 0.9
 		var a := randf() * TAU
 		var from := arena.global_position + Vector3(cos(a) * r, RAY_TOP, sin(a) * r)
 		var query := PhysicsRayQueryParameters3D.create(from, from + Vector3(0, RAY_BOTTOM - RAY_TOP, 0))
 		var hit := space.intersect_ray(query)
 		if hit.is_empty() or hit.normal.y < 0.7:
+			continue
+		if roof_only and not buildings.any(func(b): return b.is_ancestor_of(hit.collider)):
 			continue
 		var pos: Vector3 = hit.position
 		fallback = pos
@@ -151,7 +171,7 @@ func _find_spot() -> Vector3:
 		if not space.intersect_shape(shape, 1).is_empty():
 			continue
 		return pos
-	return fallback
+	return null if roof_only else fallback
 
 
 func _build_label() -> void:

@@ -20,12 +20,24 @@ var _combo_base := Vector2.ZERO
 var _vignette: ColorRect
 var _vignette_tween: Tween
 var _impact: ColorRect
+var _hurt: ColorRect
+var _hurt_tween: Tween
 
 const VIGNETTE_STRENGTH := 1.0
 const PARRY_FREEZE_TIME := 0.3
 const IMPACT_THRESHOLD := 0.55
 const PARRY_SHAKE := 2.0
 const COMBO_SHAKE_PIXELS := 15.0
+
+const HURT_SHADER := """
+shader_type canvas_item;
+uniform float strength : hint_range(0.0, 1.0) = 0.0;
+void fragment() {
+	float d = distance(UV, vec2(0.5)) * 1.41421;
+	float v = smoothstep(0.25, 0.9, d);
+	COLOR = vec4(0.8, 0.0, 0.02, v * strength);
+}
+"""
 
 const IMPACT_SHADER := """
 shader_type canvas_item;
@@ -65,6 +77,7 @@ func _ready():
 
 	_build_vignette()
 	_build_impact()
+	_build_hurt()
 	_build_ammo()
 
 	var player = get_tree().get_first_node_in_group("player")
@@ -87,6 +100,27 @@ func _process(delta: float) -> void:
 
 func _on_health_updated(health):
 	$Health.text = str(health) + "%"
+	_flash_hurt()
+
+func _build_hurt() -> void:
+	var mat := ShaderMaterial.new()
+	mat.shader = Shader.new()
+	mat.shader.code = HURT_SHADER
+	_hurt = ColorRect.new()
+	_hurt.name = "HurtFlash"
+	_hurt.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hurt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hurt.material = mat
+	add_child(_hurt)
+	move_child(_hurt, 0)
+
+func _flash_hurt() -> void:
+	if _hurt_tween:
+		_hurt_tween.kill()
+	var mat := _hurt.material as ShaderMaterial
+	mat.set_shader_parameter("strength", 1.0)
+	_hurt_tween = create_tween().set_ignore_time_scale(true)
+	_hurt_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), 1.0, 0.0, 0.5)
 
 func _on_combo_changed(combo: int):
 	if _combo_tween:
