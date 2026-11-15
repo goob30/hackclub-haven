@@ -20,3 +20,7 @@ func _process(_delta):
 	var t := Time.get_ticks_msec() / 1000.0 * speed + t_offset
 	position = base_pos + Vector2(sin(t) * size_xy.x, sin(2.0 * t) * size_xy.y)
 	rotation = deg_to_rad(cos(t) * tilt_degrees)
+
+
+func _on_settingsbutton_pressed() -> void:
+	pass # Replace with function body.

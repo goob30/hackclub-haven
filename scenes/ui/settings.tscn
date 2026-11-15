@@ -1,0 +1,321 @@
+[gd_scene format=3 uid="uid://b14i45ot1aghs"]
+
+[ext_resource type="Script" uid="uid://cvxom3hmj03cf" path="res://scenes/ui/settings.gd" id="1_8wfqe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vrkq3"]
+bg_color = Color(0.24546176, 0.16398361, 0.13993677, 1)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[sub_resource type="FontFile" id="FontFile_57qmd"]
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/80/0/ascent = 0.0
+cache/0/80/0/descent = 0.0
+cache/0/80/0/underline_position = 0.0
+cache/0/80/0/underline_thickness = 0.0
+cache/0/80/0/scale = 1.0
+cache/0/77/0/ascent = 0.0
+cache/0/77/0/descent = 0.0
+cache/0/77/0/underline_position = 0.0
+cache/0/77/0/underline_thickness = 0.0
+cache/0/77/0/scale = 1.0
+cache/0/76/0/ascent = 0.0
+cache/0/76/0/descent = 0.0
+cache/0/76/0/underline_position = 0.0
+cache/0/76/0/underline_thickness = 0.0
+cache/0/76/0/scale = 1.0
+cache/0/75/0/ascent = 0.0
+cache/0/75/0/descent = 0.0
+cache/0/75/0/underline_position = 0.0
+cache/0/75/0/underline_thickness = 0.0
+cache/0/75/0/scale = 1.0
+cache/0/74/0/ascent = 0.0
+cache/0/74/0/descent = 0.0
+cache/0/74/0/underline_position = 0.0
+cache/0/74/0/underline_thickness = 0.0
+cache/0/74/0/scale = 1.0
+cache/0/73/0/ascent = 0.0
+cache/0/73/0/descent = 0.0
+cache/0/73/0/underline_position = 0.0
+cache/0/73/0/underline_thickness = 0.0
+cache/0/73/0/scale = 1.0
+cache/0/72/0/ascent = 0.0
+cache/0/72/0/descent = 0.0
+cache/0/72/0/underline_position = 0.0
+cache/0/72/0/underline_thickness = 0.0
+cache/0/72/0/scale = 1.0
+cache/0/71/0/ascent = 0.0
+cache/0/71/0/descent = 0.0
+cache/0/71/0/underline_position = 0.0
+cache/0/71/0/underline_thickness = 0.0
+cache/0/71/0/scale = 1.0
+cache/0/70/0/ascent = 0.0
+cache/0/70/0/descent = 0.0
+cache/0/70/0/underline_position = 0.0
+cache/0/70/0/underline_thickness = 0.0
+cache/0/70/0/scale = 1.0
+cache/0/69/0/ascent = 0.0
+cache/0/69/0/descent = 0.0
+cache/0/69/0/underline_position = 0.0
+cache/0/69/0/underline_thickness = 0.0
+cache/0/69/0/scale = 1.0
+cache/0/68/0/ascent = 0.0
+cache/0/68/0/descent = 0.0
+cache/0/68/0/underline_position = 0.0
+cache/0/68/0/underline_thickness = 0.0
+cache/0/68/0/scale = 1.0
+cache/0/67/0/ascent = 0.0
+cache/0/67/0/descent = 0.0
+cache/0/67/0/underline_position = 0.0
+cache/0/67/0/underline_thickness = 0.0
+cache/0/67/0/scale = 1.0
+cache/0/66/0/ascent = 0.0
+cache/0/66/0/descent = 0.0
+cache/0/66/0/underline_position = 0.0
+cache/0/66/0/underline_thickness = 0.0
+cache/0/66/0/scale = 1.0
+cache/0/65/0/ascent = 0.0
+cache/0/65/0/descent = 0.0
+cache/0/65/0/underline_position = 0.0
+cache/0/65/0/underline_thickness = 0.0
+cache/0/65/0/scale = 1.0
+cache/0/64/0/ascent = 0.0
+cache/0/64/0/descent = 0.0
+cache/0/64/0/underline_position = 0.0
+cache/0/64/0/underline_thickness = 0.0
+cache/0/64/0/scale = 1.0
+cache/0/63/0/ascent = 0.0
+cache/0/63/0/descent = 0.0
+cache/0/63/0/underline_position = 0.0
+cache/0/63/0/underline_thickness = 0.0
+cache/0/63/0/scale = 1.0
+cache/0/62/0/ascent = 0.0
+cache/0/62/0/descent = 0.0
+cache/0/62/0/underline_position = 0.0
+cache/0/62/0/underline_thickness = 0.0
+cache/0/62/0/scale = 1.0
+cache/0/61/0/ascent = 0.0
+cache/0/61/0/descent = 0.0
+cache/0/61/0/underline_position = 0.0
+cache/0/61/0/underline_thickness = 0.0
+cache/0/61/0/scale = 1.0
+cache/0/60/0/ascent = 0.0
+cache/0/60/0/descent = 0.0
+cache/0/60/0/underline_position = 0.0
+cache/0/60/0/underline_thickness = 0.0
+cache/0/60/0/scale = 1.0
+cache/0/59/0/ascent = 0.0
+cache/0/59/0/descent = 0.0
+cache/0/59/0/underline_position = 0.0
+cache/0/59/0/underline_thickness = 0.0
+cache/0/59/0/scale = 1.0
+cache/0/58/0/ascent = 0.0
+cache/0/58/0/descent = 0.0
+cache/0/58/0/underline_position = 0.0
+cache/0/58/0/underline_thickness = 0.0
+cache/0/58/0/scale = 1.0
+cache/0/57/0/ascent = 0.0
+cache/0/57/0/descent = 0.0
+cache/0/57/0/underline_position = 0.0
+cache/0/57/0/underline_thickness = 0.0
+cache/0/57/0/scale = 1.0
+cache/0/56/0/ascent = 0.0
+cache/0/56/0/descent = 0.0
+cache/0/56/0/underline_position = 0.0
+cache/0/56/0/underline_thickness = 0.0
+cache/0/56/0/scale = 1.0
+cache/0/55/0/ascent = 0.0
+cache/0/55/0/descent = 0.0
+cache/0/55/0/underline_position = 0.0
+cache/0/55/0/underline_thickness = 0.0
+cache/0/55/0/scale = 1.0
+cache/0/54/0/ascent = 0.0
+cache/0/54/0/descent = 0.0
+cache/0/54/0/underline_position = 0.0
+cache/0/54/0/underline_thickness = 0.0
+cache/0/54/0/scale = 1.0
+cache/0/53/0/ascent = 0.0
+cache/0/53/0/descent = 0.0
+cache/0/53/0/underline_position = 0.0
+cache/0/53/0/underline_thickness = 0.0
+cache/0/53/0/scale = 1.0
+cache/0/52/0/ascent = 0.0
+cache/0/52/0/descent = 0.0
+cache/0/52/0/underline_position = 0.0
+cache/0/52/0/underline_thickness = 0.0
+cache/0/52/0/scale = 1.0
+cache/0/51/0/ascent = 0.0
+cache/0/51/0/descent = 0.0
+cache/0/51/0/underline_position = 0.0
+cache/0/51/0/underline_thickness = 0.0
+cache/0/51/0/scale = 1.0
+cache/0/50/0/ascent = 0.0
+cache/0/50/0/descent = 0.0
+cache/0/50/0/underline_position = 0.0
+cache/0/50/0/underline_thickness = 0.0
+cache/0/50/0/scale = 1.0
+cache/0/49/0/ascent = 0.0
+cache/0/49/0/descent = 0.0
+cache/0/49/0/underline_position = 0.0
+cache/0/49/0/underline_thickness = 0.0
+cache/0/49/0/scale = 1.0
+cache/0/48/0/ascent = 0.0
+cache/0/48/0/descent = 0.0
+cache/0/48/0/underline_position = 0.0
+cache/0/48/0/underline_thickness = 0.0
+cache/0/48/0/scale = 1.0
+cache/0/47/0/ascent = 0.0
+cache/0/47/0/descent = 0.0
+cache/0/47/0/underline_position = 0.0
+cache/0/47/0/underline_thickness = 0.0
+cache/0/47/0/scale = 1.0
+cache/0/46/0/ascent = 0.0
+cache/0/46/0/descent = 0.0
+cache/0/46/0/underline_position = 0.0
+cache/0/46/0/underline_thickness = 0.0
+cache/0/46/0/scale = 1.0
+cache/0/45/0/ascent = 0.0
+cache/0/45/0/descent = 0.0
+cache/0/45/0/underline_position = 0.0
+cache/0/45/0/underline_thickness = 0.0
+cache/0/45/0/scale = 1.0
+cache/0/44/0/ascent = 0.0
+cache/0/44/0/descent = 0.0
+cache/0/44/0/underline_position = 0.0
+cache/0/44/0/underline_thickness = 0.0
+cache/0/44/0/scale = 1.0
+cache/0/43/0/ascent = 0.0
+cache/0/43/0/descent = 0.0
+cache/0/43/0/underline_position = 0.0
+cache/0/43/0/underline_thickness = 0.0
+cache/0/43/0/scale = 1.0
+cache/0/42/0/ascent = 0.0
+cache/0/42/0/descent = 0.0
+cache/0/42/0/underline_position = 0.0
+cache/0/42/0/underline_thickness = 0.0
+cache/0/42/0/scale = 1.0
+cache/0/41/0/ascent = 0.0
+cache/0/41/0/descent = 0.0
+cache/0/41/0/underline_position = 0.0
+cache/0/41/0/underline_thickness = 0.0
+cache/0/41/0/scale = 1.0
+cache/0/40/0/ascent = 0.0
+cache/0/40/0/descent = 0.0
+cache/0/40/0/underline_position = 0.0
+cache/0/40/0/underline_thickness = 0.0
+cache/0/40/0/scale = 1.0
+cache/0/78/0/ascent = 0.0
+cache/0/78/0/descent = 0.0
+cache/0/78/0/underline_position = 0.0
+cache/0/78/0/underline_thickness = 0.0
+cache/0/78/0/scale = 1.0
+cache/0/79/0/ascent = 0.0
+cache/0/79/0/descent = 0.0
+cache/0/79/0/underline_position = 0.0
+cache/0/79/0/underline_thickness = 0.0
+cache/0/79/0/scale = 1.0
+cache/0/81/0/ascent = 0.0
+cache/0/81/0/descent = 0.0
+cache/0/81/0/underline_position = 0.0
+cache/0/81/0/underline_thickness = 0.0
+cache/0/81/0/scale = 1.0
+cache/0/82/0/ascent = 0.0
+cache/0/82/0/descent = 0.0
+cache/0/82/0/underline_position = 0.0
+cache/0/82/0/underline_thickness = 0.0
+cache/0/82/0/scale = 1.0
+cache/0/83/0/ascent = 0.0
+cache/0/83/0/descent = 0.0
+cache/0/83/0/underline_position = 0.0
+cache/0/83/0/underline_thickness = 0.0
+cache/0/83/0/scale = 1.0
+cache/0/32/0/ascent = 0.0
+cache/0/32/0/descent = 0.0
+cache/0/32/0/underline_position = 0.0
+cache/0/32/0/underline_thickness = 0.0
+cache/0/32/0/scale = 1.0
+
+[node name="Control" type="Control" unique_id=2094486747]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8wfqe")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1853215835]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="Panel" type="Panel" parent="CenterContainer" unique_id=687748086]
+custom_minimum_size = Vector2(1000, 440)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vrkq3")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1645624355]
+layout_mode = 2
+
+[node name="sfxvol" type="HBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=672716387]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/sfxvol" unique_id=299844527]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "SFX Volume"
+
+[node name="Control" type="Control" parent="CenterContainer/VBoxContainer/sfxvol" unique_id=558652561]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CenterContainer/VBoxContainer/sfxvol" unique_id=450647225]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="musicvol" type="HBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=1794325376]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/musicvol" unique_id=1216502487]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Music Volume"
+
+[node name="Control" type="Control" parent="CenterContainer/VBoxContainer/musicvol" unique_id=1404386213]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="CenterContainer/VBoxContainer/musicvol" unique_id=1563190810]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="backbutton" type="Button" parent="." unique_id=455604664]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 160.0
+offset_right = 232.0
+offset_bottom = 232.0
+theme_override_fonts/font = SubResource("FontFile_57qmd")
+theme_override_font_sizes/font_size = 40
+text = "<"
+
+[connection signal="pressed" from="backbutton" to="." method="_on_backbutton_pressed"]
