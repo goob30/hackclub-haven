@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://c7tut0r1a1scn"]
+
+[ext_resource type="PackedScene" uid="uid://dxvvlck8lej3f" path="res://scenes/main.tscn" id="1_main"]
+[ext_resource type="Script" path="res://scripts/tutorial.gd" id="2_tut"]
+
+[node name="Tutorial" instance=ExtResource("1_main")]
+
+[node name="Enemies" parent="."]
+script = ExtResource("2_tut")

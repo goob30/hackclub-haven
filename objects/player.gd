@@ -42,6 +42,10 @@ const GRAVITY := 20.0
 var health: int = 100
 var dead := false
 var beam_active := false
+var auto_beam := true # out of ammo beam death
+var infinite_ammo := false
+var death_scene := "" # empty reloads the current scene
+var _beam_forced := false
 var out_of_ammo := false
 var _refill_pending := false # round start reload not finished yet
 const BEAM_SHADER := preload("res://sprites/beam_dither.gdshader")
@@ -284,6 +288,7 @@ func action_shoot():
 		muzzle_flash.restart()
 		shake = 1.0
 		if model and model.has_method("play_shoot"):
+			if "infinite" in model: model.infinite = infinite_ammo
 			model.play_shoot()
 		
 		blaster_cooldown.start(weapon.cooldown)
@@ -421,7 +426,9 @@ func _on_ammo_depleted(ammo: int, _capacity: int) -> void:
 		_refill_pending = false
 
 func _beam_allowed() -> bool:
-	if not out_of_ammo or _refill_pending or dead or _in_round_transition():
+	if _beam_forced:
+		return not dead
+	if not auto_beam or not out_of_ammo or _refill_pending or dead or _in_round_transition():
 		return false
 	return not get_tree().get_nodes_in_group("enemy").is_empty()
 
@@ -429,6 +436,11 @@ func _check_beam_death() -> void:
 	if beam_active or is_instance_valid(bullet) or not _beam_allowed():
 		return
 	_beam_death()
+
+func summon_beam() -> void:
+	_beam_forced = true
+	if not beam_active and not dead:
+		_beam_death()
 
 func _beam_death() -> void:
 	beam_active = true
@@ -497,7 +509,14 @@ func _die() -> void:
 	tw.tween_property(camera, "rotation:x", 0.0, 1.4)
 	tw.tween_property(red, "color:a", 0.3, 1.4)
 	tw.chain().tween_interval(3.0)
-	tw.chain().tween_callback(func(): get_tree().reload_current_scene())
+	tw.chain().tween_callback(_after_death)
+
+func _after_death() -> void:
+	if death_scene.is_empty():
+		get_tree().reload_current_scene()
+		return
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_tree().change_scene_to_file(death_scene)
 
 func hide_right_arm():
 	var skels := arms.find_children("*", "Skeleton3D")

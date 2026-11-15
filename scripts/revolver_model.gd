@@ -26,7 +26,9 @@ const RELOAD_SPEED := 0.5
 
 var ammo := SHOTS
 var reloading := false
+var infinite := false
 var _seg_end := -1.0
+var _inf_idx := 0
 
 func can_fire() -> bool:
 	return ammo > 0 and not reloading
@@ -36,8 +38,12 @@ func play_shoot() -> void:
 		return
 	var seg := _anim.get_animation("Shoot").length / SHOTS
 	var idx := SHOTS - ammo
-	ammo -= 1
-	ammo_changed.emit(ammo, SHOTS)
+	if infinite:
+		idx = _inf_idx % SHOTS
+		_inf_idx += 1
+	else:
+		ammo -= 1
+		ammo_changed.emit(ammo, SHOTS)
 	_seg_end = (idx + 1) * seg
 	_anim.play("Shoot", -1, shoot_speed)
 	_anim.seek(idx * seg, true)
@@ -54,7 +60,10 @@ func _process(_delta: float) -> void:
 	if _anim and _seg_end >= 0.0 and _anim.current_animation == "Shoot" and _anim.current_animation_position >= _seg_end:
 		_anim.pause()
 		_seg_end = -1.0
-		if ammo == 0:
+		if ammo == 0 and infinite:
+			ammo = SHOTS
+			ammo_changed.emit(ammo, SHOTS)
+		elif ammo == 0:
 			reloading = true
 			_anim.play("Reload", -1, RELOAD_SPEED)
 

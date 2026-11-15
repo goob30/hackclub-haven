@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dl2ed4gkybggf" path="res://objects/player.tscn" id="2_elriq"]
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" uid="uid://b2tyb5oleohda" path="res://fonts/shadow_of_xizor.ttf" id="3_w27de"]
-[ext_resource type="Shader" path="res://fonts/text_gradient.gdshader" id="4_grad"]
+[ext_resource type="Shader" uid="uid://dcivx1w1peqi1" path="res://fonts/text_gradient.gdshader" id="4_grad"]
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
@@ -16,19 +16,19 @@
 [ext_resource type="PackedScene" uid="uid://byxxvtbjvwi6b" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete.tscn" id="14_a8y0u"]
 [ext_resource type="PackedScene" uid="uid://cv0tpb5q88r63" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete_alt.tscn" id="15_jbj1t"]
 [ext_resource type="PackedScene" uid="uid://nswyk50q4kur" path="res://arena/assets/Buildings Prebuild/Ready scenes/hangar_1.tscn" id="16_muem4"]
+[ext_resource type="PackedScene" uid="uid://cgr81sg436y6r" path="res://scenes/ui/pause.tscn" id="17_muem4"]
+[ext_resource type="Script" uid="uid://cdxsxfg407jex" path="res://scenes/ui/pause.gd" id="18_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://b4xslsjw0lehw" path="res://arena/assets/Road type 1/road_1_Tjunction.fbx" id="19_0ld40"]
 [ext_resource type="PackedScene" uid="uid://cvua5c1tqqlui" path="res://arena/assets/Road type 1/road_1_straight.glb" id="19_gqmmt"]
 [ext_resource type="PackedScene" uid="uid://bu4wp5vmqvxa6" path="res://arena/assets/Cones/Traffic_cone_round_rubber.fbx" id="20_gqmmt"]
 [ext_resource type="PackedScene" uid="uid://bm6un6dk7cgh1" path="res://arena/assets/Traffic lights/traffic_light_L.glb" id="21_yc10j"]
+[ext_resource type="AudioStream" uid="uid://dgujl000wk7g5" path="res://sounds/ascension to entropy.ogg" id="23_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://b3kj3f2fid8sd" path="res://arena/assets/Traffic lights/street_light_clean.fbx" id="24_y6deb"]
 [ext_resource type="Script" uid="uid://xi4r57ncbv3e" path="res://scripts/auto_collision.gd" id="25_autocol"]
+[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.wav" id="25_og1vs"]
 [ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
 [ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
 [ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
-[ext_resource type="PackedScene" uid="uid://cgr81sg436y6r" path="res://scenes/ui/pause.tscn" id="17_muem4"]
-[ext_resource type="Script" uid="uid://cdxsxfg407jex" path="res://scenes/ui/pause.gd" id="18_dp3eg"]
-[ext_resource type="AudioStream" uid="uid://dgujl000wk7g5" path="res://sounds/ascension to entropy.ogg" id="23_pm3ni"]
-[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.wav" id="25_og1vs"]
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
@@ -256,12 +256,10 @@ process_mode = 3
 stream = ExtResource("23_pm3ni")
 volume_db = -7.087
 autoplay = true
-bus = &"music"
 
 [node name="dangermusicadd" type="AudioStreamPlayer" parent="." unique_id=78346466]
 process_mode = 3
 stream = ExtResource("25_og1vs")
 volume_db = -80.0
-bus = &"music"
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
