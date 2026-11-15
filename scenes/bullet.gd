@@ -8,7 +8,7 @@ enum State { OUTBOUND, RETURNING }
 @export var player_damage: int = 10
 @export var hit_player_radius: float = 0.9
 @export var lifetime: float = 6.0
-@export var trail_delay: float = 0.12
+@export var trail_delay: float = 0.0
 
 @export_subgroup("Parry / Slow-mo")
 @export var slow_trigger_time: float = 0.06
@@ -208,66 +208,67 @@ func _build_visuals() -> void:
 	add_child(_fire)
 
 func _make_fire_trail() -> GPUParticles3D:
-	var grad := Gradient.new()
-	grad.set_color(0, Color(1, 1, 1, 1))
-	grad.set_color(1, Color(1, 1, 1, 0))
-	var tex := GradientTexture2D.new()
-	tex.gradient = grad
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = Vector2(0.5, 0.5)
-	tex.fill_to = Vector2(1.0, 0.5)
-	tex.width = 64
-	tex.height = 64
+	var tex: Texture2D = load("res://player/trail.png")
 
 	var quad_mat := StandardMaterial3D.new()
 	quad_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	quad_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	quad_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_HASH
+	quad_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	quad_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	quad_mat.vertex_color_use_as_albedo = true
 	quad_mat.albedo_texture = tex
 	quad_mat.disable_receive_shadows = true
 
 	var quad := QuadMesh.new()
-	quad.size = Vector2(0.3, 0.3)
+	quad.size = Vector2(0.4, 0.4)
 	quad.material = quad_mat
 
 	var colors := Gradient.new()
-	colors.offsets = PackedFloat32Array([0.0, 0.25, 0.6, 1.0])
+	colors.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
 	colors.colors = PackedColorArray([
-		Color(1.0, 0.85, 0.45, 0.45),
-		Color(1.0, 0.5, 0.1, 0.35),
-		Color(0.8, 0.2, 0.05, 0.18),
-		Color(0.2, 0.05, 0.05, 0.0)])
+		Color(1, 1, 1, 1),
+		Color(0.55, 0.45, 0.4, 0.7),
+		Color(0.12, 0.08, 0.08, 0.0)])
 	var color_ramp := GradientTexture1D.new()
 	color_ramp.gradient = colors
 
 	var shrink := Curve.new()
 	shrink.add_point(Vector2(0.0, 1.0))
-	shrink.add_point(Vector2(1.0, 0.0))
+	shrink.add_point(Vector2(0.3, 1.0))
+	shrink.add_point(Vector2(0.3, 0.7))
+	shrink.add_point(Vector2(0.6, 0.7))
+	shrink.add_point(Vector2(0.6, 0.4))
+	shrink.add_point(Vector2(0.85, 0.4))
+	shrink.add_point(Vector2(0.85, 0.2))
+	shrink.add_point(Vector2(1.0, 0.2))
 	var shrink_tex := CurveTexture.new()
 	shrink_tex.curve = shrink
 
 	var pm := ParticleProcessMaterial.new()
 	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	pm.emission_sphere_radius = 0.07
+	pm.emission_sphere_radius = 0.06
 	pm.direction = Vector3.ZERO
 	pm.spread = 180.0
-	pm.initial_velocity_min = 0.1
-	pm.initial_velocity_max = 0.3
-	pm.gravity = Vector3(0, 1.5, 0)
-	pm.scale_min = 0.5
-	pm.scale_max = 0.9
+	pm.initial_velocity_min = 0.2
+	pm.initial_velocity_max = 0.6
+	pm.gravity = Vector3(0, 1.0, 0)
+	pm.angle_min = 0.0
+	pm.angle_max = 360.0
+	pm.scale_min = 0.8
+	pm.scale_max = 1.2
 	pm.scale_curve = shrink_tex
 	pm.color_ramp = color_ramp
 
 	var fire := GPUParticles3D.new()
 	fire.name = "FireTrail"
-	fire.amount = 90
-	fire.lifetime = 0.35
+	fire.amount = 20
+	fire.lifetime = 0.25
+	fire.fixed_fps = 12
+	fire.interpolate = false
 	fire.local_coords = false
 	fire.draw_pass_1 = quad
 	fire.process_material = pm
 	fire.position.z = 0.25
-	fire.emitting = false
+	fire.emitting = true
 	fire.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
 	return fire
