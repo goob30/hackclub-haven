@@ -1202,31 +1202,37 @@ surface_material_override/0 = SubResource("StandardMaterial3D_h22ob")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00669625, -0.08148125)
 
 [node name="Eye" type="MeshInstance3D" parent="Total/Body/Face" unique_id=392675886]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01875, 0.01205375, -0.00601875)
 mesh = SubResource("ArrayMesh_wqhlo")
 skeleton = NodePath("")
 
 [node name="Eye_1" type="MeshInstance3D" parent="Total/Body/Face" unique_id=923568807]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.034375, 0.04017875, 0.01273125)
 mesh = SubResource("ArrayMesh_bhyen")
 skeleton = NodePath("")
 
 [node name="Teeth" type="MeshInstance3D" parent="Total/Body/Face" unique_id=835273486]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028125, -0.027231876, -0.006713125)
 mesh = SubResource("ArrayMesh_2qak4")
 skeleton = NodePath("")
 
 [node name="Eye_2" type="MeshInstance3D" parent="Total/Body/Face" unique_id=663236921]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01875, 0.01205375, -0.00601875)
 mesh = SubResource("ArrayMesh_06llv")
 skeleton = NodePath("")
 
 [node name="Eye_3" type="MeshInstance3D" parent="Total/Body/Face" unique_id=2110007685]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034375, 0.04017875, 0.01273125)
 mesh = SubResource("ArrayMesh_c28ge")
 skeleton = NodePath("")
 
 [node name="Teeth_1" type="MeshInstance3D" parent="Total/Body/Face" unique_id=478304608]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.028125, -0.027231876, -0.006713125)
 mesh = SubResource("ArrayMesh_qp6ps")
 skeleton = NodePath("")
@@ -1256,6 +1262,7 @@ mesh = SubResource("ArrayMesh_ceqoa")
 skeleton = NodePath("")
 
 [node name="Joint" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg3" unique_id=1434199098]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07381562, 0.075, 0.00097875)
 mesh = SubResource("ArrayMesh_yqi0w")
 skeleton = NodePath("")
@@ -1277,6 +1284,7 @@ mesh = SubResource("ArrayMesh_nhjie")
 skeleton = NodePath("")
 
 [node name="Joint_1" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg4" unique_id=757428966]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.117565624, 0.125, 0.00097875)
 mesh = SubResource("ArrayMesh_h3t4i")
 skeleton = NodePath("")
@@ -1298,6 +1306,7 @@ mesh = SubResource("ArrayMesh_cwv6q")
 skeleton = NodePath("")
 
 [node name="Joint_2" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg2" unique_id=1206814110]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08120062, 0.0692625, 0.010046875)
 mesh = SubResource("ArrayMesh_skcyo")
 skeleton = NodePath("")
@@ -1319,6 +1328,7 @@ mesh = SubResource("ArrayMesh_vavax")
 skeleton = NodePath("")
 
 [node name="Joint_3" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg1" unique_id=1730761803]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12644938, 0.13653187, -0.020875)
 mesh = SubResource("ArrayMesh_030r4")
 skeleton = NodePath("")
@@ -1343,6 +1353,7 @@ mesh = SubResource("ArrayMesh_qyjuk")
 skeleton = NodePath("")
 
 [node name="Joint_4" type="MeshInstance3D" parent="Total/RightLegs/RightLeg1" unique_id=664592318]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12644938, 0.13653187, -0.020875)
 mesh = SubResource("ArrayMesh_fxmjj")
 skeleton = NodePath("")
@@ -1364,6 +1375,7 @@ mesh = SubResource("ArrayMesh_g0kru")
 skeleton = NodePath("")
 
 [node name="Joint_5" type="MeshInstance3D" parent="Total/RightLegs/RightLeg2" unique_id=727022689]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08120062, 0.0692625, 0.010046875)
 mesh = SubResource("ArrayMesh_nuiqs")
 skeleton = NodePath("")
@@ -1385,6 +1397,7 @@ mesh = SubResource("ArrayMesh_all0f")
 skeleton = NodePath("")
 
 [node name="Joint_6" type="MeshInstance3D" parent="Total/RightLegs/RightLeg4" unique_id=2129865012]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07381562, 0.075, 0.00097875)
 mesh = SubResource("ArrayMesh_bwcxu")
 skeleton = NodePath("")
@@ -1406,6 +1419,7 @@ mesh = SubResource("ArrayMesh_ys2vt")
 skeleton = NodePath("")
 
 [node name="Joint_7" type="MeshInstance3D" parent="Total/RightLegs/RightLeg5" unique_id=21602843]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.117565624, 0.125, 0.00097875)
 mesh = SubResource("ArrayMesh_flwpj")
 skeleton = NodePath("")
@@ -1423,6 +1437,7 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, -0.5)
 shape = SubResource("SphereShape3D_vamlu")
 
 [node name="BiteParticles" type="GPUParticles3D" parent="." unique_id=104482664]
+cast_shadow = 0
 emitting = false
 amount = 60
 lifetime = 0.4
@@ -1433,6 +1448,7 @@ draw_pass_1 = SubResource("SphereMesh_lljo6")
 draw_skin = SubResource("Skin_sddlj")
 
 [node name="HitParticles" type="GPUParticles3D" parent="." unique_id=104482999]
+cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 emitting = false
 amount = 30

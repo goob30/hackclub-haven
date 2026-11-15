@@ -52,6 +52,7 @@ func _base(mat: Material, size: float, amount: int, lifetime: float) -> GPUParti
 	p.interpolate = false
 	p.draw_pass_1 = quad
 	p.layers = 2
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	p.emitting = false
 	p.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
 	return p

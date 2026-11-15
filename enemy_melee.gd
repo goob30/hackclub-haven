@@ -1,6 +1,8 @@
 extends CharacterBody3D
 
 const MIST_SHADER := preload("res://sprites/spider_mist.gdshader")
+static var _mist_mesh: QuadMesh
+static var _mist_process: ShaderMaterial
 
 @export var move_speed := 3.8
 @export var stop_distance := 1.0
@@ -186,17 +188,18 @@ func _spawn_mist() -> void:
 	if hit_particles == null or not is_inside_tree():
 		return
 
-	var hit_mesh := hit_particles.draw_pass_1 as QuadMesh
-	var mesh := QuadMesh.new()
-	mesh.size = Vector2(0.6, 0.6)
-	mesh.material = hit_mesh.material
-
-	var process_material := ShaderMaterial.new()
-	process_material.shader = MIST_SHADER
+	if _mist_mesh == null:
+		var hit_mesh := hit_particles.draw_pass_1 as QuadMesh
+		_mist_mesh = QuadMesh.new()
+		_mist_mesh.size = Vector2(0.6, 0.6)
+		_mist_mesh.material = hit_mesh.material
+		_mist_process = ShaderMaterial.new()
+		_mist_process.shader = MIST_SHADER
 
 	var mist := GPUParticles3D.new()
-	mist.process_material = process_material
-	mist.draw_pass_1 = mesh
+	mist.process_material = _mist_process
+	mist.draw_pass_1 = _mist_mesh
+	mist.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mist.amount = 80
 	mist.lifetime = 0.8
 	mist.one_shot = true

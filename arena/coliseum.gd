@@ -28,17 +28,11 @@ enum buildingTypes {
 const GROUND_TEXTURE := preload("res://arena/assets/Road type 1/road_1_bridge_ramp_2.png")
 const BUILDING_FLOORS: Array = [3, 2, 6, 6, 3, 3, 3, 3, 0]
 const FLOOR_HEIGHT = 1.608
-const BUILDING_MAX_Y: Array = [
-	FLOOR_HEIGHT * BUILDING_FLOORS[0],
-	FLOOR_HEIGHT * BUILDING_FLOORS[1],
-	FLOOR_HEIGHT * BUILDING_FLOORS[2],
-	FLOOR_HEIGHT * BUILDING_FLOORS[3],
-	FLOOR_HEIGHT * BUILDING_FLOORS[4],
-	FLOOR_HEIGHT * BUILDING_FLOORS[5],
-	FLOOR_HEIGHT * BUILDING_FLOORS[6],
-	FLOOR_HEIGHT * BUILDING_FLOORS[7],
-	FLOOR_HEIGHT * BUILDING_FLOORS[8]
-]
+const PLAYER_SCRIPT := preload("res://objects/player.gd")
+const DEFAULT_JUMP_STRENGTH := 11.0
+const DEFAULT_JUMPS := 2
+const JUMP_FPS := 60.0
+const LANDING_MARGIN := 0.3
 
 var BUILDING_NODES: Array
 
@@ -89,12 +83,34 @@ var BUILDING_NODES: Array
 var _dirty := false
 
 func randomize_building_heights() -> void:
+	randomize()
+	var ground := global_position.y
+	var reach := _max_jump_height()
 	for i in range(BUILDING_NODES.size()):
-		randomize()
-		var random_offset = randi_range(0, BUILDING_FLOORS[i]) * -FLOOR_HEIGHT
-		var node = BUILDING_NODES[i]
-		node.global_position = Vector3(node.global_position.x, random_offset, node.global_position.z)
+		var node: Node3D = BUILDING_NODES[i]
+		node.global_position.y = ground
+		var roof := _roof_y(node) - ground
+		var min_k := maxi(0, ceili((roof - reach) / FLOOR_HEIGHT))
+		var max_k := maxi(min_k, BUILDING_FLOORS[i])
+		node.global_position.y = ground - randi_range(min_k, max_k) * FLOOR_HEIGHT
 	
+
+func _roof_y(node: Node3D) -> float:
+	var top := -INF
+	for mi in node.find_children("*", "MeshInstance3D", true, false):
+		var box: AABB = mi.global_transform * mi.get_aabb()
+		top = maxf(top, box.end.y)
+	return top
+
+
+# Feet rise per jump, minus the per-frame Euler loss (~v*dt/2)
+func _max_jump_height() -> float:
+	var p = get_tree().get_first_node_in_group("player")
+	var v: float = p.jump_strength if p else DEFAULT_JUMP_STRENGTH
+	var n: int = p.number_of_jumps if p else DEFAULT_JUMPS
+	var per_jump: float = v * v / (2.0 * PLAYER_SCRIPT.GRAVITY) - v / (2.0 * JUMP_FPS)
+	return n * per_jump - LANDING_MARGIN
+
 
 func is_inside_bounds(world_pos: Vector3) -> bool:
 	var p := to_local(world_pos)
@@ -194,4 +210,5 @@ func _ready() -> void:
 	get_node("../Hangar1"),
 ]
 	_rebuild()
-	randomize_building_heights()
+	if not Engine.is_editor_hint():
+		randomize_building_heights()

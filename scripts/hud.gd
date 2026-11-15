@@ -78,6 +78,8 @@ func _ready():
 		player.parry_succeeded.connect(_on_parry_succeeded)
 
 func _process(delta: float) -> void:
+	if _shake <= 0.0 and _combo_shake <= 0.0 and _cylinder.position == Vector2.ZERO and combo_label.position == _combo_base:
+		return
 	_shake = move_toward(_shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 5.0)
 	_cylinder.position = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _shake * 8.0
 	_combo_shake = move_toward(_combo_shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 1.2)

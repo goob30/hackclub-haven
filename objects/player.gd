@@ -35,6 +35,8 @@ var mouse_captured := true
 var movement_velocity: Vector3
 var rotation_target: Vector3
 
+const GRAVITY := 20.0
+
 var health: int = 100
 var gravity := 0.0
 
@@ -81,9 +83,36 @@ func _ready():
 	muzzle_flash.position = Vector3(0, 0, 10)
 	muzzle_flash.set_emitting(true)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+	_setup_item_environment()
+
 	weapon = weapons[weapon_index] # Weapon must never be nil
 	initiate_change_weapon(weapon_index)
+
+# Weapon camera skips the expensive screen effects (invisible at arm's length)
+func _setup_item_environment():
+	var world_env: Environment = get_world_3d().environment
+	if world_env == null:
+		return
+	var env := world_env.duplicate() as Environment
+	env.ssao_enabled = false
+	env.ssil_enabled = false
+	env.ssr_enabled = false
+	env.sdfgi_enabled = false
+	env.fog_enabled = false
+	env.volumetric_fog_enabled = false
+	# Own lighting so the night sky doesn't black out the weapon
+	var sky_mat := PanoramaSkyMaterial.new()
+	sky_mat.panorama = preload("res://sprites/skybox.png")
+	sky_mat.energy_multiplier = 0.5
+	env.sky = Sky.new()
+	env.sky.sky_material = sky_mat
+	env.background_mode = Environment.BG_SKY
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.5, 0.55, 0.7)
+	env.ambient_light_energy = 1.0
+	env.ambient_light_sky_contribution = 0.0
+	(muzzle.get_parent() as Camera3D).environment = env
 
 var shake := 0.0
 
@@ -202,7 +231,7 @@ func handle_rotation(xRot: float, yRot: float, isController: bool, delta: float 
 # Handle gravity
 
 func handle_gravity(delta):
-	gravity += 20 * delta
+	gravity += GRAVITY * delta
 
 	if gravity < 0 and is_on_ceiling():
 		gravity = 0

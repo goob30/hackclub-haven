@@ -40,15 +40,26 @@ grow_vertical = 2
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="Head/Camera/SubViewportContainer" unique_id=746672301]
+own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
 msaa_3d = 1
+positional_shadow_atlas_size = 0
 size = Vector2i(1280, 720)
 render_target_update_mode = 4
 
 [node name="CameraItem" type="Camera3D" parent="Head/Camera/SubViewportContainer/SubViewport" unique_id=1946707674]
 cull_mask = 1047554
 fov = 40.0
+far = 20.0
+
+[node name="ItemLight" type="OmniLight3D" parent="Head/Camera/SubViewportContainer/SubViewport/CameraItem"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.5, 0.5)
+light_color = Color(0.8, 0.85, 1, 1)
+light_energy = 1.5
+light_cull_mask = 1047554
+omni_range = 12.0
+omni_attenuation = 0.5
 
 [node name="Container" type="Node3D" parent="Head/Camera/SubViewportContainer/SubViewport/CameraItem" unique_id=1194146126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, -1, -2.25)
@@ -76,3 +87,11 @@ autoplay = true
 
 [node name="Cooldown" type="Timer" parent="." unique_id=1072261150]
 one_shot = true
+
+[node name="Flashlight" type="SpotLight3D" parent="Head/Camera"]
+light_color = Color(1, 0.95, 0.8, 1)
+light_energy = 6.0
+light_volumetric_fog_energy = 2.0
+spot_range = 30.0
+spot_angle = 28.0
+spot_angle_attenuation = 0.6

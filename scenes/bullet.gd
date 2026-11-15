@@ -194,6 +194,7 @@ func _make_fire_trail() -> GPUParticles3D:
 	fire.process_material = _trail_process
 	fire.position.z = 0.25
 	fire.emitting = true
+	fire.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	fire.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
 	return fire
 
