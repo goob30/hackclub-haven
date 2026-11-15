@@ -157,7 +157,9 @@ func _add_dust(b: Node3D, ground_y: float) -> void:
 		dust.emitting = true
 		add_child(dust)
 		dust.global_transform = Transform3D(yaw, pos)
-		get_tree().create_timer(SHIFT_TIME - DUST_LIFETIME, false).timeout.connect(func(): dust.emitting = false)
+		get_tree().create_timer(SHIFT_TIME - DUST_LIFETIME, false).timeout.connect(func():
+			if is_instance_valid(dust):
+				dust.emitting = false)
 		get_tree().create_timer(SHIFT_TIME + 0.5, false).timeout.connect(dust.queue_free)
 
 

@@ -5,13 +5,22 @@ extends Node
 const FIXED_PITCH := ["res://sounds/gun_fire.wav"]
 
 var num_players = 12
-var bus = "Master"
+var bus = "sfx"
+
+var music_volume := 1.0:
+	set(v):
+		music_volume = clampf(v, 0.0, 1.0)
+		_apply_volume("music", music_volume)
+var sfx_volume := 1.0:
+	set(v):
+		sfx_volume = clampf(v, 0.0, 1.0)
+		_apply_volume("sfx", sfx_volume)
 
 var available = []
 var queue = []
 
 const OPEN_HZ := 20500.0
-const MUFFLED_HZ := 800.0
+const MUFFLED_HZ := 1300.0
 const FADE_TIME := 0.3
 const MUFFLE_BUSES := ["music", "Master"]
 
@@ -22,6 +31,13 @@ var _tween: Tween
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	if AudioServer.get_bus_index(bus) == -1:
+		AudioServer.add_bus()
+		var idx := AudioServer.bus_count - 1
+		AudioServer.set_bus_name(idx, bus)
+		AudioServer.set_bus_send(idx, "Master")
+	_apply_volume("music", music_volume)
+	_apply_volume("sfx", sfx_volume)
 	for i in num_players:
 		var p = AudioStreamPlayer.new()
 		add_child(p)
@@ -76,3 +92,8 @@ func _apply_cutoff(hz: float) -> void:
 			var fx := AudioServer.get_bus_effect(idx, i)
 			if fx is AudioEffectLowPassFilter:
 				fx.cutoff_hz = hz
+
+func _apply_volume(bus_name: String, linear: float) -> void:
+	var idx := AudioServer.get_bus_index(bus_name)
+	if idx != -1:
+		AudioServer.set_bus_volume_db(idx, linear_to_db(linear))

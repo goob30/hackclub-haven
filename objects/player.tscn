@@ -82,6 +82,7 @@ normal_fade = 0.5
 stream = ExtResource("5_ics1s")
 volume_db = -5.0
 autoplay = true
+bus = &"sfx"
 
 [node name="Cooldown" type="Timer" parent="." unique_id=1072261150]
 one_shot = true

@@ -246,7 +246,10 @@ transform = Transform3D(-0.48604566, 0.051767744, 0.1052603, 0.04341204, 0.49620
 mesh = ExtResource("26_vxglm")
 script = ExtResource("25_autocol")
 
-[node name="pausemenu" parent="." unique_id=334462521 instance=ExtResource("17_muem4")]
+[node name="PauseLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="pausemenu" parent="PauseLayer" unique_id=334462521 instance=ExtResource("17_muem4")]
 process_mode = 3
 visible = false
 script = ExtResource("18_dp3eg")
@@ -254,12 +257,14 @@ script = ExtResource("18_dp3eg")
 [node name="mainmusic" type="AudioStreamPlayer" parent="." unique_id=378507183]
 process_mode = 3
 stream = ExtResource("23_pm3ni")
+bus = &"music"
 volume_db = -7.087
 autoplay = true
 
 [node name="dangermusicadd" type="AudioStreamPlayer" parent="." unique_id=78346466]
 process_mode = 3
 stream = ExtResource("25_og1vs")
+bus = &"music"
 volume_db = -80.0
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]

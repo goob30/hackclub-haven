@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bossuybd14ynb" path="res://scenes/ui/homescreen.gd" id="1_fof2p"]
 [ext_resource type="Shader" uid="uid://bhqdivbfmw6wg" path="res://arena/assets/Buildings Prebuild/Ready scenes/new_shader.gdshader" id="2_5i1aa"]
 [ext_resource type="Script" uid="uid://bqw5t1kbjx3l" path="res://scenes/ui/label.gd" id="2_ofyl8"]
+[ext_resource type="Shader" uid="uid://bnp0esp8cxa4k" path="res://buttonshader.gdshader" id="4_6i0ju"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ofyl8"]
 shader = ExtResource("2_5i1aa")
@@ -16,6 +17,46 @@ shader_parameter/noise_amount = 0.25
 shader_parameter/noise_speed = 0.0
 shader_parameter/levels = 5
 shader_parameter/opacity = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1gytf"]
+shader = ExtResource("4_6i0ju")
+shader_parameter/pixel_size = 4.0
+shader_parameter/block_taps = 3
+shader_parameter/spread = 0.5
+shader_parameter/coverage_gamma = 1.6
+shader_parameter/sharpen = 0.8
+shader_parameter/sharpen_radius = 2.0
+shader_parameter/center_weight = 0.35
+shader_parameter/threshold = 0.4
+shader_parameter/contrast = 5.0
+shader_parameter/edge_midpoint = 0.5
+shader_parameter/halo_amount = 0.35
+shader_parameter/halo_radius = 1.5
+shader_parameter/halo_samples = 8
+shader_parameter/halo_angle_offset = 0.0
+shader_parameter/halo_variation = 0.6
+shader_parameter/halo_base = 0.7
+shader_parameter/halo_noise_scale = 1.7
+shader_parameter/noise_amount = 0.25
+shader_parameter/noise_speed = 0.0
+shader_parameter/noise_edge_power = 1.0
+shader_parameter/noise_seed = Vector2(127.1, 311.7)
+shader_parameter/levels = 5
+shader_parameter/level_rounding = 0.5
+shader_parameter/effect_strength = 0.5
+shader_parameter/opacity = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcx2k"]
+bg_color = Color(0.05236323, 0.052332446, 0.22716853, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Control" type="Control" unique_id=1733424123]
 layout_mode = 3
@@ -35,16 +76,55 @@ offset_bottom = 720.0
 layout_mode = 2
 
 [node name="Control" type="Control" parent="CenterContainer/VBoxContainer" unique_id=609315548]
+custom_minimum_size = Vector2(0, 184)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer/Control" unique_id=626003858]
 material = SubResource("ShaderMaterial_ofyl8")
 layout_mode = 0
+offset_left = -120.5
 offset_top = -196.0
-offset_right = 529.0
+offset_right = 664.5
 offset_bottom = -4.0
-theme_override_font_sizes/font_size = 138
-text = "TITLE OF GAME"
+theme_override_colors/font_color = Color(0.56078434, 0.34117648, 0.32156864, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5411765)
+theme_override_constants/shadow_offset_x = 11
+theme_override_constants/shadow_offset_y = 9
+theme_override_constants/shadow_outline_size = 25
+theme_override_font_sizes/font_size = 158
+text = "BEATDOWN"
 script = ExtResource("2_ofyl8")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CenterContainer/VBoxContainer/Control/Label" unique_id=285304759]
+
+[node name="playbutton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1509106000]
+material = SubResource("ShaderMaterial_1gytf")
+custom_minimum_size = Vector2(128, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_bcx2k")
+text = "PLAY"
+
+[node name="Control2" type="Control" parent="CenterContainer/VBoxContainer" unique_id=865359645]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="tutorialbutton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=458905936]
+material = SubResource("ShaderMaterial_1gytf")
+custom_minimum_size = Vector2(128, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_bcx2k")
+text = "TUTORIAL"
+
+[node name="Control3" type="Control" parent="CenterContainer/VBoxContainer" unique_id=1294450607]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="settingsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=314837778]
+material = SubResource("ShaderMaterial_1gytf")
+custom_minimum_size = Vector2(128, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_bcx2k")
+text = "SETTINGS"
