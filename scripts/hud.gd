@@ -14,6 +14,20 @@ var _steps := 0
 var _count := SLOTS
 var _tween: Tween
 var _shake := 0.0
+var _vignette: ColorRect
+var _vignette_tween: Tween
+
+const VIGNETTE_SHADER := """
+shader_type canvas_item;
+uniform float strength : hint_range(0.0, 1.0) = 0.0;
+uniform float edge_start = 0.25;
+uniform float edge_end = 0.85;
+void fragment() {
+	float d = distance(UV, vec2(0.5)) * 1.41421;
+	float v = smoothstep(edge_start, edge_end, d);
+	COLOR = vec4(0.0, 0.0, 0.0, v * strength);
+}
+"""
 
 func _ready():
 	var health_label: Label = $Health
@@ -24,11 +38,14 @@ func _ready():
 	combo_label.visible = false
 	add_child(combo_label)
 
+	_build_vignette()
 	_build_ammo()
 
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_signal("combo_changed"):
 		player.combo_changed.connect(_on_combo_changed)
+	if player and player.has_signal("slowmo_changed"):
+		player.slowmo_changed.connect(_on_slowmo_changed)
 	if player and player.has_signal("ammo_changed"):
 		player.ammo_changed.connect(_on_ammo_changed)
 
@@ -97,3 +114,25 @@ func _on_ammo_changed(ammo: int, capacity: int) -> void:
 		_tween = create_tween().set_ignore_time_scale(true)
 		_tween.tween_property(_cylinder, "rotation_degrees", _steps * 60.0, 0.08)
 		_tween.tween_callback(func(): _rounds[top].visible = false)
+
+func _build_vignette() -> void:
+	var shader := Shader.new()
+	shader.code = VIGNETTE_SHADER
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	_vignette = ColorRect.new()
+	_vignette.name = "Vignette"
+	_vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mat.set_shader_parameter("strength", 0.0)
+	_vignette.material = mat
+	add_child(_vignette)
+	move_child(_vignette, 0)
+
+func _on_slowmo_changed(active: bool) -> void:
+	if _vignette_tween:
+		_vignette_tween.kill()
+	_vignette_tween = create_tween().set_ignore_time_scale(true)
+	var mat := _vignette.material as ShaderMaterial
+	var from: float = mat.get_shader_parameter("strength")
+	_vignette_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), from, 1.0 if active else 0.0, 0.12 if active else 0.2)
