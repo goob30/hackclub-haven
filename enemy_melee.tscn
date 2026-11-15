@@ -52,4 +52,3 @@ one_shot = true
 fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_jc8hi")
 draw_pass_1 = SubResource("QuadMesh_myfey")
-draw_skin = SubResource("Skin_ntn57")

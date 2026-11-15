@@ -346,7 +346,7 @@ func _label(text: String, size: int, color := Color.WHITE) -> Label:
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
 	l.add_theme_color_override("font_outline_color", Color.BLACK)
-	l.add_theme_constant_override("outline_size", maxi(4, size / 5))
+	l.add_theme_constant_override("outline_size", maxi(4, int(size / 5.0)))
 	return l
 
 
@@ -355,9 +355,9 @@ func _key(text: String, size: int) -> Control:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = KEY_BG
 	sb.border_color = KEY_BORDER
-	sb.set_border_width_all(maxi(2, size / 12))
-	sb.border_width_bottom = maxi(4, size / 5)
-	sb.set_corner_radius_all(maxi(4, size / 4))
+	sb.set_border_width_all(maxi(2, int(size / 12.0)))
+	sb.border_width_bottom = maxi(4, int(size / 5.0))
+	sb.set_corner_radius_all(maxi(4, int(size / 4.0)))
 	sb.content_margin_left = size * 0.4
 	sb.content_margin_right = size * 0.4
 	sb.content_margin_top = size * 0.05

@@ -94,7 +94,9 @@ func _ready():
 	arms_anim = arms.find_child("AnimationPlayer", true, false)
 	hide_right_arm()
 	if arms_anim:
-		arms_anim.animation_finished.connect(func(_n): arms.visible = false)
+		arms_anim.animation_finished.connect(func(_n):
+			if is_instance_valid(arms):
+				arms.visible = false)
 	muzzle.visible = false
 	muzzle.get_parent().add_child(muzzle_flash)
 	muzzle_flash.position = Vector3(0, 0, 10)
@@ -478,6 +480,8 @@ func _beam_death() -> void:
 	var tw := create_tween()
 	tw.tween_interval(0.25)
 	tw.tween_callback(func():
+		if not is_instance_valid(beam):
+			return
 		if not _beam_allowed():
 			beam.queue_free()
 			beam_active = false
@@ -490,7 +494,9 @@ func _beam_death() -> void:
 			_die()
 		var fade := create_tween()
 		fade.tween_method(func(v: float): mat.set_shader_parameter("fade", v), 1.0, 0.0, 1.4)
-		fade.tween_callback(beam.queue_free))
+		fade.tween_callback(func():
+			if is_instance_valid(beam):
+				beam.queue_free()))
 
 const BEAM_SIZE := 8.0
 

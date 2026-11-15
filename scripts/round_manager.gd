@@ -117,7 +117,10 @@ func _shift_buildings(player: Node) -> void:
 		_add_dust(b, ground_y)
 		tween.tween_property(b, "global_position:y", targets[i], SHIFT_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	if player:
-		tween.tween_method(func(t: float): player.shake = SHIFT_SHAKE * (1.0 - t * t), 0.0, 1.0, SHIFT_TIME)
+		var shake_fn := func(t: float) -> void:
+			if is_instance_valid(player):
+				player.shake = SHIFT_SHAKE * (1.0 - t * t)
+		tween.tween_method(shake_fn, 0.0, 1.0, SHIFT_TIME)
 
 
 func _add_dust(b: Node3D, ground_y: float) -> void:

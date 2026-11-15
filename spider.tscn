@@ -40,10 +40,8 @@ shape = SubResource("SphereShape3D_jc8hi")
 [node name="SlashParticles" type="GPUParticles3D" parent="." index="7" unique_id=1518590444]
 emitting = false
 one_shot = true
-trail_enabled = true
 process_material = SubResource("ShaderMaterial_ntn57")
 draw_pass_1 = SubResource("ArrayMesh_myfey")
-draw_skin = SubResource("Skin_jc8hi")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." index="8" unique_id=499411988]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14792438, 0.17488125, -0.04375)
