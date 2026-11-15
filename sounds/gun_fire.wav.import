@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://brqdlln771bt2"
-path="res://.godot/imported/Final Parry.wav-4a1478caa21bcfb3dd425498272383a6.sample"
+uid="uid://dknp4rfpeboc4"
+path="res://.godot/imported/gun_fire.wav-86508b05a31e1543c674db2a5ab4675b.sample"
 
 [deps]
 
-source_file="res://Final Parry.wav"
-dest_files=["res://.godot/imported/Final Parry.wav-4a1478caa21bcfb3dd425498272383a6.sample"]
+source_file="res://sounds/gun_fire.wav"
+dest_files=["res://.godot/imported/gun_fire.wav-86508b05a31e1543c674db2a5ab4675b.sample"]
 
 [params]
 

@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://dknp4rfpeboc4"
-path="res://.godot/imported/Gun Fire.wav-fffe159f451b45c3834ed00126dc8f4c.sample"
+uid="uid://c5lcwvtc2epsw"
+path="res://.godot/imported/enemy_death.wav-0c75f1b664dd044a527493d5949d6759.sample"
 
 [deps]
 
-source_file="res://Gun Fire.wav"
-dest_files=["res://.godot/imported/Gun Fire.wav-fffe159f451b45c3834ed00126dc8f4c.sample"]
+source_file="res://sounds/enemy_death.wav"
+dest_files=["res://.godot/imported/enemy_death.wav-0c75f1b664dd044a527493d5949d6759.sample"]
 
 [params]
 

@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://bjjni5raw8jt6"
-path="res://.godot/imported/Player Hurt.wav-7d05407ff0aa3401960db38dacb66a20.sample"
+uid="uid://brqdlln771bt2"
+path="res://.godot/imported/final_parry.wav-4383916bab088bd647b916fac859b27d.sample"
 
 [deps]
 
-source_file="res://Player Hurt.wav"
-dest_files=["res://.godot/imported/Player Hurt.wav-7d05407ff0aa3401960db38dacb66a20.sample"]
+source_file="res://sounds/final_parry.wav"
+dest_files=["res://.godot/imported/final_parry.wav-4383916bab088bd647b916fac859b27d.sample"]
 
 [params]
 

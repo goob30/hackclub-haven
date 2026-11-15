@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 
 
 func damage(amount: int) -> void:
-	Audio.play("sounds/enemy_hurt.ogg")
+	Audio.play("sounds/enemy_hurt.wav")
 	health -= amount
 
 	if health <= 0 and not destroyed:
@@ -52,7 +52,7 @@ func damage(amount: int) -> void:
 
 
 func destroy() -> void:
-	Audio.play("sounds/enemy_destroy.ogg")
+	Audio.play("sounds/enemy_death.wav")
 	destroyed = true
 	queue_free()
 

@@ -372,6 +372,7 @@ func change_weapon():
 func damage(amount):
 	health -= amount
 	shake = 1.5
+	Audio.play("sounds/player_hurt.wav")
 	health_updated.emit(health) # Update health on HUD
 
 	if health < 0:
@@ -406,6 +407,7 @@ func action_parry():
 	var forward: Vector3 = -camera.global_transform.basis.z
 	var parried: bool = bullet.try_parry(get_auto_aim_point(get_crosshair_point()), forward)
 	if parried:
+		Audio.play("sounds/final_parry.wav")
 		Audio.play(weapon.sound_shoot)
 		parry_succeeded.emit()
 

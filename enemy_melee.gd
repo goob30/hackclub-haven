@@ -172,13 +172,15 @@ func damage(amount: int) -> void:
 
 	if health <= 0:
 		destroy()
-	elif hit_particles != null:
+	else:
+		Audio.play("sounds/enemy_hurt.wav")
+	if health > 0 and hit_particles != null:
 		hit_particles.restart()
 		hit_particles.emitting = true
 
 
 func destroy() -> void:
-	Audio.play("sounds/enemy_destroy.ogg")
+	Audio.play("sounds/enemy_death.wav")
 	destroyed = true
 	_spawn_mist()
 	queue_free()

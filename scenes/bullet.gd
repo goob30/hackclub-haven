@@ -126,6 +126,7 @@ func slow_scale() -> float:
 
 func _start_slowmo() -> void:
 	_slowmo_on = true
+	Audio.play("sounds/initial_parry.wav")
 	Engine.time_scale = slow_scale()
 	if is_instance_valid(player) and player.has_method("set_slowmo"):
 		player.set_slowmo(true)
