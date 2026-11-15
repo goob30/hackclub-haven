@@ -3,10 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgli8ogpf3fyj"
-path.s3tc="res://.godot/imported/flat_square_brick_alt_houses.png-dd0172bfaec7dcc1370ffecaaf49c2a6.s3tc.ctex"
+path="res://.godot/imported/flat_square_brick_alt_houses.png-dd0172bfaec7dcc1370ffecaaf49c2a6.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "163f4227a303fc3d8fe14b81976fe629"
@@ -15,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://arena/assets/Buildings Prebuild/flat_square_brick_alt_houses.png"
-dest_files=["res://.godot/imported/flat_square_brick_alt_houses.png-dd0172bfaec7dcc1370ffecaaf49c2a6.s3tc.ctex"]
+dest_files=["res://.godot/imported/flat_square_brick_alt_houses.png-dd0172bfaec7dcc1370ffecaaf49c2a6.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,5 +39,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=512
 detect_3d/compress_to=0

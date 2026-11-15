@@ -28,7 +28,7 @@ const SOUNDS := [
 
 const STREAMS := [
 	"res://sounds/ascension to entropy.ogg",
-	"res://sounds/ascension to entropy secondary.wav",
+	"res://sounds/ascension to entropy secondary.ogg",
 	"res://sounds/walking.ogg",
 ]
 

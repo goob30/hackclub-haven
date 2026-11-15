@@ -25,19 +25,19 @@
 [ext_resource type="AudioStream" uid="uid://dgujl000wk7g5" path="res://sounds/ascension to entropy.ogg" id="23_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://b3kj3f2fid8sd" path="res://arena/assets/Traffic lights/street_light_clean.fbx" id="24_y6deb"]
 [ext_resource type="Script" uid="uid://xi4r57ncbv3e" path="res://scripts/auto_collision.gd" id="25_autocol"]
-[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.wav" id="25_og1vs"]
+[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.ogg" id="25_og1vs"]
 [ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
 [ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
 [ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
-shader_parameter/light_levels = 9
-shader_parameter/color_levels = 18
+shader_parameter/light_levels = 8
+shader_parameter/color_levels = 16
 shader_parameter/floor_light = 0.02
 shader_parameter/contrast = 1.1
 shader_parameter/saturation = 0.85
-shader_parameter/pixel_size = 1.33
+shader_parameter/pixel_size = 1.5
 shader_parameter/dither = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grad"]

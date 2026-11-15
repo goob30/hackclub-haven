@@ -3,10 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cy20j5aeuend4"
-path.s3tc="res://.godot/imported/Traffic_cone_round_rubber_0.png-49e3168d720691ee574171bd9f7000ec.s3tc.ctex"
+path="res://.godot/imported/Traffic_cone_round_rubber_0.png-49e3168d720691ee574171bd9f7000ec.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "319c91b72f0ba8e5eafec21a2112fcf5"
@@ -15,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://arena/assets/Cones/Traffic_cone_round_rubber_0.png"
-dest_files=["res://.godot/imported/Traffic_cone_round_rubber_0.png-49e3168d720691ee574171bd9f7000ec.s3tc.ctex"]
+dest_files=["res://.godot/imported/Traffic_cone_round_rubber_0.png-49e3168d720691ee574171bd9f7000ec.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

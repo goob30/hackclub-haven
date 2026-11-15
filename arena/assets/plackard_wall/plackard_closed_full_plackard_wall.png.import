@@ -3,10 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cbvh2mhimfquv"
-path.s3tc="res://.godot/imported/plackard_closed_full_plackard_wall.png-5254506f403aeeaeb30d257ca3f65550.s3tc.ctex"
+path="res://.godot/imported/plackard_closed_full_plackard_wall.png-5254506f403aeeaeb30d257ca3f65550.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "763e9ad7de0ffed2cdfe920d515dfe76"
@@ -15,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://arena/assets/plackard_wall/plackard_closed_full_plackard_wall.png"
-dest_files=["res://.godot/imported/plackard_closed_full_plackard_wall.png-5254506f403aeeaeb30d257ca3f65550.s3tc.ctex"]
+dest_files=["res://.godot/imported/plackard_closed_full_plackard_wall.png-5254506f403aeeaeb30d257ca3f65550.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

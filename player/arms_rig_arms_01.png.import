@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://v1nvji0ysp10"
-path.s3tc="res://.godot/imported/arms_rig_arms_01.png-da15c3797e0b81a0dadc570e865b7019.s3tc.ctex"
+path="res://.godot/imported/arms_rig_arms_01.png-da15c3797e0b81a0dadc570e865b7019.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://player/arms_rig_arms_01.png"
-dest_files=["res://.godot/imported/arms_rig_arms_01.png-da15c3797e0b81a0dadc570e865b7019.s3tc.ctex"]
+dest_files=["res://.godot/imported/arms_rig_arms_01.png-da15c3797e0b81a0dadc570e865b7019.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

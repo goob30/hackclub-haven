@@ -1,7 +1,7 @@
 extends Control
 
 const MAP := preload("res://scenes/main.tscn")
-const MENU_MUSIC := preload("res://sounds/menu_music.mp3")
+const MENU_MUSIC := preload("res://sounds/menu_music.ogg")
 const SETTINGS := preload("res://scenes/ui/settings.tscn")
 const AUTO_COLLISION := preload("res://scripts/auto_collision.gd")
 const STRIP := ["Player", "HUD", "Enemies", "PauseLayer", "mainmusic", "dangermusicadd"]
@@ -26,7 +26,7 @@ func _ready() -> void:
 		return
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var music := AudioStreamPlayer.new()
-	var stream := MENU_MUSIC.duplicate() as AudioStreamMP3
+	var stream := MENU_MUSIC.duplicate() as AudioStreamOggVorbis
 	stream.loop = true
 	music.stream = stream
 	music.bus = &"music"
