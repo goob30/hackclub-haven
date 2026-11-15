@@ -128,6 +128,8 @@ func slow_scale() -> float:
 	return lerpf(min_slow_scale, 1.0, t * t)
 
 func _start_slowmo() -> void:
+	if is_instance_valid(player) and (player.dead or player.beam_active):
+		return
 	_slowmo_on = true
 	Audio.play("sounds/initial_parry.wav")
 	Engine.time_scale = slow_scale()

@@ -3,6 +3,7 @@ extends Node
 const DRONE := preload("res://DroneFly.tscn")
 const SPIDER := preload("res://SpiderEnemy.tscn")
 const DEMON := preload("res://DemonGround.tscn")
+const MEDKIT := preload("res://scripts/medkit.gd")
 const ENEMY_BULLET := preload("res://scenes/EnemyBullet.tscn")
 
 # Health units each enemy counts for in the round budget
@@ -39,10 +40,15 @@ var _banner: Label
 
 
 func _ready() -> void:
+	add_to_group("round_manager")
 	_build_label()
 	_waiting = true
 	await get_tree().create_timer(1.0, false).timeout
 	_start_round()
+
+
+func in_transition() -> bool:
+	return _waiting
 
 
 func _process(_delta: float) -> void:
@@ -75,9 +81,24 @@ func _start_round() -> void:
 			kind = Kind.DEMON
 		_spawn(kind)
 		budget -= DRONE_HEALTH if kind == Kind.DRONE else 2
+	_maybe_spawn_medkit()
 	if player:
 		player.shake = SPAWN_SHAKE
 	_waiting = false
+
+
+func _maybe_spawn_medkit() -> void:
+	for old in get_tree().get_nodes_in_group("medkit"):
+		old.queue_free()
+	if round_number % 2 != 0:
+		return
+	var spot = _find_spot(true)
+	if spot == null:
+		return
+	var kit := MEDKIT.new()
+	kit.add_to_group("medkit")
+	add_child(kit)
+	kit.global_position = spot
 
 
 # Buildings slide to new heights while dust pours off their base and the camera shakes

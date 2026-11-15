@@ -7,7 +7,7 @@ const AIM_OFFSET := Vector3(0.0, 0.5, 0.0)
 @export var player: Node3D
 @export var bullet_scene: PackedScene
 @export var attack_range := 30.0
-@export var attack_damage := 5
+@export var attack_damage := 10
 @export var fire_interval := 2.0
 @export var fire_jitter := 0.5
 

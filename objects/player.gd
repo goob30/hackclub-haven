@@ -41,6 +41,11 @@ const GRAVITY := 20.0
 
 var health: int = 100
 var dead := false
+var beam_active := false
+var out_of_ammo := false
+var _refill_pending := false # round start reload not finished yet
+const BEAM_SHADER := preload("res://sprites/beam_dither.gdshader")
+const BEAM_TEXTURE := preload("res://sprites/laser_beam_from_god.png")
 var gravity := 0.0
 
 var previously_floored := false
@@ -79,6 +84,7 @@ func _ready():
 	for mesh in arms.find_children("*", "MeshInstance3D"):
 		mesh.layers = 2
 	arms.visible = false
+	ammo_changed.connect(_on_ammo_depleted)
 	arms_anim = arms.find_child("AnimationPlayer", true, false)
 	hide_right_arm()
 	if arms_anim:
@@ -127,8 +133,10 @@ func _process(delta):
 	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
 	_update_danger_music(delta)
 
+	_check_beam_death()
+
 	# Handle functions
-	if dead:
+	if dead or beam_active:
 		movement_velocity = Vector3.ZERO
 	else:
 		handle_controls(delta)
@@ -354,6 +362,8 @@ func reload_weapon() -> void:
 	for n in container.get_children():
 		if n.has_method("reload") and n.reload():
 			Audio.play("sounds/revolver_reload.mp3")
+		if n.get("reloading"):
+			_refill_pending = true
 
 # Switches the weapon model (off-screen)
 
@@ -386,7 +396,17 @@ func change_weapon():
 		
 	crosshair.texture = weapon.crosshair
 
+func _in_round_transition() -> bool:
+	var rm = get_tree().get_first_node_in_group("round_manager")
+	return rm != null and rm.in_transition()
+
+func heal_full() -> void:
+	health = 100
+	health_updated.emit(health)
+
 func damage(amount):
+	if _in_round_transition():
+		return
 	health = maxi(health - amount, 0)
 	shake = 1.5
 	Audio.play("sounds/player_hurt.wav")
@@ -395,9 +415,70 @@ func damage(amount):
 	if health < 1 and not dead:
 		_die()
 
+func _on_ammo_depleted(ammo: int, _capacity: int) -> void:
+	out_of_ammo = ammo == 0
+	if ammo != 0:
+		_refill_pending = false
+
+func _beam_allowed() -> bool:
+	if not out_of_ammo or _refill_pending or dead or _in_round_transition():
+		return false
+	return not get_tree().get_nodes_in_group("enemy").is_empty()
+
+func _check_beam_death() -> void:
+	if beam_active or is_instance_valid(bullet) or not _beam_allowed():
+		return
+	_beam_death()
+
+func _beam_death() -> void:
+	beam_active = true
+	Engine.time_scale = 1.0
+	Audio.reset_muffle()
+	$Head/Camera/SubViewportContainer.visible = false
+	var mat := ShaderMaterial.new()
+	mat.shader = BEAM_SHADER
+	mat.render_priority = 100
+	mat.set_shader_parameter("tex", BEAM_TEXTURE)
+	var size := 8.0
+	var quad := QuadMesh.new()
+	quad.size = Vector2(size, size * 10.0)
+	var beam := MeshInstance3D.new()
+	beam.mesh = quad
+	beam.material_override = mat
+	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var fwd: Vector3 = -camera.global_transform.basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized()
+	var right: Vector3 = fwd.cross(Vector3.UP)
+	var spot: Vector3 = global_position + fwd * 1.6 + right * 0.7
+	var q := PhysicsRayQueryParameters3D.create(spot + Vector3.UP * 5.0, spot + Vector3.DOWN * 50.0)
+	q.exclude = [get_rid()]
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	var floor_y: float = hit.position.y if hit else global_position.y - 1.0
+	get_parent().add_child(beam)
+	beam.global_position = Vector3(spot.x, floor_y + size * 5.0, spot.z)
+	beam.look_at(Vector3(global_position.x, beam.global_position.y, global_position.z), Vector3.UP)
+	var tw := create_tween()
+	tw.tween_interval(0.25)
+	tw.tween_callback(func():
+		if not _beam_allowed():
+			beam.queue_free()
+			beam_active = false
+			if not dead:
+				$Head/Camera/SubViewportContainer.visible = true
+			return
+		health = 0
+		health_updated.emit(health)
+		if not dead:
+			_die()
+		var fade := create_tween()
+		fade.tween_method(func(v: float): mat.set_shader_parameter("fade", v), 1.0, 0.0, 1.4)
+		fade.tween_callback(beam.queue_free))
+
 func _die() -> void:
 	dead = true
 	Engine.time_scale = 1.0
+	Audio.play("sounds/enemy_death.wav")
 	Audio.reset_muffle()
 	$Head/Camera/SubViewportContainer.visible = false
 	crosshair.visible = false

@@ -6,7 +6,7 @@ static var _mist_process: ShaderMaterial
 
 @export var move_speed := 3.8
 @export var stop_distance := 1.0
-@export var attack_damage := 10
+@export var attack_damage := 20
 @export var attack_interval := 1.5
 @export var bite_windup := 0.0
 @export var health := 50

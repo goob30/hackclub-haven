@@ -3,7 +3,7 @@ extends Node3D
 @export var player: Node3D
 @export var melee_range := 2.0
 @export var move_speed := 3.0
-@export var attack_damage := 10
+@export var attack_damage := 20
 @export var attack_interval := 1.5
 
 @onready var raycast: RayCast3D = $RayCast

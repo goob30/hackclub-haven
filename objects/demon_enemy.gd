@@ -7,7 +7,7 @@ const IDLE_ANIM := &"MonsterPSX_Rig|Idle_Watchful"
 const AIM_OFFSET := Vector3(0.0, 0.5, 0.0)
 
 @export var bullet_scene: PackedScene
-@export var attack_damage := 5
+@export var attack_damage := 10
 @export var fire_interval := 2.0
 @export var fire_jitter := 0.5
 ## Seconds into the attack animation when the ball leaves the hand
