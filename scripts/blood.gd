@@ -5,41 +5,47 @@ const MIST_SHADER := preload("res://sprites/spider_mist.gdshader")
 const DITHER_SHADER := preload("res://sprites/blood_dither.gdshader")
 const BLOOD_TEX := preload("res://sprites/blood_particle.png")
 
-static var _material: ShaderMaterial
-static var _splat_mesh: QuadMesh
 static var _splat_process: ShaderMaterial
-static var _mist_mesh: QuadMesh
 static var _mist_process: ShaderMaterial
+static var _meshes := {}
 
 
-static func splatter(pos: Vector3, amount := 60) -> void:
+static func splatter(pos: Vector3, amount := 60, tex: Texture2D = BLOOD_TEX) -> void:
 	_build()
-	_emit(pos, _splat_mesh, _splat_process, amount, 0.4, 0.4)
+	_emit(pos, _get_meshes(tex)[0], _splat_process, amount, 0.4, 0.4)
 
 
-static func mist(pos: Vector3) -> void:
+static func mist(pos: Vector3, tex: Texture2D = BLOOD_TEX) -> void:
 	_build()
-	_emit(pos, _mist_mesh, _mist_process, 80, 0.8, 0.95)
+	_emit(pos, _get_meshes(tex)[1], _mist_process, 80, 0.8, 0.95)
+
+
+# [splatter mesh, mist mesh] for a texture, built once
+static func _get_meshes(tex: Texture2D) -> Array:
+	if _meshes.has(tex):
+		return _meshes[tex]
+	var mat := ShaderMaterial.new()
+	mat.shader = DITHER_SHADER
+	mat.set_shader_parameter("tex", tex)
+	var splat := QuadMesh.new()
+	splat.size = Vector2(0.24, 0.24)
+	splat.material = mat
+	var mist_mesh := QuadMesh.new()
+	mist_mesh.size = Vector2(0.6, 0.6)
+	mist_mesh.material = mat
+	_meshes[tex] = [splat, mist_mesh]
+	return _meshes[tex]
 
 
 static func _build() -> void:
-	if _material:
+	if _splat_process:
 		return
-	_material = ShaderMaterial.new()
-	_material.shader = DITHER_SHADER
-	_material.set_shader_parameter("tex", BLOOD_TEX)
-	_splat_mesh = QuadMesh.new()
-	_splat_mesh.size = Vector2(0.24, 0.24)
-	_splat_mesh.material = _material
 	_splat_process = ShaderMaterial.new()
 	_splat_process.shader = SPLATTER_SHADER
 	_splat_process.set_shader_parameter("speed_min", 1.5)
 	_splat_process.set_shader_parameter("speed_max", 3.5)
 	_splat_process.set_shader_parameter("spread", 0.5)
 	_splat_process.set_shader_parameter("gravity", Vector3(0, -9.8, 0))
-	_mist_mesh = QuadMesh.new()
-	_mist_mesh.size = Vector2(0.6, 0.6)
-	_mist_mesh.material = _material
 	_mist_process = ShaderMaterial.new()
 	_mist_process.shader = MIST_SHADER
 

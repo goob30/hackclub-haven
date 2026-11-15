@@ -40,6 +40,7 @@ var rotation_target: Vector3
 const GRAVITY := 20.0
 
 var health: int = 100
+var dead := false
 var gravity := 0.0
 
 var previously_floored := false
@@ -127,7 +128,10 @@ func _process(delta):
 	_update_danger_music(delta)
 
 	# Handle functions
-	handle_controls(delta)
+	if dead:
+		movement_velocity = Vector3.ZERO
+	else:
+		handle_controls(delta)
 	handle_gravity(delta)
 	
 	# Movement
@@ -383,14 +387,36 @@ func change_weapon():
 	crosshair.texture = weapon.crosshair
 
 func damage(amount):
-	health -= amount
+	health = maxi(health - amount, 0)
 	shake = 1.5
 	Audio.play("sounds/player_hurt.wav")
 	health_updated.emit(health) # Update health on HUD
 
-	if health < 0:
-		Engine.time_scale = 1.0
-		get_tree().reload_current_scene() # Reset when out of health
+	if health < 1 and not dead:
+		_die()
+
+func _die() -> void:
+	dead = true
+	Engine.time_scale = 1.0
+	Audio.reset_muffle()
+	$Head/Camera/SubViewportContainer.visible = false
+	crosshair.visible = false
+	var layer := CanvasLayer.new()
+	layer.layer = 100
+	var red := ColorRect.new()
+	red.set_anchors_preset(Control.PRESET_FULL_RECT)
+	red.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	red.color = Color(0.8, 0.0, 0.0, 0.0)
+	layer.add_child(red)
+	add_child(layer)
+	var head := $Head
+	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(head, "rotation:z", deg_to_rad(90), 1.4)
+	tw.tween_property(head, "position:y", 0.4, 1.4)
+	tw.tween_property(camera, "rotation:x", 0.0, 1.4)
+	tw.tween_property(red, "color:a", 0.3, 1.4)
+	tw.chain().tween_interval(3.0)
+	tw.chain().tween_callback(func(): get_tree().reload_current_scene())
 
 func hide_right_arm():
 	var skels := arms.find_children("*", "Skeleton3D")

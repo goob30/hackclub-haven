@@ -127,6 +127,13 @@ func _max_jump_height() -> float:
 	return n * per_jump - LANDING_MARGIN
 
 
+func _physics_process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		if enemy is Node3D and enemy.has_method("destroy") and not is_inside_bounds(enemy.global_position):
+			enemy.destroy()
+
 func is_inside_bounds(world_pos: Vector3) -> bool:
 	var p := to_local(world_pos)
 	var outer := get_inner_radius() / cos(PI / segment_count)

@@ -1,10 +1,17 @@
 [gd_scene format=3 uid="uid://dg6h5uopjapqr"]
 
 [ext_resource type="Script" uid="uid://vqpnfq1v5tq1" path="res://scenes/enemy_bullet.gd" id="1_63f26"]
+[ext_resource type="Texture2D" path="res://sprites/enemy_projectile_texture.png" id="2_balltex"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_myfey"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ball"]
+shading_mode = 0
+albedo_texture = ExtResource("2_balltex")
+texture_filter = 0
+
 [sub_resource type="SphereMesh" id="SphereMesh_myfey"]
+material = SubResource("StandardMaterial3D_ball")
 radial_segments = 16
 rings = 8
 

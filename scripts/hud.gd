@@ -25,7 +25,7 @@ var _hurt_tween: Tween
 
 const VIGNETTE_STRENGTH := 1.0
 const PARRY_FREEZE_TIME := 0.3
-const IMPACT_THRESHOLD := 0.55
+const IMPACT_THRESHOLD := 0.35
 const PARRY_SHAKE := 2.0
 const COMBO_SHAKE_PIXELS := 15.0
 

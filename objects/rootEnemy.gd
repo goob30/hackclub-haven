@@ -1,9 +1,8 @@
 extends CharacterBody3D
 
-const MIST_SHADER := preload("res://sprites/spider_mist.gdshader")
+const Blood := preload("res://scripts/blood.gd")
+const DRONE_BLOOD := preload("res://sprites/drone_blood.png")
 const AIM_OFFSET := Vector3(0.0, 0.5, 0.0)
-static var _mist_mesh: QuadMesh
-static var _mist_process: ShaderMaterial
 
 @export var player: Node3D
 @export var bullet_scene: PackedScene
@@ -132,41 +131,9 @@ func destroy() -> void:
 	destroyed = true
 	set_physics_process(false)
 	Audio.play("sounds/enemy_death.wav")
-	_spawn_mist()
+	Blood.splatter(global_position, 60, DRONE_BLOOD)
+	Blood.mist(global_position, DRONE_BLOOD)
 	queue_free()
-
-
-func _spawn_mist() -> void:
-	if not is_inside_tree():
-		return
-
-	if _mist_mesh == null:
-		var mat := StandardMaterial3D.new()
-		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		mat.vertex_color_use_as_albedo = true
-		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-		mat.albedo_color = Color(0.25, 0.25, 0.28)
-		_mist_mesh = QuadMesh.new()
-		_mist_mesh.size = Vector2(0.6, 0.6)
-		_mist_mesh.material = mat
-		_mist_process = ShaderMaterial.new()
-		_mist_process.shader = MIST_SHADER
-
-	var mist := GPUParticles3D.new()
-	mist.process_material = _mist_process
-	mist.draw_pass_1 = _mist_mesh
-	mist.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mist.amount = 80
-	mist.lifetime = 0.8
-	mist.one_shot = true
-	mist.explosiveness = 0.95
-	mist.visibility_aabb = AABB(Vector3(-6, -6, -6), Vector3(12, 12, 12))
-	mist.emitting = true
-
-	get_tree().current_scene.add_child(mist)
-	mist.global_position = global_position
-	get_tree().create_timer(mist.lifetime + 0.5).timeout.connect(mist.queue_free)
 
 
 func _find_player() -> Node3D:

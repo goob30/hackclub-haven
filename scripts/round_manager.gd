@@ -19,7 +19,7 @@ const BANNER_TIME := 2.0
 const SPAWN_SHAKE := 0.8
 const SHIFT_TIME := 2.0
 const SHIFT_SHAKE := 3.0
-const DUST_LIFETIME := 0.6
+const DUST_LIFETIME := 0.3
 const DUST_COLOR := Color(0.5, 0.46, 0.4)
 const MIN_PLAYER_DISTANCE := 12.0
 const CLEARANCE_RADIUS := 0.8
@@ -136,7 +136,8 @@ func _add_dust(b: Node3D, ground_y: float) -> void:
 		dust.emitting = true
 		add_child(dust)
 		dust.global_transform = Transform3D(yaw, pos)
-		get_tree().create_timer(SHIFT_TIME + DUST_LIFETIME + 0.5, false).timeout.connect(dust.queue_free)
+		get_tree().create_timer(SHIFT_TIME - DUST_LIFETIME, false).timeout.connect(func(): dust.emitting = false)
+		get_tree().create_timer(SHIFT_TIME + 0.5, false).timeout.connect(dust.queue_free)
 
 
 func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
@@ -144,17 +145,16 @@ func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
 	m.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
 	m.emission_box_extents = extents
 	m.direction = Vector3.UP
-	m.spread = 55.0
-	m.initial_velocity_min = 2.0
-	m.initial_velocity_max = 6.0
-	m.gravity = Vector3(0, -1.5, 0)
-	m.damping_min = 1.0
-	m.damping_max = 2.5
+	m.spread = 75.0
+	m.initial_velocity_min = 4.0
+	m.initial_velocity_max = 12.0
+	m.gravity = Vector3(0, -36.0, 0)
 	m.scale_min = 0.6
 	m.scale_max = 1.8
 	var g := Gradient.new()
-	g.set_color(0, Color(1, 1, 1, 0.9))
+	g.set_color(0, Color(1, 1, 1, 1.0))
 	g.set_color(1, Color(1, 1, 1, 0.0))
+	g.add_point(0.35, Color(1, 1, 1, 1.0))
 	var tex := GradientTexture1D.new()
 	tex.gradient = g
 	m.color_ramp = tex
@@ -164,12 +164,9 @@ func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
 func _get_dust_mesh() -> QuadMesh:
 	if _dust_mesh:
 		return _dust_mesh
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.vertex_color_use_as_albedo = true
-	mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	mat.albedo_color = DUST_COLOR
+	var mat := ShaderMaterial.new()
+	mat.shader = preload("res://sprites/blood_dither.gdshader")
+	mat.set_shader_parameter("tex", preload("res://sprites/rumble_particle.png"))
 	_dust_mesh = QuadMesh.new()
 	_dust_mesh.size = Vector2(0.5, 0.5)
 	_dust_mesh.material = mat
