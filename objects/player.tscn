@@ -5,9 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://8ggihh27mlrr" path="res://sprites/blob_shadow.png" id="2_b0fo8"]
 [ext_resource type="Script" uid="uid://dg01pkkc1c5vd" path="res://scripts/weapon.gd" id="2_i825w"]
 [ext_resource type="Resource" uid="uid://c56y8pqoyk15f" path="res://weapons/blaster.tres" id="3_kr4p8"]
-[ext_resource type="Resource" path="res://weapons/revolver.tres" id="9_rev"]
 [ext_resource type="SpriteFrames" uid="uid://dbv3sy5qjatnl" path="res://sprites/burst_animation.tres" id="4_m6ukc"]
 [ext_resource type="AudioStream" uid="uid://cydjn1ct3hps2" path="res://sounds/walking.ogg" id="5_ics1s"]
+[ext_resource type="Resource" path="res://weapons/revolver.tres" id="9_rev"]
+[ext_resource type="PackedScene" uid="uid://bvawxgn63exqo" path="res://player/arms_rig.glb" id="10_arms"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gdq8c"]
 radius = 0.3
@@ -19,7 +20,7 @@ script = ExtResource("1_ffboj")
 weapons = Array[ExtResource("2_i825w")]([ExtResource("9_rev"), ExtResource("3_kr4p8"), ExtResource("2_6epbw")])
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=1204707327]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54999995, 0)
 shape = SubResource("CapsuleShape3D_gdq8c")
 
 [node name="Head" type="Node3D" parent="." unique_id=1678401529]
@@ -52,16 +53,14 @@ fov = 40.0
 [node name="Container" type="Node3D" parent="Head/Camera/SubViewportContainer/SubViewport/CameraItem" unique_id=1194146126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, -1, -2.25)
 
+[node name="Arms" parent="Head/Camera/SubViewportContainer/SubViewport/CameraItem" unique_id=654622892 instance=ExtResource("10_arms")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, -1.7, -0.17079167)
+
 [node name="Muzzle" type="AnimatedSprite3D" parent="Head/Camera/SubViewportContainer/SubViewport/CameraItem" unique_id=1272131087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -0.75, -6)
 layers = 2
 sprite_frames = ExtResource("4_m6ukc")
 frame = 2
-
-[node name="RayCast" type="RayCast3D" parent="Head/Camera" unique_id=1940373799]
-exclude_parent = false
-target_position = Vector3(0, 0, -10)
-collide_with_areas = true
 
 [node name="Shadow" type="Decal" parent="." unique_id=2065261376]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9, 0)
