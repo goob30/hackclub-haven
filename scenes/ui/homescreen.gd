@@ -20,6 +20,9 @@ var _settings: Control
 
 
 func _ready() -> void:
+	if not AssetCache.loaded:
+		get_tree().change_scene_to_file.call_deferred("res://scenes/ui/loading.tscn")
+		return
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var holder := SubViewportContainer.new()
 	holder.stretch = true

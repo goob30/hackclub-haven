@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="haven2"
 config/tags=PackedStringArray("starterkit")
-run/main_scene="res://scenes/ui/loading.tscn"
+run/main_scene="res://scenes/ui/homescreen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/show_image=false
 boot_splash/use_filter=false
