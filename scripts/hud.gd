@@ -16,6 +16,22 @@ var _tween: Tween
 var _shake := 0.0
 var _vignette: ColorRect
 var _vignette_tween: Tween
+var _impact: ColorRect
+
+const VIGNETTE_STRENGTH := 0.7
+const PARRY_FREEZE_TIME := 0.3
+const IMPACT_THRESHOLD := 0.55
+const PARRY_SHAKE := 2.0
+
+const IMPACT_SHADER := """
+shader_type canvas_item;
+uniform sampler2D screen_tex : hint_screen_texture, filter_nearest;
+uniform float threshold = 0.35;
+void fragment() {
+	float l = dot(texture(screen_tex, SCREEN_UV).rgb, vec3(0.299, 0.587, 0.114));
+	COLOR = vec4(vec3(step(threshold, l)), 1.0);
+}
+"""
 
 const VIGNETTE_SHADER := """
 shader_type canvas_item;
@@ -39,6 +55,7 @@ func _ready():
 	add_child(combo_label)
 
 	_build_vignette()
+	_build_impact()
 	_build_ammo()
 
 	var player = get_tree().get_first_node_in_group("player")
@@ -48,9 +65,11 @@ func _ready():
 		player.slowmo_changed.connect(_on_slowmo_changed)
 	if player and player.has_signal("ammo_changed"):
 		player.ammo_changed.connect(_on_ammo_changed)
+	if player and player.has_signal("parry_succeeded"):
+		player.parry_succeeded.connect(_on_parry_succeeded)
 
 func _process(delta: float) -> void:
-	_shake = move_toward(_shake, 0.0, delta * 5.0)
+	_shake = move_toward(_shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 5.0)
 	_cylinder.position = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _shake * 8.0
 
 func _on_health_updated(health):
@@ -129,10 +148,36 @@ func _build_vignette() -> void:
 	add_child(_vignette)
 	move_child(_vignette, 0)
 
+func _build_impact() -> void:
+	var shader := Shader.new()
+	shader.code = IMPACT_SHADER
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.set_shader_parameter("threshold", IMPACT_THRESHOLD)
+	_impact = ColorRect.new()
+	_impact.name = "ImpactFrame"
+	_impact.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_impact.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_impact.material = mat
+	_impact.visible = false
+	add_child(_impact)
+	move_child(_impact, 0)
+
+func _on_parry_succeeded() -> void:
+	var saved_scale := Engine.time_scale
+	Engine.time_scale = 0.0
+	_impact.visible = true
+	await get_tree().create_timer(PARRY_FREEZE_TIME, true, false, true).timeout
+	_impact.visible = false
+	Engine.time_scale = saved_scale if saved_scale > 0.0 else 1.0
+	var player = get_tree().get_first_node_in_group("player")
+	if player:
+		player.shake = PARRY_SHAKE
+
 func _on_slowmo_changed(active: bool) -> void:
 	if _vignette_tween:
 		_vignette_tween.kill()
 	_vignette_tween = create_tween().set_ignore_time_scale(true)
 	var mat := _vignette.material as ShaderMaterial
 	var from: float = mat.get_shader_parameter("strength")
-	_vignette_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), from, 1.0 if active else 0.0, 0.12 if active else 0.2)
+	_vignette_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), from, VIGNETTE_STRENGTH if active else 0.0, 0.12 if active else 0.2)

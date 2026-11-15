@@ -170,7 +170,19 @@ func _face(dir: Vector3) -> void:
 	var up := Vector3.UP if absf(dir.normalized().y) < 0.99 else Vector3.RIGHT
 	look_at(global_position + dir, up)
 
+const MODEL_PATH := "res://player/bullet_model.glb"
+const MODEL_SCALE := 0.04
+
 func _build_visuals() -> void:
+	if ResourceLoader.exists(MODEL_PATH):
+		var model: Node3D = (load(MODEL_PATH) as PackedScene).instantiate()
+		model.name = "Visual"
+		model.scale = Vector3.ONE * MODEL_SCALE
+		add_child(model)
+		_fire = _make_fire_trail()
+		add_child(_fire)
+		return
+
 	var brass := StandardMaterial3D.new()
 	brass.albedo_color = Color(0.82, 0.6, 0.18)
 	brass.metallic = 1.0

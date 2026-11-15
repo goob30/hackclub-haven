@@ -26,6 +26,7 @@ var _parry_ready: bool = true
 
 signal slowmo_changed(active: bool)
 signal combo_changed(combo: int)
+signal parry_succeeded
 
 var mouse_captured := true
 
@@ -88,7 +89,7 @@ func _ready():
 var shake := 0.0
 
 func _process(delta):
-	shake = move_toward(shake, 0.0, delta * 6.0)
+	shake = move_toward(shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 6.0)
 	camera.h_offset = randf_range(-1.0, 1.0) * shake * 0.2
 	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
 
@@ -357,6 +358,7 @@ func action_parry():
 	var parried: bool = bullet.try_parry(get_crosshair_point(), forward)
 	if parried:
 		Audio.play(weapon.sound_shoot)
+		parry_succeeded.emit()
 
 func _on_parry_cooldown_done():
 	_parry_ready = true
