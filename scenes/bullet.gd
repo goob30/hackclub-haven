@@ -8,7 +8,6 @@ enum State { OUTBOUND, RETURNING }
 @export var player_damage: int = 10
 @export var hit_player_radius: float = 0.9
 @export var lifetime: float = 6.0
-@export var trail_delay: float = 0.0
 
 @export_subgroup("Parry / Slow-mo")
 @export var slow_trigger_time: float = 0.06
@@ -22,7 +21,6 @@ var player: Node3D
 var arena: Coliseum
 
 var _life_left: float = 0.0
-var _age: float = 0.0
 var _fire: GPUParticles3D
 var _slowmo_on: bool = false
 
@@ -40,10 +38,6 @@ func launch(from_pos: Vector3, dir: Vector3) -> void:
 	_face(direction)
 
 func _physics_process(delta: float) -> void:
-	_age += delta
-	if _fire and not _fire.emitting and _age >= trail_delay:
-		_fire.emitting = true
-
 	if state == State.OUTBOUND:
 		_life_left -= delta
 		if _life_left <= 0.0:
@@ -125,9 +119,6 @@ func slow_scale() -> float:
 	var t: float = clampf(float(combo) / maxf(combo_for_no_slow, 1.0), 0.0, 1.0)
 	return lerpf(min_slow_scale, 1.0, t * t)
 
-func is_slowmo_active() -> bool:
-	return _slowmo_on
-
 func _start_slowmo() -> void:
 	_slowmo_on = true
 	Engine.time_scale = slow_scale()
@@ -170,56 +161,38 @@ func _face(dir: Vector3) -> void:
 	var up := Vector3.UP if absf(dir.normalized().y) < 0.99 else Vector3.RIGHT
 	look_at(global_position + dir, up)
 
-const MODEL_PATH := "res://player/bullet_model.glb"
+const MODEL_SCENE := preload("res://player/bullet_model.glb")
 const MODEL_SCALE := 0.04
 
+static var _trail_mesh: QuadMesh
+static var _trail_process: ParticleProcessMaterial
+
 func _build_visuals() -> void:
-	if ResourceLoader.exists(MODEL_PATH):
-		var model: Node3D = (load(MODEL_PATH) as PackedScene).instantiate()
-		model.name = "Visual"
-		model.scale = Vector3.ONE * MODEL_SCALE
-		add_child(model)
-		_fire = _make_fire_trail()
-		add_child(_fire)
-		return
-
-	var brass := StandardMaterial3D.new()
-	brass.albedo_color = Color(0.82, 0.6, 0.18)
-	brass.metallic = 1.0
-	brass.metallic_specular = 0.8
-	brass.roughness = 0.28
-	brass.emission_enabled = true
-	brass.emission = Color(1.0, 0.55, 0.1)
-	brass.emission_energy_multiplier = 0.35
-
-	var visual := Node3D.new()
-	visual.name = "Visual"
-	visual.rotation_degrees.x = -90.0
-	add_child(visual)
-
-	var body := MeshInstance3D.new()
-	var body_mesh := CylinderMesh.new()
-	body_mesh.top_radius = 0.09
-	body_mesh.bottom_radius = 0.09
-	body_mesh.height = 0.4
-	body_mesh.material = brass
-	body.mesh = body_mesh
-	visual.add_child(body)
-
-	var nose := MeshInstance3D.new()
-	var nose_mesh := CylinderMesh.new()
-	nose_mesh.top_radius = 0.0
-	nose_mesh.bottom_radius = 0.09
-	nose_mesh.height = 0.2
-	nose_mesh.material = brass
-	nose.mesh = nose_mesh
-	nose.position.y = 0.3
-	visual.add_child(nose)
-
+	var model: Node3D = MODEL_SCENE.instantiate()
+	model.name = "Visual"
+	model.scale = Vector3.ONE * MODEL_SCALE
+	add_child(model)
 	_fire = _make_fire_trail()
 	add_child(_fire)
 
 func _make_fire_trail() -> GPUParticles3D:
+	if not _trail_mesh:
+		_build_trail_resources()
+	var fire := GPUParticles3D.new()
+	fire.name = "FireTrail"
+	fire.amount = 20
+	fire.lifetime = 0.25
+	fire.fixed_fps = 12
+	fire.interpolate = false
+	fire.local_coords = false
+	fire.draw_pass_1 = _trail_mesh
+	fire.process_material = _trail_process
+	fire.position.z = 0.25
+	fire.emitting = true
+	fire.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
+	return fire
+
+static func _build_trail_resources() -> void:
 	var tex: Texture2D = load("res://player/trail.png")
 
 	var quad_mat := StandardMaterial3D.new()
@@ -234,6 +207,7 @@ func _make_fire_trail() -> GPUParticles3D:
 	var quad := QuadMesh.new()
 	quad.size = Vector2(0.4, 0.4)
 	quad.material = quad_mat
+	_trail_mesh = quad
 
 	var colors := Gradient.new()
 	colors.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
@@ -271,16 +245,4 @@ func _make_fire_trail() -> GPUParticles3D:
 	pm.scale_curve = shrink_tex
 	pm.color_ramp = color_ramp
 
-	var fire := GPUParticles3D.new()
-	fire.name = "FireTrail"
-	fire.amount = 20
-	fire.lifetime = 0.25
-	fire.fixed_fps = 12
-	fire.interpolate = false
-	fire.local_coords = false
-	fire.draw_pass_1 = quad
-	fire.process_material = pm
-	fire.position.z = 0.25
-	fire.emitting = true
-	fire.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
-	return fire
+	_trail_process = pm
