@@ -3,9 +3,18 @@ extends CharacterBody3D
 signal justShot
 
 @export_subgroup("Properties")
-@export var movement_speed = 5
+@export var movement_speed = 12
 @export_range(0, 100) var number_of_jumps: int = 2
-@export var jump_strength = 8
+@export var jump_strength = 11
+
+@export_subgroup("Dash")
+@export var dash_speed := 30.0
+@export var dash_duration := 0.15
+@export var dash_cooldown := 1.0
+
+var dash_time_left := 0.0
+var dash_cooldown_left := 0.0
+var dash_dir := Vector3.ZERO
 
 @export_subgroup("Weapons")
 @export var weapons: Array[Weapon] = []
@@ -105,13 +114,22 @@ func _process(delta):
 	
 	applied_velocity = velocity.lerp(movement_velocity, delta * 10)
 	applied_velocity.y = - gravity
-	
+
+	if dash_cooldown_left > 0.0:
+		dash_cooldown_left -= delta
+	if dash_time_left > 0.0:
+		dash_time_left -= delta
+		applied_velocity.x = dash_dir.x * dash_speed
+		applied_velocity.z = dash_dir.z * dash_speed
+		applied_velocity.y = 0.0
+		gravity = 0.0
+
 	velocity = applied_velocity
 	move_and_slide()
 	
 	# Rotation 
 	container.position = lerp(container.position, container_offset - (basis.inverse() * applied_velocity / 30), delta * 10)
-	arms.position = arms_base_position + (container.position - container_offset) * 0.4
+	arms.position = arms_base_position
 	
 	# Movement sound
 	
@@ -181,8 +199,11 @@ func handle_controls(delta):
 		if jumps_remaining:
 			action_jump()
 		
+	if Input.is_action_just_pressed("dash"):
+		action_dash(input)
+
 	# Weapon switching
-	
+
 	action_weapon_toggle()
 
 # Camera rotation
@@ -222,6 +243,16 @@ func action_jump():
 	Audio.play("sounds/jump_a.ogg, sounds/jump_b.ogg, sounds/jump_c.ogg")
 	gravity = - jump_strength
 	jumps_remaining -= 1
+
+func action_dash(input: Vector2):
+	if dash_cooldown_left > 0.0 or dash_time_left > 0.0: return
+	var dir := transform.basis * Vector3(input.x, 0, input.y)
+	if dir.length() < 0.1:
+		dir = -transform.basis.z
+	dash_dir = dir.normalized()
+	dash_time_left = dash_duration
+	dash_cooldown_left = dash_cooldown
+	Audio.play("sounds/jump_a.ogg")
 
 # Shooting
 
@@ -358,6 +389,7 @@ func action_parry():
 	var parried: bool = bullet.try_parry(get_crosshair_point(), forward)
 	if parried:
 		Audio.play(weapon.sound_shoot)
+		dash_cooldown_left = 0.0
 		parry_succeeded.emit()
 
 func _on_parry_cooldown_done():
