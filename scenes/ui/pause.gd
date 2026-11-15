@@ -1,0 +1,25 @@
+extends Control
+
+var is_in_pause = false
+var pm
+var main
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pm = get_node("../pausemenu")
+	main = get_node("../")
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("ui_cancel") && !is_in_pause:
+		pm.visible = true
+		is_in_pause = true
+		get_tree().paused = true
+		
+	elif Input.is_action_just_pressed("ui_cancel") && is_in_pause:
+		pm.visible = false
+		is_in_pause = false
+		get_tree().paused = false
+		get_window().grab_focus()

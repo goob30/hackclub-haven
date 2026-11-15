@@ -27,6 +27,7 @@ var _parry_ready: bool = true
 signal slowmo_changed(active: bool)
 signal combo_changed(combo: int)
 
+
 var mouse_captured := true
 
 var movement_velocity: Vector3
@@ -64,6 +65,7 @@ var muzzle_flash := PixelFlash.new()
 # Functions
 
 func _ready():
+	
 	add_to_group("player")
 	muzzle.visible = false
 	muzzle.get_parent().add_child(muzzle_flash)
@@ -80,6 +82,10 @@ func _process(delta):
 	shake = move_toward(shake, 0.0, delta * 6.0)
 	camera.h_offset = randf_range(-1.0, 1.0) * shake * 0.2
 	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
+	
+	
+	
+	
 
 	# Handle functions
 	handle_controls(delta)
