@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://cgr81sg436y6r"]
 
+[ext_resource type="Script" uid="uid://lcaryhdkgint" path="res://scenes/ui/pauseroot.gd" id="1_4x8ym"]
 [ext_resource type="Shader" uid="uid://bhqdivbfmw6wg" path="res://arena/assets/Buildings Prebuild/Ready scenes/new_shader.gdshader" id="1_xld5c"]
 [ext_resource type="Script" uid="uid://clg2yviwfw3i" path="res://scenes/ui/pauselabel.gd" id="2_k23cl"]
 [ext_resource type="Shader" uid="uid://bnp0esp8cxa4k" path="res://buttonshader.gdshader" id="3_qgos8"]
+[ext_resource type="PackedScene" uid="uid://b14i45ot1aghs" path="res://scenes/ui/settings.tscn" id="4_5834a"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yf5fn"]
-bg_color = Color(0.16470589, 0.16470589, 0.16470589, 0.36862746)
+bg_color = Color(0, 0, 0, 0.5058824)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xld5c"]
 shader = ExtResource("1_xld5c")
@@ -60,14 +62,29 @@ _data = {
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k23cl"]
 shader = ExtResource("3_qgos8")
 shader_parameter/pixel_size = 4.0
+shader_parameter/block_taps = 3
+shader_parameter/spread = 0.5
+shader_parameter/coverage_gamma = 1.6
+shader_parameter/sharpen = 0.8
+shader_parameter/sharpen_radius = 2.0
+shader_parameter/center_weight = 0.35
 shader_parameter/threshold = 0.4
 shader_parameter/contrast = 5.0
-shader_parameter/spread = 0.5
+shader_parameter/edge_midpoint = 0.5
 shader_parameter/halo_amount = 0.35
 shader_parameter/halo_radius = 1.5
+shader_parameter/halo_samples = 8
+shader_parameter/halo_angle_offset = 0.0
+shader_parameter/halo_variation = 0.6
+shader_parameter/halo_base = 0.7
+shader_parameter/halo_noise_scale = 1.7
 shader_parameter/noise_amount = 0.25
 shader_parameter/noise_speed = 0.0
+shader_parameter/noise_edge_power = 1.0
+shader_parameter/noise_seed = Vector2(127.1, 311.7)
 shader_parameter/levels = 5
+shader_parameter/level_rounding = 0.5
+shader_parameter/effect_strength = 0.5
 shader_parameter/opacity = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4v7s"]
@@ -84,6 +101,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_4x8ym")
 
 [node name="Panel" type="Panel" parent="." unique_id=1430070802]
 layout_mode = 0
@@ -117,19 +135,20 @@ layout_mode = 2
 material = SubResource("ShaderMaterial_xld5c")
 layout_mode = 0
 offset_right = 347.0
-offset_bottom = 124.0
-theme_override_font_sizes/font_size = 90
+offset_bottom = 181.0
+theme_override_font_sizes/font_size = 130
 text = "PAUSED"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("2_k23cl")
 
 [node name="pauselabel" type="Label" parent="CenterContainer/VBoxContainer/label control/pauselabel" unique_id=2069376509]
+visible = false
 material = SubResource("ShaderMaterial_xld5c")
 layout_mode = 0
 offset_right = 347.0
-offset_bottom = 124.0
-theme_override_font_sizes/font_size = 90
+offset_bottom = 168.0
+theme_override_font_sizes/font_size = 120
 text = "PAUSED"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -162,3 +181,18 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 48
 theme_override_styles/normal = SubResource("StyleBoxFlat_g4v7s")
 text = "EXIT TO MENU"
+
+[node name="settingscontrol" parent="." unique_id=2094486747 instance=ExtResource("4_5834a")]
+visible = false
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 16.0
+offset_right = 387.0
+offset_bottom = 16.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/settingsbutton" to="." method="_on_settingsbutton_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/settingsbutton" to="CenterContainer/VBoxContainer/label control/pauselabel" method="_on_settingsbutton_pressed"]
