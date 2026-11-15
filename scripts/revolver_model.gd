@@ -30,7 +30,7 @@ var _seg_end := -1.0
 func can_fire() -> bool:
 	return ammo > 0 and not reloading
 
-func play_shoot(_duration: float = 0.0) -> void:
+func play_shoot() -> void:
 	if not _anim or not can_fire():
 		return
 	var seg := _anim.get_animation("Shoot").length / SHOTS

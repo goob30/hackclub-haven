@@ -1,7 +1,5 @@
 extends CharacterBody3D
 
-signal justShot
-
 @export_subgroup("Properties")
 @export var movement_speed = 12
 @export_range(0, 100) var number_of_jumps: int = 2
@@ -42,8 +40,6 @@ var mouse_captured := true
 var movement_velocity: Vector3
 var rotation_target: Vector3
 
-var input_mouse: Vector2
-
 var health: int = 100
 var gravity := 0.0
 
@@ -53,8 +49,6 @@ var jumps_remaining: int
 
 var container_offset = Vector3(1.2, -1.1, -2.75)
 
-var tween: Tween
-var arms_base_position := Vector3.ZERO
 var arms_anim: AnimationPlayer
 
 const BULLET_SCENE := preload("res://scenes/bullet.tscn")
@@ -64,7 +58,6 @@ signal health_updated
 signal ammo_changed(ammo: int, capacity: int)
 
 @onready var camera = $Head/Camera
-@onready var raycast = $Head/Camera/RayCast
 @onready var muzzle = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Muzzle
 var muzzle_flash := PixelFlash.new()
 @onready var container = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Container
@@ -78,7 +71,6 @@ var muzzle_flash := PixelFlash.new()
 
 func _ready():
 	add_to_group("player")
-	arms_base_position = arms.position
 	for mesh in arms.find_children("*", "MeshInstance3D"):
 		mesh.layers = 2
 	arms.visible = false
@@ -129,7 +121,6 @@ func _process(delta):
 	
 	# Rotation 
 	container.position = lerp(container.position, container_offset - (basis.inverse() * applied_velocity / 30), delta * 10)
-	arms.position = arms_base_position
 	
 	# Movement sound
 	
@@ -162,7 +153,6 @@ func _exit_tree():
 
 func _input(event):
 	if event is InputEventMouseMotion and mouse_captured:
-		input_mouse = event.relative / mouse_sensitivity
 		handle_rotation(event.relative.x, event.relative.y, false)
 
 	if event.is_action_pressed("parry"):
@@ -177,8 +167,6 @@ func handle_controls(delta):
 	if Input.is_action_just_pressed("mouse_capture_exit"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		mouse_captured = false
-		
-		input_mouse = Vector2.ZERO
 	
 	# Movement
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
@@ -273,13 +261,9 @@ func action_shoot():
 		muzzle_flash.restart()
 		shake = 1.0
 		if model and model.has_method("play_shoot"):
-			model.play_shoot(weapon.cooldown)
+			model.play_shoot()
 		
 		blaster_cooldown.start(weapon.cooldown)
-		
-		# Shoot the weapon, amount based on shot count
-		
-		justShot.emit()
 		
 		var new_bullet: Projectile3D = BULLET_SCENE.instantiate()
 		get_tree().current_scene.add_child(new_bullet)
@@ -313,7 +297,7 @@ func action_weapon_toggle():
 func initiate_change_weapon(index):
 	weapon_index = index
 	
-	tween = get_tree().create_tween()
+	var tween := get_tree().create_tween()
 	tween.set_ease(Tween.EASE_OUT_IN)
 	tween.tween_property(container, "position", container_offset - Vector3(0, 1, 0), 0.1)
 	tween.tween_callback(change_weapon) # Changes the model
@@ -347,9 +331,6 @@ func change_weapon():
 	for child in weapon_model.find_children("*", "MeshInstance3D"):
 		child.layers = 2
 		
-	# Set weapon data
-	
-	raycast.target_position = Vector3(0, 0, -1) * weapon.max_distance
 	crosshair.texture = weapon.crosshair
 
 func damage(amount):
@@ -420,19 +401,11 @@ func get_combo() -> int:
 func add_combo():
 	combo += 1
 	combo_changed.emit(combo)
-	print("Parry! combo = ", combo)
 
 func reset_combo():
-	if combo != 0:
-		print("Combo lost at ", combo)
 	combo = 0
 	combo_changed.emit(combo)
 
 func set_slowmo(active: bool):
 	slowmo_active = active
 	slowmo_changed.emit(active)
-
-# Create a random knockback vector
-static func random_vec2(_min: Vector2, _max: Vector2) -> Vector2:
-	var _sign = -1 if randi() % 2 == 0 else 1
-	return Vector2(randf_range(_min.x, _max.x), randf_range(_min.y, _max.y) * _sign)
