@@ -1,18 +1,20 @@
 class_name Projectile3D
 extends Area3D
 
-# A visible, fast-moving bullet. Spawned by the player (see player.gd).
-# OUTBOUND: flies straight, hits an enemy -> RETURNING, hits anything else -> lost.
-# RETURNING: homes in on the player, ignores walls.
-
 enum State { OUTBOUND, RETURNING }
 
-@export var outbound_speed: float = 45.0   # fast, but still readable by the eye
-@export var hit_damage: float = 25.0       # damage dealt to an enemy
-@export var player_damage: int = 10        # damage dealt to the player on return
-@export var hit_player_radius: float = 0.9 # distance at which the returning bullet "reaches" the player
+@export var outbound_speed: float = 45.0
+@export var hit_damage: float = 25.0
+@export var player_damage: int = 10
+@export var hit_player_radius: float = 0.9
 @export var lifetime: float = 6.0
-@export var trail_delay: float = 0.12     # seconds after firing before the fire trail starts
+@export var trail_delay: float = 0.0
+
+@export_subgroup("Parry / Slow-mo")
+@export var slow_trigger_time: float = 0.06
+@export var parry_range: float = 2.5
+@export var min_slow_scale: float = 0.01
+@export var combo_for_no_slow: float = 26.67
 
 var state: State = State.OUTBOUND
 var direction: Vector3 = Vector3.FORWARD
@@ -22,6 +24,7 @@ var arena: Coliseum
 var _life_left: float = 0.0
 var _age: float = 0.0
 var _fire: GPUParticles3D
+var _slowmo_on: bool = false
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player") as Node3D
@@ -31,14 +34,12 @@ func _ready() -> void:
 	_build_visuals()
 	_face(direction)
 
-# Call right after adding to the scene tree
 func launch(from_pos: Vector3, dir: Vector3) -> void:
 	global_position = from_pos
 	direction = dir.normalized()
 	_face(direction)
 
 func _physics_process(delta: float) -> void:
-	# Start the trail a moment after firing so it isn't in your face
 	_age += delta
 	if _fire and not _fire.emitting and _age >= trail_delay:
 		_fire.emitting = true
@@ -46,12 +47,11 @@ func _physics_process(delta: float) -> void:
 	if state == State.OUTBOUND:
 		_life_left -= delta
 		if _life_left <= 0.0:
-			queue_free()
+			_lose_bullet()
 			return
 
-		# Left the arena (over the walls, off the edge, below the floor): delete
 		if is_instance_valid(arena) and not arena.is_inside_bounds(global_position):
-			queue_free()
+			_lose_bullet()
 			return
 
 	match state:
@@ -64,8 +64,6 @@ func _move_outbound(delta: float) -> void:
 	var from := global_position
 	var to := from + direction * outbound_speed * delta
 
-	# Sweep a ray from old to new position so the bullet can't skip through thin walls.
-	# Bodies only (walls); enemies are Area3Ds and are handled by area_entered.
 	var query := PhysicsRayQueryParameters3D.create(from, to)
 	query.collide_with_bodies = true
 	query.collide_with_areas = false
@@ -89,31 +87,83 @@ func _move_returning(delta: float) -> void:
 	var to_target := target - global_position
 
 	var step := outbound_speed * delta
-	if to_target.length() <= maxf(hit_player_radius, step):
+	var distance := to_target.length()
+	if distance <= maxf(hit_player_radius, step):
 		if player.has_method("damage"):
 			player.damage(player_damage)
 		_lose_bullet()
 		return
+
+	var time_to_impact := distance / outbound_speed
+	if not _slowmo_on and time_to_impact <= slow_trigger_time:
+		_start_slowmo()
 
 	direction = to_target.normalized()
 	_face(direction)
 	global_position += direction * outbound_speed * delta
 
 func _on_hit(other: Area3D) -> void:
-	# Only enemies are Area3Ds that matter; only react while flying outward.
 	if state != State.OUTBOUND:
 		return
 	if other.is_in_group("enemy") and other.has_method("damage"):
 		other.damage(hit_damage)
-		state = State.RETURNING # comes back to the player no matter what
+		state = State.RETURNING
 
 func _lose_bullet() -> void:
-	# Later: Run.bullet_lost() goes here
+	if is_instance_valid(player) and player.has_method("reset_combo"):
+		player.reset_combo()
 	queue_free()
 
-# --- Visuals -------------------------------------------------------------
+func _exit_tree() -> void:
+	_end_slowmo()
+	Engine.time_scale = 1.0
 
-# Point the bullet's nose (-Z) along dir
+func slow_scale() -> float:
+	var combo: int = 0
+	if is_instance_valid(player) and player.has_method("get_combo"):
+		combo = player.get_combo()
+	var t: float = clampf(float(combo) / maxf(combo_for_no_slow, 1.0), 0.0, 1.0)
+	return lerpf(min_slow_scale, 1.0, t * t)
+
+func is_slowmo_active() -> bool:
+	return _slowmo_on
+
+func _start_slowmo() -> void:
+	_slowmo_on = true
+	Engine.time_scale = slow_scale()
+	if is_instance_valid(player) and player.has_method("set_slowmo"):
+		player.set_slowmo(true)
+
+func _end_slowmo() -> void:
+	if not _slowmo_on:
+		return
+	_slowmo_on = false
+	Engine.time_scale = 1.0
+	if is_instance_valid(player) and player.has_method("set_slowmo"):
+		player.set_slowmo(false)
+
+func try_parry(aim_point: Vector3, fallback_dir: Vector3) -> bool:
+	if state != State.RETURNING or not is_instance_valid(player):
+		return false
+
+	var target := player.global_position + Vector3.UP * 1.0
+	var distance := global_position.distance_to(target)
+	if not _slowmo_on and distance > parry_range:
+		return false
+
+	var new_dir := aim_point - global_position
+	if new_dir.length_squared() < 0.01:
+		new_dir = fallback_dir
+	direction = new_dir.normalized()
+	_face(direction)
+	state = State.OUTBOUND
+	_life_left = lifetime
+	_end_slowmo()
+
+	if player.has_method("add_combo"):
+		player.add_combo()
+	return true
+
 func _face(dir: Vector3) -> void:
 	if not is_inside_tree() or dir.length_squared() < 0.0001:
 		return
@@ -121,7 +171,6 @@ func _face(dir: Vector3) -> void:
 	look_at(global_position + dir, up)
 
 func _build_visuals() -> void:
-	# Brass material
 	var brass := StandardMaterial3D.new()
 	brass.albedo_color = Color(0.82, 0.6, 0.18)
 	brass.metallic = 1.0
@@ -131,7 +180,6 @@ func _build_visuals() -> void:
 	brass.emission = Color(1.0, 0.55, 0.1)
 	brass.emission_energy_multiplier = 0.35
 
-	# Cylinder meshes point along Y, so rotate the holder to make Y point along -Z (forward)
 	var visual := Node3D.new()
 	visual.name = "Visual"
 	visual.rotation_degrees.x = -90.0
@@ -160,68 +208,67 @@ func _build_visuals() -> void:
 	add_child(_fire)
 
 func _make_fire_trail() -> GPUParticles3D:
-	# Soft round sprite
-	var grad := Gradient.new()
-	grad.set_color(0, Color(1, 1, 1, 1))
-	grad.set_color(1, Color(1, 1, 1, 0))
-	var tex := GradientTexture2D.new()
-	tex.gradient = grad
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = Vector2(0.5, 0.5)
-	tex.fill_to = Vector2(1.0, 0.5)
-	tex.width = 64
-	tex.height = 64
+	var tex: Texture2D = load("res://player/trail.png")
 
 	var quad_mat := StandardMaterial3D.new()
 	quad_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	quad_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	quad_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_HASH
+	quad_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	quad_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	quad_mat.vertex_color_use_as_albedo = true
 	quad_mat.albedo_texture = tex
 	quad_mat.disable_receive_shadows = true
 
 	var quad := QuadMesh.new()
-	quad.size = Vector2(0.3, 0.3)
+	quad.size = Vector2(0.4, 0.4)
 	quad.material = quad_mat
 
-	# Yellow-white -> orange -> red -> transparent
 	var colors := Gradient.new()
-	colors.offsets = PackedFloat32Array([0.0, 0.25, 0.6, 1.0])
+	colors.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
 	colors.colors = PackedColorArray([
-		Color(1.0, 0.85, 0.45, 0.45),
-		Color(1.0, 0.5, 0.1, 0.35),
-		Color(0.8, 0.2, 0.05, 0.18),
-		Color(0.2, 0.05, 0.05, 0.0)])
+		Color(1, 1, 1, 1),
+		Color(0.55, 0.45, 0.4, 0.7),
+		Color(0.12, 0.08, 0.08, 0.0)])
 	var color_ramp := GradientTexture1D.new()
 	color_ramp.gradient = colors
 
 	var shrink := Curve.new()
 	shrink.add_point(Vector2(0.0, 1.0))
-	shrink.add_point(Vector2(1.0, 0.0))
+	shrink.add_point(Vector2(0.3, 1.0))
+	shrink.add_point(Vector2(0.3, 0.7))
+	shrink.add_point(Vector2(0.6, 0.7))
+	shrink.add_point(Vector2(0.6, 0.4))
+	shrink.add_point(Vector2(0.85, 0.4))
+	shrink.add_point(Vector2(0.85, 0.2))
+	shrink.add_point(Vector2(1.0, 0.2))
 	var shrink_tex := CurveTexture.new()
 	shrink_tex.curve = shrink
 
 	var pm := ParticleProcessMaterial.new()
 	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	pm.emission_sphere_radius = 0.07
+	pm.emission_sphere_radius = 0.06
 	pm.direction = Vector3.ZERO
 	pm.spread = 180.0
-	pm.initial_velocity_min = 0.1
-	pm.initial_velocity_max = 0.3
-	pm.gravity = Vector3(0, 1.5, 0) # flames drift upward
-	pm.scale_min = 0.5
-	pm.scale_max = 0.9
+	pm.initial_velocity_min = 0.2
+	pm.initial_velocity_max = 0.6
+	pm.gravity = Vector3(0, 1.0, 0)
+	pm.angle_min = 0.0
+	pm.angle_max = 360.0
+	pm.scale_min = 0.8
+	pm.scale_max = 1.2
 	pm.scale_curve = shrink_tex
 	pm.color_ramp = color_ramp
 
 	var fire := GPUParticles3D.new()
 	fire.name = "FireTrail"
-	fire.amount = 90
-	fire.lifetime = 0.35
-	fire.local_coords = false # particles stay where they were emitted -> a trail behind the bullet
+	fire.amount = 20
+	fire.lifetime = 0.25
+	fire.fixed_fps = 12
+	fire.interpolate = false
+	fire.local_coords = false
 	fire.draw_pass_1 = quad
 	fire.process_material = pm
-	fire.position.z = 0.25 # tail end of the bullet
-	fire.emitting = false # switched on after trail_delay, see _build_visuals()
+	fire.position.z = 0.25
+	fire.emitting = true
 	fire.visibility_aabb = AABB(Vector3(-5, -5, -5), Vector3(10, 10, 10))
 	return fire

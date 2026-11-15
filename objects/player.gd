@@ -16,6 +16,17 @@ var weapon_index := 0
 var mouse_sensitivity = 700
 var gamepad_sensitivity := 0.075
 
+@export_subgroup("Parry")
+@export var slowmo_sensitivity_mult: float = 0.7
+@export var parry_cooldown: float = 0.4
+
+var slowmo_active: bool = false
+var combo: int = 0             
+var _parry_ready: bool = true  
+
+signal slowmo_changed(active: bool)
+signal combo_changed(combo: int)
+
 var mouse_captured := true
 
 var movement_velocity: Vector3
@@ -38,10 +49,12 @@ const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 var bullet: Projectile3D
 
 signal health_updated
+signal ammo_changed(ammo: int, capacity: int)
 
 @onready var camera = $Head/Camera
 @onready var raycast = $Head/Camera/RayCast
 @onready var muzzle = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Muzzle
+var muzzle_flash := PixelFlash.new()
 @onready var container = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Container
 @onready var sound_footsteps = $SoundFootsteps
 @onready var blaster_cooldown = $Cooldown
@@ -52,12 +65,22 @@ signal health_updated
 
 func _ready():
 	add_to_group("player")
+	muzzle.visible = false
+	muzzle.get_parent().add_child(muzzle_flash)
+	muzzle_flash.position = Vector3(0, 0, 10)
+	muzzle_flash.set_emitting(true)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 	weapon = weapons[weapon_index] # Weapon must never be nil
 	initiate_change_weapon(weapon_index)
 
+var shake := 0.0
+
 func _process(delta):
+	shake = move_toward(shake, 0.0, delta * 6.0)
+	camera.h_offset = randf_range(-1.0, 1.0) * shake * 0.2
+	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
+
 	# Handle functions
 	handle_controls(delta)
 	handle_gravity(delta)
@@ -98,7 +121,11 @@ func _process(delta):
 	# Falling/respawning
 	
 	if position.y < -10:
+		Engine.time_scale = 1.0
 		get_tree().reload_current_scene()
+
+func _exit_tree():
+	Engine.time_scale = 1.0
 
 # Mouse movement
 
@@ -106,6 +133,9 @@ func _input(event):
 	if event is InputEventMouseMotion and mouse_captured:
 		input_mouse = event.relative / mouse_sensitivity
 		handle_rotation(event.relative.x, event.relative.y, false)
+
+	if event.is_action_pressed("parry"):
+		action_parry()
 
 func handle_controls(delta):
 	# Mouse capture
@@ -145,13 +175,18 @@ func handle_controls(delta):
 # Camera rotation
 
 func handle_rotation(xRot: float, yRot: float, isController: bool, delta: float = 0.0):
+	var look_mult: float = 1.0
+	if slowmo_active:
+		look_mult = slowmo_sensitivity_mult
+
 	if isController:
-		rotation_target -= Vector3(-yRot, -xRot, 0).limit_length(1.0) * gamepad_sensitivity
+		var real_delta: float = delta / maxf(Engine.time_scale, 0.001)
+		rotation_target -= Vector3(-yRot, -xRot, 0).limit_length(1.0) * gamepad_sensitivity * look_mult
 		rotation_target.x = clamp(rotation_target.x, deg_to_rad(-90), deg_to_rad(90))
-		camera.rotation.x = lerp_angle(camera.rotation.x, rotation_target.x, delta * 25)
-		rotation.y = lerp_angle(rotation.y, rotation_target.y, delta * 25)
+		camera.rotation.x = lerp_angle(camera.rotation.x, rotation_target.x, minf(real_delta * 25, 1.0))
+		rotation.y = lerp_angle(rotation.y, rotation_target.y, minf(real_delta * 25, 1.0))
 	else:
-		rotation_target += (Vector3(-yRot, -xRot, 0) / mouse_sensitivity)
+		rotation_target += (Vector3(-yRot, -xRot, 0) / mouse_sensitivity) * look_mult
 		rotation_target.x = clamp(rotation_target.x, deg_to_rad(-90), deg_to_rad(90))
 		camera.rotation.x = rotation_target.x;
 		rotation.y = rotation_target.y;
@@ -181,16 +216,20 @@ func action_shoot():
 	if Input.is_action_pressed("shoot"):
 		if is_instance_valid(bullet): return # Only one bullet in flight at a time
 		if !blaster_cooldown.is_stopped(): return # Cooldown for shooting
+		var model = container.get_child(0) if container.get_child_count() > 0 else null
+		if model and model.has_method("can_fire") and not model.can_fire(): return # Out of ammo / reloading
 		
 		Audio.play(weapon.sound_shoot)
 		
 		# Set muzzle flash position, play animation
 		
-		muzzle.play("default")
-		
-		muzzle.rotation_degrees.z = randf_range(-45, 45)
-		muzzle.scale = Vector3.ONE * randf_range(0.40, 0.75)
+
 		muzzle.position = container.position - weapon.muzzle_position
+		muzzle_flash.position = muzzle.position
+		muzzle_flash.restart()
+		shake = 1.0
+		if model and model.has_method("play_shoot"):
+			model.play_shoot(weapon.cooldown)
 		
 		blaster_cooldown.start(weapon.cooldown)
 		
@@ -198,13 +237,9 @@ func action_shoot():
 		
 		justShot.emit()
 		
-		# Spawn the bullet: an Area3D that flies from the camera along the crosshair
-		
 		var new_bullet: Projectile3D = BULLET_SCENE.instantiate()
 		get_tree().current_scene.add_child(new_bullet)
 		
-		# The gun is drawn by a second camera (narrower FOV), so convert the muzzle's
-		# on-screen position into a point in front of the main camera.
 		var item_fov_tan: float = tan(deg_to_rad(muzzle.get_viewport().get_camera_3d().fov * 0.5))
 		var main_fov_tan: float = tan(deg_to_rad(camera.fov * 0.5))
 		var m: Vector3 = muzzle.position
@@ -215,19 +250,10 @@ func action_shoot():
 			-depth)
 		var spawn_pos: Vector3 = camera.global_transform * local_spawn
 		
-		# Fly toward whatever the crosshair points at
 		var aim_point: Vector3 = camera.global_position - camera.global_transform.basis.z * 100.0
 		new_bullet.launch(spawn_pos, aim_point - spawn_pos)
 		bullet = new_bullet
 		
-		var knockback = random_vec2(weapon.min_knockback, weapon.max_knockback)
-		# print('knockback', knockback)
-		container.position.z += 0.25 # Knockback of weapon visual
-		camera.rotation.x += knockback.x # Knockback of camera
-		rotation.y += knockback.y
-		rotation_target.x += knockback.x
-		rotation_target.y += knockback.y
-		movement_velocity += Vector3(0, 0, weapon.knockback) # Knockback
 
 # Toggle between available weapons (listed in 'weapons')
 
@@ -263,6 +289,12 @@ func change_weapon():
 	var weapon_model = weapon.model.instantiate()
 	container.add_child(weapon_model)
 	
+	if weapon_model.has_signal("ammo_changed"):
+		weapon_model.ammo_changed.connect(ammo_changed.emit)
+		ammo_changed.emit(weapon_model.ammo, weapon_model.SHOTS)
+	else:
+		ammo_changed.emit(-1, 0)
+	
 	weapon_model.position = weapon.position
 	weapon_model.rotation_degrees = weapon.rotation
 	
@@ -279,9 +311,63 @@ func change_weapon():
 func damage(amount):
 	health -= amount
 	health_updated.emit(health) # Update health on HUD
-	
+
 	if health < 0:
+		Engine.time_scale = 1.0
 		get_tree().reload_current_scene() # Reset when out of health
+
+func action_parry():
+	if not _parry_ready: return
+	if not is_instance_valid(bullet): return
+	if bullet.state != Projectile3D.State.RETURNING: return
+
+	_parry_ready = false
+	get_tree().create_timer(parry_cooldown, true, false, true).timeout.connect(_on_parry_cooldown_done)
+
+	var forward: Vector3 = -camera.global_transform.basis.z
+	var parried: bool = bullet.try_parry(get_crosshair_point(), forward)
+	if parried:
+		Audio.play(weapon.sound_shoot)
+
+func _on_parry_cooldown_done():
+	_parry_ready = true
+
+func get_crosshair_point() -> Vector3:
+	var from: Vector3 = camera.global_position
+	var forward: Vector3 = -camera.global_transform.basis.z
+	var to: Vector3 = from + forward * 100.0
+
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	query.collide_with_bodies = true
+	query.collide_with_areas = true 
+	var ignore: Array[RID] = [get_rid()]
+	if is_instance_valid(bullet):
+		ignore.append(bullet.get_rid())
+	query.exclude = ignore
+
+	var result: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+	if result.is_empty():
+		return to
+	var hit_pos: Vector3 = result["position"]
+	return hit_pos
+
+func get_combo() -> int:
+	return combo
+
+func add_combo():
+	combo += 1
+	combo_changed.emit(combo)
+	print("Parry! combo = ", combo)
+
+func reset_combo():
+	if combo != 0:
+		print("Combo lost at ", combo)
+	combo = 0
+	combo_changed.emit(combo)
+
+func set_slowmo(active: bool):
+	slowmo_active = active
+	slowmo_changed.emit(active)
 
 # Create a random knockback vector
 static func random_vec2(_min: Vector2, _max: Vector2) -> Vector2:
