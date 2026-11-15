@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dpm3l05d7fu35" path="res://objects/platform.tscn" id="5_3s40e"]
 [ext_resource type="PackedScene" uid="uid://r7rt7pth4u7o" path="res://objects/wall_low.tscn" id="5_6vel1"]
 [ext_resource type="PackedScene" uid="uid://dg6h5uopjapqr" path="res://scenes/EnemyBullet.tscn" id="5_eb6dy"]
+[ext_resource type="Script" uid="uid://cit2uerl6aq6c" path="res://walk_animation.gd" id="6_a8y0u"]
 [ext_resource type="PackedScene" uid="uid://c71evdjblk5wp" path="res://objects/wall_high.tscn" id="7_cabne"]
 [ext_resource type="PackedScene" uid="uid://bvx5cvigosg0s" path="res://objects/platform_large_grass.tscn" id="7_wggef"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
@@ -69,6 +70,13 @@ vertical_alignment = 2
 [node name="Enemies" type="Node" parent="." unique_id=2021581775]
 
 [node name="SpiderMelee" parent="Enemies" unique_id=2110410114 instance=ExtResource("9_jkv2x")]
+
+[node name="LegAnim" type="Node3D" parent="Enemies/SpiderMelee" unique_id=226215614 node_paths=PackedStringArray("body", "body_visual", "gait_group_a", "gait_group_b")]
+script = ExtResource("6_a8y0u")
+body = NodePath("..")
+body_visual = NodePath("../Total")
+gait_group_a = [NodePath("../Total/LeftLegs/LeftLeg1/LowerLeg7"), NodePath("../Total/LeftLegs/LeftLeg3/LowerLeg/LowerLeg_1"), NodePath("../Total/RightLegs/RightLeg2/UpperLeg_5"), NodePath("../Total/RightLegs/RightLeg5/UpperLeg_7")]
+gait_group_b = [NodePath("../Total/LeftLegs/LeftLeg2/UpperLeg_2"), NodePath("../Total/LeftLegs/LeftLeg4/UpperLeg_1"), NodePath("../Total/RightLegs/RightLeg1/UpperLeg_4"), NodePath("../Total/RightLegs/RightLeg4/UpperLeg_6")]
 
 [node name="EnemyBullet" type="Node3D" parent="Enemies" unique_id=741858025]
 
@@ -167,3 +175,5 @@ shape = SubResource("SphereShape3D_ya4ey")
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
 [connection signal="justShot" from="Player" to="Bullet1" method="_on_player_just_shot"]
+
+[editable path="Enemies/SpiderMelee"]

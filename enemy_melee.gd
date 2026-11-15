@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 @export var move_speed := 3.0
+@export var stop_distance := 1.0
 @export var attack_damage := 10
 @export var attack_interval := 3.0
 @export var bite_windup := 0.6
@@ -69,23 +70,23 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	if is_instance_valid(player):
-		var aim_point = player.global_position + Vector3(0, 0.5, 0)
-		var offset = player.global_position - global_position
-		var horizontal = Vector3(offset.x, 0.0, offset.z)
+		var offset := player.global_position - global_position
+		var horizontal := Vector3(offset.x, 0.0, offset.z)
 
 		if horizontal.length() > 0.01:
-			var facing_direction = -horizontal if reverse_facing else horizontal
+			var facing_direction := -horizontal if reverse_facing else horizontal
 			look_at(global_position + facing_direction, Vector3.UP, false)
 
-		if attack_area != null and attack_area.overlaps_body(player):
+		if horizontal.length() <= stop_distance:
 			velocity.x = 0.0
 			velocity.z = 0.0
 		else:
-			var direction = horizontal.normalized()
+			var direction := horizontal.normalized()
 			velocity.x = direction.x * move_speed
 			velocity.z = direction.z * move_speed
 
 		if raycast != null:
+			var aim_point := player.global_position + Vector3(0.0, 0.5, 0.0)
 			raycast.target_position = raycast.to_local(aim_point)
 	else:
 		velocity.x = 0.0
@@ -115,9 +116,9 @@ func _on_timer_timeout() -> void:
 		bite_particles.emitting = true
 		bite_particles.restart()
 
-	if player.has_method("damage"):
+	if is_instance_valid(player) and player.has_method("damage"):
 		player.damage(attack_damage)
-	else:
+	elif is_instance_valid(player):
 		push_warning("The player needs a damage(amount) method.")
 
 	Audio.play("sounds/enemy_attack.ogg")
@@ -131,25 +132,25 @@ func _can_bite_player() -> bool:
 	if not attack_area.overlaps_body(player):
 		return false
 
-	var aim_point = player.global_position + Vector3(0, 0.5, 0)
+	var aim_point := player.global_position + Vector3(0.0, 0.5, 0.0)
 	raycast.target_position = raycast.to_local(aim_point)
 	raycast.force_raycast_update()
 
 	if not raycast.is_colliding():
 		return false
 
-	var collider = raycast.get_collider()
+	var collider := raycast.get_collider()
 	return collider == player or (
 		collider is Node and player.is_ancestor_of(collider)
 	)
 
 
 func _find_player() -> Node3D:
-	var grouped_player = get_tree().get_first_node_in_group("player")
+	var grouped_player := get_tree().get_first_node_in_group("player")
 	if grouped_player is Node3D:
 		return grouped_player
 
-	var named_player = get_tree().root.find_child("Player", true, false)
+	var named_player := get_tree().root.find_child("Player", true, false)
 	if named_player is Node3D:
 		return named_player
 

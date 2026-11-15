@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://cvwj2i2klphrx"]
 
+[ext_resource type="Script" uid="uid://cit2uerl6aq6c" path="res://walk_animation.gd" id="1_80e3e"]
 [ext_resource type="Script" uid="uid://jlhojqkjxnol" path="res://enemy_melee.gd" id="1_lljo6"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0yeux"]
@@ -1388,7 +1389,7 @@ skeleton = NodePath("")
 [node name="Timer" type="Timer" parent="." unique_id=1624933449]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=234120572]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0.2, 0)
 shape = SubResource("SphereShape3D_blwv7")
 
 [node name="AttackArea" type="Area3D" parent="." unique_id=1426839353]
@@ -1406,3 +1407,10 @@ draw_skin = SubResource("Skin_sddlj")
 
 [node name="BitePoint" type="Marker3D" parent="." unique_id=1074558505]
 transform = Transform3D(1, 1.3362995e-21, 0, 1.3362995e-21, 1, 0, 0, 0, 1, 0.03513753, 0.08715839, -0.14839275)
+
+[node name="Node3D" type="Node3D" parent="." unique_id=1849594389 node_paths=PackedStringArray("body", "body_visual", "gait_group_a", "gait_group_b")]
+script = ExtResource("1_80e3e")
+body = NodePath("..")
+body_visual = NodePath("..")
+gait_group_a = [NodePath("../Total/LeftLegs/LeftLeg1/Joint_3"), NodePath("../Total/LeftLegs/LeftLeg3/Joint"), NodePath("../Total/RightLegs/RightLeg2/Joint_5"), NodePath("../Total/RightLegs/RightLeg5/Joint_7")]
+gait_group_b = [NodePath("../Total/LeftLegs/LeftLeg2/Joint_2"), NodePath("../Total/LeftLegs/LeftLeg4/Joint_1"), NodePath("../Total/RightLegs/RightLeg1/Joint_4"), NodePath("../Total/RightLegs/RightLeg4/Joint_6")]
