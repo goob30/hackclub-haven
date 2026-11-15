@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://bnk0ot6dmowcj"]
-
-[ext_resource type="PackedScene" uid="uid://b28iw6y4xexr5" path="res://arena/assets/plackard_wall/plackard_closed_full.glb" id="1_av7qh"]
-
-[node name="coliseumnode" type="Node3D" unique_id=366906845]
-
-[node name="plackard_closed_full2" parent="." unique_id=4399451 instance=ExtResource("1_av7qh")]

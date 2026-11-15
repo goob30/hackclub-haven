@@ -1,5 +1,0 @@
-[gd_scene format=3 uid="uid://hkqn7unwu4v0"]
-
-[ext_resource type="PackedScene" uid="uid://bqly8y1p3onv3" path="res://Drone.FBX" id="1_uvgqj"]
-
-[node name="Drone" unique_id=1908915862 instance=ExtResource("1_uvgqj")]
