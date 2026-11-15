@@ -15,6 +15,8 @@ var _steps := 0
 var _count := SLOTS
 var _tween: Tween
 var _shake := 0.0
+var _combo_shake := 0.0
+var _combo_base := Vector2.ZERO
 var _vignette: ColorRect
 var _vignette_tween: Tween
 var _impact: ColorRect
@@ -23,6 +25,7 @@ const VIGNETTE_STRENGTH := 0.7
 const PARRY_FREEZE_TIME := 0.3
 const IMPACT_THRESHOLD := 0.55
 const PARRY_SHAKE := 2.0
+const COMBO_SHAKE_PIXELS := 15.0
 
 const IMPACT_SHADER := """
 shader_type canvas_item;
@@ -55,7 +58,8 @@ func _ready():
 	combo_mat.set_shader_parameter("top_color", Color(1.0, 0.85, 0.2))
 	combo_mat.set_shader_parameter("bottom_color", Color(0.9, 0.1, 0.0))
 	combo_label.material = combo_mat
-	combo_label.position = health_label.position + Vector2(0, -105)
+	_combo_base = health_label.position + Vector2(0, -105)
+	combo_label.position = _combo_base
 	combo_label.visible = false
 	add_child(combo_label)
 
@@ -76,6 +80,8 @@ func _ready():
 func _process(delta: float) -> void:
 	_shake = move_toward(_shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 5.0)
 	_cylinder.position = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _shake * 8.0
+	_combo_shake = move_toward(_combo_shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 1.2)
+	combo_label.position = _combo_base + Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _combo_shake * COMBO_SHAKE_PIXELS
 
 func _on_health_updated(health):
 	$Health.text = str(health) + "%"
@@ -178,6 +184,7 @@ func _build_impact() -> void:
 	move_child(_impact, 0)
 
 func _on_parry_succeeded() -> void:
+	_combo_shake = 1.0
 	var saved_scale := Engine.time_scale
 	Engine.time_scale = 0.0
 	_impact.visible = true

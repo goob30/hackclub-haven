@@ -67,6 +67,11 @@ func _move_outbound(delta: float) -> void:
 	var result := get_world_3d().direct_space_state.intersect_ray(query)
 	if not result.is_empty():
 		global_position = result.position
+		var collider = result.collider
+		if collider is Node and collider.is_in_group("enemy") and collider.has_method("damage"):
+			collider.damage(hit_damage)
+			state = State.RETURNING
+			return
 		_lose_bullet()
 		return
 

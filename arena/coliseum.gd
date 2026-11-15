@@ -25,6 +25,7 @@ enum buildingTypes {
 	HANGAR1
 }
 
+const GROUND_TEXTURE := preload("res://arena/assets/Road type 1/road_1_bridge_ramp_2.png")
 const BUILDING_FLOORS: Array = [3, 2, 6, 6, 3, 3, 3, 3, 0]
 const FLOOR_HEIGHT = 1.608
 const BUILDING_MAX_Y: Array = [
@@ -79,6 +80,7 @@ var BUILDING_NODES: Array
 	set(v):
 		ground_thickness = v
 		_queue_rebuild()
+@export_range(0.5, 20.0, 0.5) var ground_tile_size: float = 4.0
 @export var ground_color: Color = Color(0.45, 0.42, 0.38):
 	set(v):
 		ground_color = v
@@ -160,7 +162,11 @@ func _rebuild() -> void:
 		cylinder.height = ground_thickness
 		cylinder.radial_segments = 96
 		var mat := StandardMaterial3D.new()
-		mat.albedo_color = ground_color
+		mat.albedo_texture = GROUND_TEXTURE
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
+		mat.uv1_triplanar = true
+		mat.uv1_world_triplanar = true
+		mat.uv1_scale = Vector3.ONE / ground_tile_size
 		cylinder.material = mat
 		mesh_instance.mesh = cylinder
 		ground.add_child(mesh_instance)

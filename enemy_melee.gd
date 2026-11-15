@@ -1,11 +1,14 @@
 extends CharacterBody3D
 
-@export var move_speed := 3.0
+const MIST_SHADER := preload("res://sprites/spider_mist.gdshader")
+
+@export var move_speed := 3.8
 @export var stop_distance := 1.0
 @export var attack_damage := 10
-@export var attack_interval := 3.0
-@export var bite_windup := 0.6
-@export var health := 25
+@export var attack_interval := 1.5
+@export var bite_windup := 0.0
+@export var health := 50
+@export var size_scale := 2.0
 @export var reverse_facing := false
 
 var player: Node3D
@@ -14,12 +17,16 @@ var attack_timer: Timer
 var attack_area: Area3D
 var bite_particles: GPUParticles3D
 var bite_point: Marker3D
+var hit_particles: GPUParticles3D
 
 var destroyed := false
 var is_biting := false
+var cooldown := 0.0
 
 
 func _ready() -> void:
+	add_to_group("enemy")
+	scale *= size_scale
 	player = _find_player()
 
 	raycast = find_child("RayCast3D", true, false) as RayCast3D
@@ -33,6 +40,7 @@ func _ready() -> void:
 	attack_area = find_child("AttackArea", true, false) as Area3D
 	bite_particles = find_child("BiteParticles", true, false) as GPUParticles3D
 	bite_point = find_child("BitePoint", true, false) as Marker3D
+	hit_particles = find_child("HitParticles", true, false) as GPUParticles3D
 
 	if raycast != null:
 		raycast.enabled = true
@@ -50,30 +58,27 @@ func _ready() -> void:
 	if bite_particles == null:
 		push_error("Add a GPUParticles3D named BiteParticles for the bite effect.")
 
-	if attack_timer != null:
-		attack_timer.stop()
-		attack_timer.wait_time = attack_interval
-		attack_timer.one_shot = false
-
-		if not attack_timer.timeout.is_connected(_on_timer_timeout):
-			attack_timer.timeout.connect(_on_timer_timeout)
-
-		attack_timer.start(randf_range(0.1, attack_interval))
-	else:
-		push_error("No Timer or AttackTimer was found under the spider.")
-
 
 func _physics_process(delta: float) -> void:
+	if destroyed or not is_inside_tree():
+		return
+
+	cooldown -= delta
+	if cooldown <= 0.0 and not is_biting and _can_bite_player():
+		_bite()
+		if destroyed or not is_inside_tree():
+			return
+
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	elif velocity.y < 0.0:
 		velocity.y = 0.0
 
-	if is_instance_valid(player):
+	if is_instance_valid(player) and player.is_inside_tree():
 		var offset := player.global_position - global_position
 		var horizontal := Vector3(offset.x, 0.0, offset.z)
 
-		if horizontal.length() > 0.01:
+		if horizontal.length() > 0.5:
 			var facing_direction := -horizontal if reverse_facing else horizontal
 			look_at(global_position + facing_direction, Vector3.UP, false)
 
@@ -95,17 +100,16 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func _on_timer_timeout() -> void:
-	if is_biting or not _can_bite_player():
-		return
+func _bite() -> void:
+	cooldown = attack_interval
+	if bite_windup > 0.0:
+		is_biting = true
+		await get_tree().create_timer(bite_windup).timeout
 
-	is_biting = true
-	await get_tree().create_timer(bite_windup).timeout
+		if not is_instance_valid(self) or destroyed:
+			return
 
-	if not is_instance_valid(self) or destroyed:
-		return
-
-	is_biting = false
+		is_biting = false
 
 	# Recheck so the player can dodge during the wind-up.
 	if not _can_bite_player():
@@ -125,7 +129,7 @@ func _on_timer_timeout() -> void:
 
 
 func _can_bite_player() -> bool:
-	if not is_instance_valid(player):
+	if not is_instance_valid(player) or not player.is_inside_tree():
 		return false
 	if attack_area == null or raycast == null:
 		return false
@@ -159,13 +163,49 @@ func _find_player() -> Node3D:
 
 
 func damage(amount: int) -> void:
+	if destroyed:
+		return
+
 	health -= amount
 
-	if health <= 0 and not destroyed:
+	if health <= 0:
 		destroy()
+	elif hit_particles != null:
+		hit_particles.restart()
+		hit_particles.emitting = true
 
 
 func destroy() -> void:
 	Audio.play("sounds/enemy_destroy.ogg")
 	destroyed = true
+	_spawn_mist()
 	queue_free()
+
+
+func _spawn_mist() -> void:
+	if hit_particles == null or not is_inside_tree():
+		return
+
+	var hit_mesh := hit_particles.draw_pass_1 as QuadMesh
+	var mesh := QuadMesh.new()
+	mesh.size = Vector2(0.6, 0.6)
+	mesh.material = hit_mesh.material
+
+	var process_material := ShaderMaterial.new()
+	process_material.shader = MIST_SHADER
+
+	var mist := GPUParticles3D.new()
+	mist.process_material = process_material
+	mist.draw_pass_1 = mesh
+	mist.amount = 80
+	mist.lifetime = 0.8
+	mist.one_shot = true
+	mist.explosiveness = 0.95
+	mist.visibility_aabb = AABB(Vector3(-6, -6, -6), Vector3(12, 12, 12))
+	mist.emitting = true
+
+	var root := get_tree().current_scene
+	root.add_child(mist)
+	mist.global_position = global_position + Vector3.UP * 0.4
+
+	get_tree().create_timer(mist.lifetime + 0.5).timeout.connect(mist.queue_free)

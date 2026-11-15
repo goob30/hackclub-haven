@@ -12,11 +12,12 @@ extends Node3D
 @export var body_bob_height := 0.04
 
 # Adjust these to match how your leg pivots are oriented.
-@export var leg_swing_axis := Vector3(0.0, 0.0, 1.0)
-@export var leg_lift_axis := Vector3(1.0, 0.0, 0.0)
+@export var leg_swing_axis := Vector3(0.0, 1.0, 0.0)
+@export var leg_lift_axis := Vector3(0.0, 0.0, 1.0)
 
 var _base_rotations: Dictionary = {}
 var _body_rest_position := Vector3.ZERO
+var _lift_sign: Dictionary = {}
 var _phase := 0.0
 
 
@@ -24,6 +25,7 @@ func _ready() -> void:
 	for leg in gait_group_a + gait_group_b:
 		if is_instance_valid(leg):
 			_base_rotations[leg] = leg.rotation
+			_lift_sign[leg] = 1.0 if leg.get_parent().position.x > 0.0 else -1.0
 
 	if is_instance_valid(body_visual):
 		_body_rest_position = body_visual.position
@@ -56,4 +58,4 @@ func _animate_group(legs: Array[Node3D], phase_offset: float, movement: float) -
 
 		leg.rotation = _base_rotations[leg] \
 			+ leg_swing_axis.normalized() * swing \
-			+ leg_lift_axis.normalized() * lift
+			+ leg_lift_axis.normalized() * lift * _lift_sign[leg]
