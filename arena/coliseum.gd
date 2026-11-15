@@ -29,7 +29,7 @@ enum buildingTypes {
 
 
 var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
-	"res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn"
+	preload("res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn")
 ]
 
 
