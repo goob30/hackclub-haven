@@ -12,7 +12,9 @@
 [ext_resource type="PackedScene" uid="uid://bvx5cvigosg0s" path="res://objects/platform_large_grass.tscn" id="7_wggef"]
 [ext_resource type="PackedScene" uid="uid://bxckp0ipkms0s" path="res://DroneFly.tscn" id="9_jbj1t"]
 [ext_resource type="PackedScene" uid="uid://cvwj2i2klphrx" path="res://SpiderEnemy.tscn" id="9_jkv2x"]
+[ext_resource type="PackedScene" uid="uid://c0fpsk4wfsc6d" path="res://DemonGround.tscn" id="9_muem4"]
 [ext_resource type="PackedScene" uid="uid://oqfhfp1a80qd" path="res://objects/cloud.tscn" id="10_5ksau"]
+[ext_resource type="Script" uid="uid://b6udw8uhlp4ei" path="res://objects/rootEnemy.gd" id="10_muem4"]
 [ext_resource type="Script" uid="uid://gw7nm87hies2" path="res://scenes/bullet.gd" id="11_ya4ey"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpmwk"]
@@ -87,8 +89,53 @@ gait_group_b = [NodePath("../Total/LeftLegs/LeftLeg2/UpperLeg_2"), NodePath("../
 
 [node name="DroneFly" parent="Enemies" unique_id=1649999197 node_paths=PackedStringArray("player") instance=ExtResource("9_jbj1t")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+visible = false
 player = NodePath("../../Player")
 bullet_scene = ExtResource("5_eb6dy")
+
+[node name="DemonGround" parent="Enemies" unique_id=1405845734 node_paths=PackedStringArray("player", "head_muzzle") instance=ExtResource("9_muem4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2622828, 0, 1.0607558)
+script = ExtResource("10_muem4")
+player = NodePath("../../Player")
+bullet_scene = ExtResource("5_eb6dy")
+head_muzzle = NodePath("Marker3D")
+
+[node name="Skeleton3D" parent="Enemies/DemonGround/MonsterPSX/MonsterPSX_Rig" parent_id_path=PackedInt32Array(1405845734, 724844358) index="0" unique_id=1771962404]
+bones/0/position = Vector3(1.4165664e-09, 8.4983185e-08, 3.40803e-07)
+bones/0/rotation = Quaternion(-7.131e-05, 0.0003145882, 1, -7.2548675e-05)
+bones/1/position = Vector3(0.00016461594, 3.2842945e-05, 0.008942669)
+bones/1/rotation = Quaternion(0.00053153187, 0.76620615, 0.6425944, -0.00057453365)
+bones/2/rotation = Quaternion(0.0019083177, -0.027083738, -0.023890115, 0.9993459)
+bones/3/rotation = Quaternion(-0.01906586, 0.050767902, 0.050295603, 0.997261)
+bones/4/rotation = Quaternion(0.06361413, -0.023356272, -0.025628861, 0.99737203)
+bones/5/rotation = Quaternion(0.3243652, 0.057677872, 0.07428436, 0.9412451)
+bones/6/rotation = Quaternion(-0.21304847, -0.107897304, -0.11639273, 0.96406496)
+bones/8/rotation = Quaternion(-0.28028163, -0.49078712, -0.44671458, 0.69355345)
+bones/9/rotation = Quaternion(-0.57747394, -0.3356002, 0.2448141, 0.7028247)
+bones/10/rotation = Quaternion(-0.54794127, -1.113335e-08, -5.678005e-08, 0.8365169)
+bones/11/rotation = Quaternion(-0.059386473, -0.6603599, 0.1089306, 0.7406296)
+bones/13/rotation = Quaternion(-0.18283948, 0.40058172, 0.33358866, 0.8335603)
+bones/14/rotation = Quaternion(-0.64203113, 0.40447122, 0.24176173, 0.6047729)
+bones/15/rotation = Quaternion(-0.5333193, 5.5048754e-10, -3.7983327e-08, 0.845914)
+bones/16/rotation = Quaternion(-0.044772603, 0.8643857, -0.0010835287, 0.500831)
+bones/18/rotation = Quaternion(-0.18339063, 0.19871078, 0.9565047, -0.10945616)
+bones/19/rotation = Quaternion(-0.28289634, -2.4274664e-08, 6.6027106e-08, 0.95915055)
+bones/20/rotation = Quaternion(0.0679176, 0.886702, 0.40619567, 0.21012336)
+bones/21/rotation = Quaternion(-0.45770776, -0.21669042, 0.12371468, 0.85337186)
+bones/23/rotation = Quaternion(0.14207445, 0.14138603, 0.9794962, 0.020304002)
+bones/24/rotation = Quaternion(-0.2608229, -1.0852914e-09, -1.1094215e-08, 0.9653867)
+bones/25/rotation = Quaternion(-0.103531554, 0.8764298, 0.44087833, -0.16364084)
+bones/26/rotation = Quaternion(-0.40653634, 0.38786268, -0.27183178, 0.78127986)
+bones/28/rotation = Quaternion(0.91848695, -0.25327286, -0.25358158, 0.16712604)
+bones/30/position = Vector3(0.005412278, 0.004159524, -0.0030056278)
+bones/30/rotation = Quaternion(0.00094012043, 0.0012544553, 0.0009864706, 0.9999983)
+bones/32/rotation = Quaternion(0.9428109, 0.21558712, 0.21513523, 0.1354499)
+bones/34/position = Vector3(-0.0064480905, 0.0051129498, 0.0005231879)
+bones/34/rotation = Quaternion(0.0011348913, 0.0005040846, 0.00412871, 0.9999907)
+bones/36/position = Vector3(-0.0018934654, -1.6578357e-05, 0.001395828)
+bones/36/rotation = Quaternion(-0.00028327652, 0.8680494, -0.4964776, 0.00039487888)
+bones/40/position = Vector3(0.0017839485, -0.0012304233, 0.0014290821)
+bones/40/rotation = Quaternion(0.000142147, 0.854993, -0.5126557, -0.078557014)
 
 [node name="Level" type="Node" parent="." unique_id=1748836644]
 
@@ -117,7 +164,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.5, 4)
 transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11.5, 3, -5.5)
 
 [node name="platform-large-grass" parent="Level" unique_id=510059275 instance=ExtResource("7_wggef")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+transform = Transform3D(3.3733313, 0, 0, 0, 1.1633523, 0, 0, 0, 2.4219882, 0, -0.5, 0)
 
 [node name="platform-large-grass2" parent="Level" unique_id=2138675056 instance=ExtResource("7_wggef")]
 transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -2, 0.5, -6)
@@ -180,3 +227,4 @@ shape = SubResource("SphereShape3D_ya4ey")
 [connection signal="justShot" from="Player" to="Bullet1" method="_on_player_just_shot"]
 
 [editable path="Enemies/SpiderMelee"]
+[editable path="Enemies/DemonGround"]
