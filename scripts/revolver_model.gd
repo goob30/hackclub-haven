@@ -17,6 +17,8 @@ func _ready() -> void:
 	_anim = gltf.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	_anim.animation_finished.connect(_on_anim_finished)
 
+signal ammo_changed(ammo: int, capacity: int)
+
 const SHOTS := 6
 
 @export var shoot_speed: float = 2.0
@@ -34,6 +36,7 @@ func play_shoot(_duration: float = 0.0) -> void:
 	var seg := _anim.get_animation("Shoot").length / SHOTS
 	var idx := SHOTS - ammo
 	ammo -= 1
+	ammo_changed.emit(ammo, SHOTS)
 	_seg_end = (idx + 1) * seg
 	_anim.play("Shoot", -1, shoot_speed)
 	_anim.seek(idx * seg, true)
@@ -50,3 +53,4 @@ func _on_anim_finished(anim_name: StringName) -> void:
 	if anim_name == "Reload":
 		ammo = SHOTS
 		reloading = false
+		ammo_changed.emit(ammo, SHOTS)

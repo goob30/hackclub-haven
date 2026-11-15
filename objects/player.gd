@@ -49,6 +49,7 @@ const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 var bullet: Projectile3D
 
 signal health_updated
+signal ammo_changed(ammo: int, capacity: int)
 
 @onready var camera = $Head/Camera
 @onready var raycast = $Head/Camera/RayCast
@@ -287,6 +288,12 @@ func change_weapon():
 	
 	var weapon_model = weapon.model.instantiate()
 	container.add_child(weapon_model)
+	
+	if weapon_model.has_signal("ammo_changed"):
+		weapon_model.ammo_changed.connect(ammo_changed.emit)
+		ammo_changed.emit(weapon_model.ammo, weapon_model.SHOTS)
+	else:
+		ammo_changed.emit(-1, 0)
 	
 	weapon_model.position = weapon.position
 	weapon_model.rotation_degrees = weapon.rotation
