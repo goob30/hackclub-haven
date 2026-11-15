@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw0rbxt58w5a0"
+uid="uid://op7gy0srowyn"
 path.s3tc="res://.godot/imported/plackard_open_plackard_wall.png-c2fc7799a219b23166b7a28c140fd745.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "763e9ad7de0ffed2cdfe920d515dfe76"
 }
 
 [deps]
