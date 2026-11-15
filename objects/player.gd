@@ -391,6 +391,7 @@ func change_weapon():
 	
 	for n in container.get_children():
 		container.remove_child(n)
+		n.queue_free()
 	
 	# Step 2. Place new weapon model in container
 	

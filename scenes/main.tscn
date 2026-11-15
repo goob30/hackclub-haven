@@ -29,6 +29,7 @@
 [ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
 [ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
 [ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
+[ext_resource type="Script" path="res://scripts/web_sun.gd" id="web_sun"]
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
@@ -70,6 +71,7 @@ shadow_opacity = 0.9
 directional_shadow_mode = 0
 directional_shadow_split_1 = 0.2
 directional_shadow_max_distance = 60.0
+script = ExtResource("web_sun")
 
 [node name="LightSteps" type="CanvasLayer" parent="." unique_id=1229088307]
 layer = -1

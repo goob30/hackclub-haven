@@ -185,11 +185,6 @@ text = "EXIT TO MENU"
 [node name="settingscontrol" parent="." unique_id=2094486747 instance=ExtResource("4_5834a")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/settingsbutton" to="." method="_on_settingsbutton_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/settingsbutton" to="CenterContainer/VBoxContainer/label control/pauselabel" method="_on_settingsbutton_pressed"]

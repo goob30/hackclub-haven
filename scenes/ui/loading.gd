@@ -199,9 +199,7 @@ func _warm_up() -> void:
 	var blood = load("res://scripts/blood.gd")
 	var home = load("res://scenes/ui/homescreen.gd")
 	var shot_script = load("res://scenes/bullet.gd")
-	var ball_script = load("res://scenes/enemy_bullet.gd")
 	shot_script.warm_up()
-	ball_script.warm_up()
 
 	var stage := Node3D.new()
 	stage.name = "WarmUp"

@@ -23,6 +23,9 @@ var _anim: AnimationPlayer
 var _muzzle: Marker3D
 var _raycast: RayCast3D
 var _muzzle_particles: GPUParticles3D
+var _grounded := false
+
+static var _material_cache := {}
 
 
 func _ready() -> void:
@@ -40,23 +43,35 @@ func _ready() -> void:
 			for i in mi.mesh.get_surface_count():
 				var mat := mi.mesh.surface_get_material(i) as StandardMaterial3D
 				if mat:
-					mat = mat.duplicate()
-					mat.albedo_color = tint
-					mi.set_surface_override_material(i, mat)
+					mi.set_surface_override_material(i, _tinted(mat, tint))
 	if _anim and _anim.has_animation(IDLE_ANIM):
 		_anim.get_animation(IDLE_ANIM).loop_mode = Animation.LOOP_LINEAR
 		_anim.play(IDLE_ANIM)
 	_cooldown = randf_range(0.1, fire_interval + fire_jitter)
 
 
+# Shared across instances, keyed by source material and tint
+static func _tinted(src: StandardMaterial3D, color: Color) -> StandardMaterial3D:
+	var key := "%d:%s" % [src.get_instance_id(), color.to_html()]
+	var mat: StandardMaterial3D = _material_cache.get(key)
+	if mat == null:
+		mat = src.duplicate()
+		mat.albedo_color = color
+		_material_cache[key] = mat
+	return mat
+
+
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		velocity.y += get_gravity().y * delta
-	else:
-		velocity.y = 0.0
-	velocity.x = 0.0
-	velocity.z = 0.0
-	move_and_slide()
+	# Demons never walk, so stop sliding once landed
+	if not _grounded:
+		if not is_on_floor():
+			velocity.y += get_gravity().y * delta
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		_grounded = is_on_floor()
+		if _grounded:
+			velocity = Vector3.ZERO
 
 	if not is_instance_valid(player):
 		return

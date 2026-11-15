@@ -1252,11 +1252,13 @@ transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.965
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.072924376, 0.07488125, 0)
 
 [node name="LowerLeg_1" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg3/LowerLeg" unique_id=630107544]
+cast_shadow = 0
 transform = Transform3D(0.7431448, 0.6691306, 0, -0.6691306, 0.7431448, 0, 0, 0, 1, -0.086315624, -0.08125, 0.00097875)
 mesh = SubResource("ArrayMesh_tjnas")
 skeleton = NodePath("")
 
 [node name="UpperLeg" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg3" unique_id=683377858]
+cast_shadow = 0
 transform = Transform3D(0.7071067, -0.7071068, 0, 0.7071068, 0.7071067, 0, 0, 0, 1, -0.017565625, 0.0125, 0.00097875)
 mesh = SubResource("ArrayMesh_ceqoa")
 skeleton = NodePath("")
@@ -1274,11 +1276,13 @@ transform = Transform3D(0.8480481, 0, 0.52991927, 0, 1, 0, -0.52991927, 0, 0.848
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11667438, 0.13113125, 0)
 
 [node name="LowerLeg_2" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg4/LowerLeg4" unique_id=1485418520]
+cast_shadow = 0
 transform = Transform3D(0.7431448, 0.6691306, 0, -0.6691306, 0.7431448, 0, 0, 0, 1, -0.086315624, -0.0875, 0.00097875)
 mesh = SubResource("ArrayMesh_r7tqv")
 skeleton = NodePath("")
 
 [node name="UpperLeg_1" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg4" unique_id=260282789]
+cast_shadow = 0
 transform = Transform3D(0.7071067, -0.7071068, 0, 0.7071068, 0.7071067, 0, 0, 0, 1, -0.017565625, 0.0125, 0.00097875)
 mesh = SubResource("ArrayMesh_nhjie")
 skeleton = NodePath("")
@@ -1296,11 +1300,13 @@ transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.965
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.079124376, 0.06914375, 0.010046875)
 
 [node name="LowerLeg_3" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg2/LowerLeg6" unique_id=1238128296]
+cast_shadow = 0
 transform = Transform3D(0.7431448, 0.6691306, 0, -0.6691306, 0.7431448, 0, 0, 0, 1, -0.0875, -0.08125, 0)
 mesh = SubResource("ArrayMesh_b48ai")
 skeleton = NodePath("")
 
 [node name="UpperLeg_2" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg2" unique_id=392280713]
+cast_shadow = 0
 transform = Transform3D(0.7071067, -0.7071068, 0, 0.7071068, 0.7071067, 0, 0, 0, 1, -0.00675625, -0.013405, 0.010046875)
 mesh = SubResource("ArrayMesh_cwv6q")
 skeleton = NodePath("")
@@ -1318,11 +1324,13 @@ transform = Transform3D(0.8480481, 0, -0.52991927, 0, 1, 0, 0.52991927, 0, 0.848
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12392812, 0.13217938, -0.01842375)
 
 [node name="LowerLeg_4" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg1/LowerLeg7" unique_id=606530911]
+cast_shadow = 0
 transform = Transform3D(0.7431448, 0.6691306, 0, -0.6691306, 0.7431448, 0, 0, 0, 1, -0.0944975, -0.0875, -0.00245125)
 mesh = SubResource("ArrayMesh_0es5h")
 skeleton = NodePath("")
 
 [node name="UpperLeg_3" type="MeshInstance3D" parent="Total/LeftLegs/LeftLeg1" unique_id=1586625018]
+cast_shadow = 0
 transform = Transform3D(0.7071067, -0.7071068, 0, 0.7071068, 0.7071067, 0, 0, 0, 1, -0.026449375, 0.024031876, -0.020875)
 mesh = SubResource("ArrayMesh_vavax")
 skeleton = NodePath("")
@@ -1343,11 +1351,13 @@ transform = Transform3D(0.8480481, 0, 0.52991927, 0, 1, 0, -0.52991927, 0, 0.848
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12392812, 0.13217938, -0.01842375)
 
 [node name="LowerLeg_5" type="MeshInstance3D" parent="Total/RightLegs/RightLeg1/LowerLeg3" unique_id=1697162530]
+cast_shadow = 0
 transform = Transform3D(0.7431448, -0.6691306, 0, 0.6691306, 0.7431448, 0, 0, 0, 1, 0.0944975, -0.0875, -0.00245125)
 mesh = SubResource("ArrayMesh_dbp2j")
 skeleton = NodePath("")
 
 [node name="UpperLeg_4" type="MeshInstance3D" parent="Total/RightLegs/RightLeg1" unique_id=967589674]
+cast_shadow = 0
 transform = Transform3D(0.7071067, 0.7071068, 0, -0.7071068, 0.7071067, 0, 0, 0, 1, 0.026449375, 0.024031876, -0.020875)
 mesh = SubResource("ArrayMesh_qyjuk")
 skeleton = NodePath("")
@@ -1365,11 +1375,13 @@ transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.965
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.079124376, 0.06914375, 0.010046875)
 
 [node name="LowerLeg_6" type="MeshInstance3D" parent="Total/RightLegs/RightLeg2/LowerLeg5" unique_id=84474904]
+cast_shadow = 0
 transform = Transform3D(0.7431448, -0.6691306, 0, 0.6691306, 0.7431448, 0, 0, 0, 1, 0.0875, -0.08125, 0)
 mesh = SubResource("ArrayMesh_asmvu")
 skeleton = NodePath("")
 
 [node name="UpperLeg_5" type="MeshInstance3D" parent="Total/RightLegs/RightLeg2" unique_id=973517529]
+cast_shadow = 0
 transform = Transform3D(0.7071067, 0.7071068, 0, -0.7071068, 0.7071067, 0, 0, 0, 1, 0.00675625, -0.013405, 0.010046875)
 mesh = SubResource("ArrayMesh_g0kru")
 skeleton = NodePath("")
@@ -1387,11 +1399,13 @@ transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.965
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.072924376, 0.07488125, 0)
 
 [node name="LowerLeg_7" type="MeshInstance3D" parent="Total/RightLegs/RightLeg4/LowerLeg8" unique_id=2006314444]
+cast_shadow = 0
 transform = Transform3D(0.7431448, -0.6691306, 0, 0.6691306, 0.7431448, 0, 0, 0, 1, 0.086315624, -0.08125, 0.00097875)
 mesh = SubResource("ArrayMesh_wyxhr")
 skeleton = NodePath("")
 
 [node name="UpperLeg_6" type="MeshInstance3D" parent="Total/RightLegs/RightLeg4" unique_id=1652427351]
+cast_shadow = 0
 transform = Transform3D(0.7071067, 0.7071068, 0, -0.7071068, 0.7071067, 0, 0, 0, 1, 0.017565625, 0.0125, 0.00097875)
 mesh = SubResource("ArrayMesh_all0f")
 skeleton = NodePath("")
@@ -1409,11 +1423,13 @@ transform = Transform3D(0.8480481, 0, -0.52991927, 0, 1, 0, 0.52991927, 0, 0.848
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11667438, 0.13113125, 0)
 
 [node name="LowerLeg_8" type="MeshInstance3D" parent="Total/RightLegs/RightLeg5/LowerLeg9" unique_id=624373012]
+cast_shadow = 0
 transform = Transform3D(0.7431448, -0.6691306, 0, 0.6691306, 0.7431448, 0, 0, 0, 1, 0.086315624, -0.0875, 0.00097875)
 mesh = SubResource("ArrayMesh_un7tq")
 skeleton = NodePath("")
 
 [node name="UpperLeg_7" type="MeshInstance3D" parent="Total/RightLegs/RightLeg5" unique_id=1403334122]
+cast_shadow = 0
 transform = Transform3D(0.7071067, 0.7071068, 0, -0.7071068, 0.7071067, 0, 0, 0, 1, 0.017565625, 0.0125, 0.00097875)
 mesh = SubResource("ArrayMesh_ys2vt")
 skeleton = NodePath("")

@@ -24,6 +24,7 @@ const OPEN_HZ := 20500.0
 const MUFFLED_HZ := 1300.0
 const FADE_TIME := 0.3
 const MUFFLE_BUSES := ["music", "Master"]
+const MAX_QUEUED_SOUNDS := 24
 
 var _slowmo := false
 var _paused := false
@@ -53,6 +54,8 @@ func _on_stream_finished(stream):
 
 func play(sound_path): # Path (or multiple, separated by commas)
 	var sounds = sound_path.split(",")
+	if queue.size() >= MAX_QUEUED_SOUNDS:
+		queue.pop_front()
 	queue.append("res://" + sounds[randi() % sounds.size()].strip_edges())
 
 func _process(_delta):

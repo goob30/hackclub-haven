@@ -163,6 +163,9 @@ func _update_climb(delta: float, direction: Vector3, chasing: bool, player_above
 
 
 func _find_climb_wall() -> Vector3:
+	# Climbable normals are always walls, skips allocating collision objects
+	if not is_on_wall():
+		return Vector3.ZERO
 	for i in get_slide_collision_count():
 		var collision := get_slide_collision(i)
 		var normal := collision.get_normal()
@@ -185,7 +188,12 @@ func _update_tilt(delta: float) -> void:
 	if reverse_facing:
 		target = -target
 		pivot.z = -pivot.z
-	_tilt = lerpf(_tilt, target, 1.0 - exp(-climb_tilt_speed * delta))
+	if absf(_tilt - target) < 0.0005:
+		if _tilt == target:
+			return
+		_tilt = target
+	else:
+		_tilt = lerpf(_tilt, target, 1.0 - exp(-climb_tilt_speed * delta))
 	var tilt_basis := Basis(Vector3.RIGHT, _tilt)
 	_tilt_pivot.transform = Transform3D(tilt_basis, pivot - tilt_basis * pivot)
 

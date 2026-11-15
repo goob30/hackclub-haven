@@ -19,9 +19,15 @@ var _base_rotations: Dictionary = {}
 var _body_rest_position := Vector3.ZERO
 var _lift_sign: Dictionary = {}
 var _phase := 0.0
+var _at_rest := false
+var _notifier: VisibleOnScreenNotifier3D
 
 
 func _ready() -> void:
+	_notifier = VisibleOnScreenNotifier3D.new()
+	_notifier.aabb = AABB(Vector3(-0.5, -0.3, -0.5), Vector3(1.0, 1.0, 1.0))
+	add_child(_notifier)
+
 	for leg in gait_group_a + gait_group_b:
 		if is_instance_valid(leg):
 			_base_rotations[leg] = leg.rotation
@@ -41,6 +47,14 @@ func _process(delta: float) -> void:
 	var movement := clampf(speed / maxf(walk_speed, 0.01), 0.0, 1.0)
 
 	_phase += delta * walk_frequency * movement
+
+	# Skip pose work when idle (already at rest) or off-screen
+	if movement == 0.0 and _at_rest:
+		return
+	if not _notifier.is_on_screen():
+		_at_rest = false
+		return
+	_at_rest = movement == 0.0
 
 	_animate_group(gait_group_a, 0.0, movement)
 	_animate_group(gait_group_b, PI, movement)
