@@ -24,7 +24,7 @@ var mouse_sensitivity = 700
 var gamepad_sensitivity := 0.075
 
 @export_subgroup("Auto Aim")
-@export_range(0.0, 30.0) var auto_aim_angle: float = 6.0
+@export_range(0.0, 30.0) var auto_aim_angle: float = 15.0
 @export var auto_aim_range: float = 100.0
 
 @export_subgroup("Parry")
@@ -289,12 +289,15 @@ func action_shoot():
 
 # Returns the nearest enemy centre inside the auto aim cone, else straight ahead
 
-func get_auto_aim_point() -> Vector3:
+func get_auto_aim_point(default_point: Variant = null) -> Vector3:
 	var from: Vector3 = camera.global_position
 	var forward: Vector3 = -camera.global_transform.basis.z
-	var best_point: Vector3 = from + forward * 100.0
+	var best_point: Vector3 = default_point if default_point != null else from + forward * 100.0
 	var best_angle: float = deg_to_rad(auto_aim_angle)
 	var space := get_world_3d().direct_space_state
+	var ignore: Array[RID] = [get_rid()]
+	if is_instance_valid(bullet):
+		ignore.append(bullet.get_rid())
 
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		if enemy.get("destroyed"):
@@ -307,8 +310,9 @@ func get_auto_aim_point() -> Vector3:
 		if angle >= best_angle:
 			continue
 		var query := PhysicsRayQueryParameters3D.create(from, target)
-		query.exclude = [get_rid()]
-		if not space.intersect_ray(query).is_empty():
+		query.exclude = ignore
+		var hit := space.intersect_ray(query)
+		if not hit.is_empty() and not (hit.collider is Node and enemy.is_ancestor_of(hit.collider)) and hit.collider != enemy:
 			continue
 		best_angle = angle
 		best_point = target
@@ -398,7 +402,7 @@ func action_parry():
 	get_tree().create_timer(parry_cooldown, true, false, true).timeout.connect(_on_parry_cooldown_done)
 
 	var forward: Vector3 = -camera.global_transform.basis.z
-	var parried: bool = bullet.try_parry(get_crosshair_point(), forward)
+	var parried: bool = bullet.try_parry(get_auto_aim_point(get_crosshair_point()), forward)
 	if parried:
 		Audio.play(weapon.sound_shoot)
 		dash_cooldown_left = 0.0
