@@ -10,10 +10,8 @@ const MODEL_HEIGHT := 2.5
 const MODEL_THICKNESS := 0.2
 const MODEL_CENTER_X := -1.5
 
-const BUILDING_DEADZONE_X: Array = [0, 25, 0, 0, 0, 0, 0, 0, 0]
-const BUILDING_DEADZONE_Y: Array = [0, 32, 0, 0, 0, 0, 0, 0, 0]
-const BUILDING_MAX_Y: Array = []
-
+# const BUILDING_DEADZONE_X: Array = [0, 25, 0, 0, 0, 0, 0, 0, 0]
+# const BUILDING_DEADZONE_Y: Array = [0, 32, 0, 0, 0, 0, 0, 0, 0]
 
 enum buildingTypes {
 	FLAT_LSHAPE,
@@ -27,11 +25,21 @@ enum buildingTypes {
 	HANGAR1
 }
 
-
-var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
-	"res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn"
+const BUILDING_FLOORS: Array = [3, 2, 6, 6, 3, 3, 3, 3, 0]
+const FLOOR_HEIGHT = 1.608
+const BUILDING_MAX_Y: Array = [
+	FLOOR_HEIGHT * BUILDING_FLOORS[0],
+	FLOOR_HEIGHT * BUILDING_FLOORS[1],
+	FLOOR_HEIGHT * BUILDING_FLOORS[2],
+	FLOOR_HEIGHT * BUILDING_FLOORS[3],
+	FLOOR_HEIGHT * BUILDING_FLOORS[4],
+	FLOOR_HEIGHT * BUILDING_FLOORS[5],
+	FLOOR_HEIGHT * BUILDING_FLOORS[6],
+	FLOOR_HEIGHT * BUILDING_FLOORS[7],
+	FLOOR_HEIGHT * BUILDING_FLOORS[8]
 ]
 
+var BUILDING_NODES: Array
 
 @export_group("Walls")
 @export_range(0.5, 20.0, 0.1) var wall_scale: float = 6.0:
@@ -79,8 +87,12 @@ var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
 var _dirty := false
 
 func randomize_building_heights() -> void:
-	pass
-
+	for i in range(BUILDING_NODES.size()):
+		randomize()
+		var random_offset = randi_range(0, BUILDING_FLOORS[i]) * -FLOOR_HEIGHT
+		var node = BUILDING_NODES[i]
+		node.global_position = Vector3(node.global_position.x, random_offset, node.global_position.z)
+	
 
 func is_inside_bounds(world_pos: Vector3) -> bool:
 	var p := to_local(world_pos)
@@ -161,3 +173,18 @@ func _rebuild() -> void:
 		ground.add_child(col)
 
 		ground.position.y = - ground_thickness * 0.5
+
+func _ready() -> void:
+	BUILDING_NODES = [
+	get_node("../flat_Lshape"),
+	get_node("../flat_Lshape_brick"),
+	get_node("../flat_Lshape_large_alt"),
+	get_node("../flat_Lshape_vertical_stripes"),
+	get_node("../flat_square_brick"),
+	get_node("../flat_square_brick_alt"),
+	get_node("../flat_square_concrete"),
+	get_node("../flat_square_concrete_alt"),
+	get_node("../Hangar1"),
+]
+	_rebuild()
+	randomize_building_heights()

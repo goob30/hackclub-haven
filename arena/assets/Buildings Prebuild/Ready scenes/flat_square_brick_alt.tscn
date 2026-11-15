@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://xtrayq50sa4w"]
+
+[ext_resource type="PackedScene" uid="uid://duri1i2hxa4va" path="res://arena/assets/Buildings Prebuild/flat_square_brick_alt.glb" id="1_0omsd"]
+
+[node name="flat_square_brick_alt" unique_id=348279577 instance=ExtResource("1_0omsd")]
+
+[node name="flat_square_brick_alt" parent="." index="0" unique_id=690423402]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

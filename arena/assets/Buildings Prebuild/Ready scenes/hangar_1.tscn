@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://nswyk50q4kur"]
+
+[ext_resource type="PackedScene" uid="uid://dhrnw7t33hmfi" path="res://arena/assets/Buildings Prebuild/Hangar1.glb" id="1_4py3y"]
+
+[node name="Hangar1" unique_id=2086808804 instance=ExtResource("1_4py3y")]
+
+[node name="Hangar1" parent="." index="0" unique_id=1124507724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

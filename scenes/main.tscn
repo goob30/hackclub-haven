@@ -7,10 +7,15 @@
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
-[ext_resource type="Script" uid="uid://cqx6ijrryh85q" path="res://scripts/enemy_spawner.gd" id="13_spawner"]
 [ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
 [ext_resource type="PackedScene" uid="uid://b73y0nhbt21j7" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_large_alt.tscn" id="9_85g3d"]
 [ext_resource type="PackedScene" uid="uid://bpwde75ssif0y" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_vertical_stripes.tscn" id="10_choun"]
+[ext_resource type="PackedScene" uid="uid://b1hurdbhymgqw" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick.tscn" id="12_eb6dy"]
+[ext_resource type="Script" uid="uid://cqx6ijrryh85q" path="res://scripts/enemy_spawner.gd" id="13_spawner"]
+[ext_resource type="PackedScene" uid="uid://xtrayq50sa4w" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick_alt.tscn" id="13_trceg"]
+[ext_resource type="PackedScene" uid="uid://byxxvtbjvwi6b" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete.tscn" id="14_a8y0u"]
+[ext_resource type="PackedScene" uid="uid://cv0tpb5q88r63" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete_alt.tscn" id="15_jbj1t"]
+[ext_resource type="PackedScene" uid="uid://nswyk50q4kur" path="res://arena/assets/Buildings Prebuild/Ready scenes/hangar_1.tscn" id="16_muem4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpmwk"]
 font = ExtResource("3_w27de")
@@ -81,17 +86,33 @@ transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 
 player = NodePath("../../Player")
 
 [node name="Coliseum" parent="." unique_id=791044948 groups=["arena"] instance=ExtResource("6_tefeu")]
+segment_count = 9
 
-[node name="flat_Lshape_brick" parent="." unique_id=598248252 instance=ExtResource("7_o6xl0")]
-transform = Transform3D(0.48028356, 0, 0.15605359, 0, 0.505, 0, -0.15605359, 0, 0.48028356, 16.518185, 0, -7.687607)
+[node name="flat_Lshape" parent="." unique_id=1799452888 groups=["buildings"] instance=ExtResource("8_tipki")]
+transform = Transform3D(-0.257115, 0, -0.306418, 0, 0.4, 0, 0.306418, 0, -0.257115, -8.835396, 0, 11.6413765)
 
-[node name="flat_Lshape" parent="." unique_id=1799452888 instance=ExtResource("8_tipki")]
-transform = Transform3D(-0.47552827, 0, -0.15450849, 0, 0.5, 0, 0.15450849, 0, -0.47552827, -15.908256, 0, 8.533939)
+[node name="flat_Lshape_brick" parent="." unique_id=598248252 groups=["buildings"] instance=ExtResource("7_o6xl0")]
+transform = Transform3D(0.34641, 0, 0.2, 0, 0.4, 0, -0.2, 0, 0.34641, 13.976546, 0, -10.617909)
 
-[node name="flat_Lshape_large_alt" parent="." unique_id=1541876156 instance=ExtResource("9_85g3d")]
-transform = Transform3D(5.9624403e-09, 0, -0.5, 0, 0.5, 0, 0.5, 0, 5.9624403e-09, 1.9443407, 0, 18.416773)
+[node name="flat_Lshape_large_alt" parent="." unique_id=1541876156 groups=["buildings"] instance=ExtResource("9_85g3d")]
+transform = Transform3D(0, 0, -0.4, 0, 0.4, 0, 0.4, 0, 0, 2.460206, 0, 15.2468)
 
-[node name="flat_Lshape_vertical_stripes" parent="." unique_id=1771935474 instance=ExtResource("10_choun")]
-transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -2.3014827, -1.9073486e-06, -18.374752)
+[node name="flat_Lshape_vertical_stripes" parent="." unique_id=1771935474 groups=["buildings"] instance=ExtResource("10_choun")]
+transform = Transform3D(-0.13680805, 0, 0.37587705, 0, 0.4, 0, -0.37587705, 0, -0.13680805, -7.843035, 0, -14.819036)
+
+[node name="flat_square_brick" parent="." unique_id=1264512400 groups=["buildings"] instance=ExtResource("12_eb6dy")]
+transform = Transform3D(0.136808, 0, 0.375877, 0, 0.4, 0, -0.375877, 0, 0.136808, 3.8544917, 0, -18.361534)
+
+[node name="flat_square_brick_alt" parent="." unique_id=348279577 groups=["buildings"] instance=ExtResource("13_trceg")]
+transform = Transform3D(0.34641, 0, -0.2, 0, 0.4, 0, 0.2, 0, 0.34641, -19.74269, 0, -16.48143)
+
+[node name="flat_square_concrete" parent="." unique_id=383748064 groups=["buildings"] instance=ExtResource("14_a8y0u")]
+transform = Transform3D(0.393923, 0, -0.069459, 0, 0.4, 0, 0.069459, 0, 0.393923, 18.455925, 0, -1.0112398)
+
+[node name="flat_square_concrete_alt" parent="." unique_id=610846673 instance=ExtResource("15_jbj1t")]
+transform = Transform3D(0.32139376, 0, -0.38302216, 0, 0.5, 0, 0.38302216, 0, 0.32139376, 13.813873, 1.9073486e-06, 10.666403)
+
+[node name="Hangar1" parent="." unique_id=2086808804 instance=ExtResource("16_muem4")]
+transform = Transform3D(0.49135754, 0.0012568533, 0.0925535, -0.0002722125, 0.49997136, -0.0053442726, -0.092561625, 0.005201507, 0.49133006, -22.63896, 0, 5.39346)
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
