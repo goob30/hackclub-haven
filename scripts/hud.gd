@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 var combo_label: Label
+var _combo_tween: Tween
 
 const CYL_SIZE := 160.0
 const BULLET_SIZE := 38.0
@@ -50,7 +51,11 @@ func _ready():
 	combo_label = Label.new()
 	combo_label.name = "Combo"
 	combo_label.label_settings = health_label.label_settings
-	combo_label.position = health_label.position + Vector2(0, -50)
+	var combo_mat := (health_label.material as ShaderMaterial).duplicate() as ShaderMaterial
+	combo_mat.set_shader_parameter("top_color", Color(1.0, 0.85, 0.2))
+	combo_mat.set_shader_parameter("bottom_color", Color(0.9, 0.1, 0.0))
+	combo_label.material = combo_mat
+	combo_label.position = health_label.position + Vector2(0, -105)
 	combo_label.visible = false
 	add_child(combo_label)
 
@@ -76,8 +81,17 @@ func _on_health_updated(health):
 	$Health.text = str(health) + "%"
 
 func _on_combo_changed(combo: int):
-	combo_label.text = "x" + str(combo) + " COMBO"
-	combo_label.visible = combo > 0
+	if _combo_tween:
+		_combo_tween.kill()
+	combo_label.modulate.a = 1.0
+	if combo > 0:
+		combo_label.text = "x" + str(combo) + " COMBO"
+		combo_label.visible = true
+		return
+	_combo_tween = create_tween().set_ignore_time_scale(true)
+	_combo_tween.tween_interval(1.5)
+	_combo_tween.tween_property(combo_label, "modulate:a", 0.0, 0.5)
+	_combo_tween.tween_callback(combo_label.hide)
 
 func _build_ammo() -> void:
 	_ammo_root = Control.new()
