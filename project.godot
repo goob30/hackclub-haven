@@ -31,6 +31,7 @@ buses/default_bus_layout="uid://clp36uhbjpsa0"
 Audio="*res://scripts/audio.gd"
 AssetCache="*res://scripts/asset_cache.gd"
 DebugStats="*res://scripts/debug_stats.gd"
+Fullscreen="*res://scripts/fullscreen.gd"
 
 [display]
 
