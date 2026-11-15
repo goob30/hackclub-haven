@@ -13,7 +13,8 @@ const DEMON_HEALTH := 2
 
 enum Kind { DRONE, SPIDER, DEMON }
 
-const BASE_BUDGET := 5
+const BASE_BUDGET := 7
+const MAX_ROUNDS := 3
 const DRONE_SCALE := 0.4
 const ROUND_DELAY := 1.0
 const BANNER_TIME := 2.0
@@ -36,6 +37,7 @@ static var _dust_ramp: GradientTexture1D
 
 var round_number := 0
 var _waiting := false
+var _done := false
 var _label: Label
 var _banner: Label
 
@@ -49,7 +51,7 @@ func _ready() -> void:
 
 
 func in_transition() -> bool:
-	return _waiting
+	return _waiting or _done
 
 
 func _process(_delta: float) -> void:
@@ -58,7 +60,27 @@ func _process(_delta: float) -> void:
 	if get_tree().get_node_count_in_group("enemy") == 0:
 		_waiting = true
 		await get_tree().create_timer(ROUND_DELAY, false).timeout
-		_start_round()
+		if round_number >= MAX_ROUNDS:
+			_end_demo()
+		else:
+			_start_round()
+
+
+# Last round cleared: freeze the game behind the end screen
+func _end_demo() -> void:
+	if _done:
+		return
+	_done = true
+	set_process(false)
+	var player = get_tree().get_first_node_in_group("player")
+	if player == null or player.dead:
+		return
+	Engine.time_scale = 1.0
+	if player.slowmo_active:
+		player.set_slowmo(false)
+	var menu := get_tree().current_scene.get_node_or_null("PauseLayer/pausemenu")
+	if menu and menu.has_method("show_game_over"):
+		menu.show_game_over("DEMO COMPLETE")
 
 
 func _start_round() -> void:
