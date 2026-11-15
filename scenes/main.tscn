@@ -3,6 +3,7 @@
 [ext_resource type="Environment" uid="uid://jvmpkdwaeaq" path="res://scenes/main-environment.tres" id="1_q8fpv"]
 [ext_resource type="PackedScene" uid="uid://dl2ed4gkybggf" path="res://objects/player.tscn" id="2_elriq"]
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
+<<<<<<< Updated upstream
 [ext_resource type="FontFile" uid="uid://biqtga8moh7ah" path="res://fonts/lilita_one_regular.ttf" id="3_w27de"]
 [ext_resource type="PackedScene" uid="uid://dpm3l05d7fu35" path="res://objects/platform.tscn" id="5_3s40e"]
 [ext_resource type="PackedScene" uid="uid://r7rt7pth4u7o" path="res://objects/wall_low.tscn" id="5_6vel1"]
@@ -16,6 +17,46 @@
 [ext_resource type="PackedScene" uid="uid://oqfhfp1a80qd" path="res://objects/cloud.tscn" id="10_5ksau"]
 [ext_resource type="Script" uid="uid://b6udw8uhlp4ei" path="res://objects/rootEnemy.gd" id="10_muem4"]
 [ext_resource type="Script" uid="uid://gw7nm87hies2" path="res://scenes/bullet.gd" id="11_ya4ey"]
+=======
+[ext_resource type="FontFile" uid="uid://b2tyb5oleohda" path="res://fonts/shadow_of_xizor.ttf" id="3_w27de"]
+[ext_resource type="Shader" uid="uid://dcivx1w1peqi1" path="res://fonts/text_gradient.gdshader" id="4_grad"]
+[ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
+[ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
+[ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
+[ext_resource type="PackedScene" uid="uid://b73y0nhbt21j7" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_large_alt.tscn" id="9_85g3d"]
+[ext_resource type="Script" uid="uid://8romm2il42jy" path="res://scripts/round_manager.gd" id="9_rounds"]
+[ext_resource type="PackedScene" uid="uid://bpwde75ssif0y" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_vertical_stripes.tscn" id="10_choun"]
+[ext_resource type="PackedScene" uid="uid://b1hurdbhymgqw" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick.tscn" id="12_eb6dy"]
+[ext_resource type="PackedScene" uid="uid://xtrayq50sa4w" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick_alt.tscn" id="13_trceg"]
+[ext_resource type="PackedScene" uid="uid://byxxvtbjvwi6b" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete.tscn" id="14_a8y0u"]
+[ext_resource type="PackedScene" uid="uid://cv0tpb5q88r63" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_concrete_alt.tscn" id="15_jbj1t"]
+[ext_resource type="PackedScene" uid="uid://nswyk50q4kur" path="res://arena/assets/Buildings Prebuild/Ready scenes/hangar_1.tscn" id="16_muem4"]
+[ext_resource type="PackedScene" uid="uid://cgr81sg436y6r" path="res://scenes/ui/pause.tscn" id="17_muem4"]
+[ext_resource type="Script" uid="uid://cdxsxfg407jex" path="res://scenes/ui/pause.gd" id="18_dp3eg"]
+[ext_resource type="PackedScene" uid="uid://b4xslsjw0lehw" path="res://arena/assets/Road type 1/road_1_Tjunction.fbx" id="19_0ld40"]
+[ext_resource type="PackedScene" uid="uid://cvua5c1tqqlui" path="res://arena/assets/Road type 1/road_1_straight.glb" id="19_gqmmt"]
+[ext_resource type="PackedScene" uid="uid://bu4wp5vmqvxa6" path="res://arena/assets/Cones/Traffic_cone_round_rubber.fbx" id="20_gqmmt"]
+[ext_resource type="PackedScene" uid="uid://bm6un6dk7cgh1" path="res://arena/assets/Traffic lights/traffic_light_L.glb" id="21_yc10j"]
+[ext_resource type="AudioStream" uid="uid://dgujl000wk7g5" path="res://sounds/ascension to entropy.ogg" id="23_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://b3kj3f2fid8sd" path="res://arena/assets/Traffic lights/street_light_clean.fbx" id="24_y6deb"]
+[ext_resource type="Script" uid="uid://xi4r57ncbv3e" path="res://scripts/auto_collision.gd" id="25_autocol"]
+[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.wav" id="25_og1vs"]
+[ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
+[ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
+[ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
+
+[sub_resource type="ShaderMaterial" id="LightSteps_mat"]
+shader = ExtResource("ls_shader")
+shader_parameter/light_levels = 12
+shader_parameter/color_levels = 32
+shader_parameter/floor_light = 0.02
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grad"]
+shader = ExtResource("4_grad")
+shader_parameter/top_color = Color(1, 0.2, 0.15, 1)
+shader_parameter/bottom_color = Color(0.55, 0, 0.02, 1)
+shader_parameter/text_height = 85.0
+>>>>>>> Stashed changes
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpmwk"]
 font = ExtResource("3_w27de")
@@ -93,6 +134,7 @@ visible = false
 player = NodePath("../../Player")
 bullet_scene = ExtResource("5_eb6dy")
 
+<<<<<<< Updated upstream
 [node name="DemonGround" parent="Enemies" unique_id=1405845734 node_paths=PackedStringArray("player", "head_muzzle") instance=ExtResource("9_muem4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2622828, 0, 1.0607558)
 script = ExtResource("10_muem4")
@@ -222,6 +264,18 @@ mesh = SubResource("SphereMesh_choun")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bullet1" unique_id=1438499292]
 shape = SubResource("SphereShape3D_ya4ey")
+=======
+[node name="mainmusic" type="AudioStreamPlayer" parent="." unique_id=378507183]
+process_mode = 3
+stream = ExtResource("23_pm3ni")
+volume_db = -7.087
+autoplay = true
+
+[node name="dangermusicadd" type="AudioStreamPlayer" parent="." unique_id=78346466]
+process_mode = 3
+stream = ExtResource("25_og1vs")
+volume_db = -80.0
+>>>>>>> Stashed changes
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
 [connection signal="justShot" from="Player" to="Bullet1" method="_on_player_just_shot"]
