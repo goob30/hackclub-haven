@@ -2,35 +2,26 @@
 class_name Coliseum
 extends Node3D
 
-# Builds a ring-shaped coliseum out of plackard wall segments, plus a round ground.
-# Select the Coliseum node and change the values in the Inspector: it rebuilds live in the editor.
-
 const WALL_SCENE := preload("res://arena/assets/plackard_wall/plackard_closed_full.glb")
 
-# Size of the unscaled model (measured from the .glb): its pivot is NOT at its center.
 const MODEL_WIDTH := 3.2
 const MODEL_HEIGHT := 2.5
 const MODEL_THICKNESS := 0.2
 const MODEL_CENTER_X := -1.5
 
 @export_group("Walls")
-## Uniform scale of each wall segment (6 = six times the original size).
 @export_range(0.5, 20.0, 0.1) var wall_scale: float = 6.0:
 	set(v):
 		wall_scale = v
 		_queue_rebuild()
-## How many wall segments make up the ring. More = rounder.
 @export_range(3, 64, 1) var segment_count: int = 16:
 	set(v):
 		segment_count = v
 		_queue_rebuild()
-## Distance from the center to the inside of the walls. 0 = automatic (segments touch edge to edge).
-## Any other value stretches/shrinks each segment's width so the ring still closes.
 @export_range(0.0, 500.0, 0.5) var radius: float = 0.0:
 	set(v):
 		radius = v
 		_queue_rebuild()
-## Turn on if the decorated side of the walls faces outward instead of inward.
 @export var flip_walls: bool = false:
 	set(v):
 		flip_walls = v
@@ -45,7 +36,6 @@ const MODEL_CENTER_X := -1.5
 	set(v):
 		ground_enabled = v
 		_queue_rebuild()
-## How far the ground extends past the walls.
 @export_range(0.0, 100.0, 0.5) var ground_margin: float = 2.0:
 	set(v):
 		ground_margin = v
@@ -65,7 +55,6 @@ func _ready() -> void:
 	add_to_group("arena")
 	_rebuild()
 
-# True while a world position is inside the arena: within the wall ring and below the wall tops.
 func is_inside_bounds(world_pos: Vector3) -> bool:
 	var p := to_local(world_pos)
 	var outer := get_inner_radius() / cos(PI / segment_count)
@@ -77,7 +66,6 @@ func _queue_rebuild() -> void:
 	_dirty = true
 	_rebuild.call_deferred()
 
-# Distance from center to the middle of a wall (the apothem of the polygon)
 func get_inner_radius() -> float:
 	if radius > 0.0:
 		return radius
@@ -90,7 +78,6 @@ func _rebuild() -> void:
 		child.free()
 
 	var inner := get_inner_radius()
-	# Width each segment needs so neighbours meet exactly at the polygon corners
 	var seg_width := 2.0 * inner * tan(PI / segment_count)
 	var width_scale := seg_width / MODEL_WIDTH
 
@@ -106,7 +93,6 @@ func _rebuild() -> void:
 		wall.position = Vector3(sin(angle), 0.0, cos(angle)) * inner
 		wall.rotation.y = angle + (PI if flip_walls else 0.0)
 
-		# Model: scaled, and shifted so the segment is centered on the wall node
 		var model := WALL_SCENE.instantiate() as Node3D
 		model.scale = Vector3(width_scale, wall_scale, wall_scale)
 		model.position.x = -MODEL_CENTER_X * width_scale
@@ -123,7 +109,7 @@ func _rebuild() -> void:
 			wall.add_child(body)
 
 	if ground_enabled:
-		var ground_radius := inner / cos(PI / segment_count) + ground_margin # reach the polygon corners
+		var ground_radius := inner / cos(PI / segment_count) + ground_margin
 		var ground := StaticBody3D.new()
 		ground.name = "Ground"
 		add_child(ground)
@@ -147,5 +133,4 @@ func _rebuild() -> void:
 		col.shape = cyl_shape
 		ground.add_child(col)
 
-		# Top surface sits at y = 0
 		ground.position.y = -ground_thickness * 0.5
