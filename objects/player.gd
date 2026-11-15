@@ -23,6 +23,10 @@ var weapon_index := 0
 var mouse_sensitivity = 700
 var gamepad_sensitivity := 0.075
 
+@export_subgroup("Auto Aim")
+@export_range(0.0, 30.0) var auto_aim_angle: float = 6.0
+@export var auto_aim_range: float = 100.0
+
 @export_subgroup("Parry")
 @export var slowmo_sensitivity_mult: float = 0.7
 @export var parry_cooldown: float = 0.4
@@ -278,10 +282,37 @@ func action_shoot():
 			-depth)
 		var spawn_pos: Vector3 = camera.global_transform * local_spawn
 		
-		var aim_point: Vector3 = camera.global_position - camera.global_transform.basis.z * 100.0
+		var aim_point: Vector3 = get_auto_aim_point()
 		new_bullet.launch(spawn_pos, aim_point - spawn_pos)
 		bullet = new_bullet
 		
+
+# Returns the nearest enemy centre inside the auto aim cone, else straight ahead
+
+func get_auto_aim_point() -> Vector3:
+	var from: Vector3 = camera.global_position
+	var forward: Vector3 = -camera.global_transform.basis.z
+	var best_point: Vector3 = from + forward * 100.0
+	var best_angle: float = deg_to_rad(auto_aim_angle)
+	var space := get_world_3d().direct_space_state
+
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		if enemy.get("destroyed"):
+			continue
+		var target: Vector3 = enemy.global_position + Vector3.UP * 0.25
+		var to_enemy: Vector3 = target - from
+		if to_enemy.length() > auto_aim_range:
+			continue
+		var angle: float = forward.angle_to(to_enemy)
+		if angle >= best_angle:
+			continue
+		var query := PhysicsRayQueryParameters3D.create(from, target)
+		query.exclude = [get_rid()]
+		if not space.intersect_ray(query).is_empty():
+			continue
+		best_angle = angle
+		best_point = target
+	return best_point
 
 # Toggle between available weapons (listed in 'weapons')
 
