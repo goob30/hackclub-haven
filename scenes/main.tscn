@@ -27,6 +27,8 @@
 [ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
 [ext_resource type="PackedScene" uid="uid://cgr81sg436y6r" path="res://scenes/ui/pause.tscn" id="17_muem4"]
 [ext_resource type="Script" uid="uid://cdxsxfg407jex" path="res://scenes/ui/pause.gd" id="18_dp3eg"]
+[ext_resource type="AudioStream" uid="uid://dgujl000wk7g5" path="res://sounds/ascension to entropy.ogg" id="23_pm3ni"]
+[ext_resource type="AudioStream" uid="uid://cxipusi5324yt" path="res://sounds/ascension to entropy secondary.wav" id="25_og1vs"]
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
@@ -248,5 +250,18 @@ script = ExtResource("25_autocol")
 process_mode = 3
 visible = false
 script = ExtResource("18_dp3eg")
+
+[node name="mainmusic" type="AudioStreamPlayer" parent="." unique_id=378507183]
+process_mode = 3
+stream = ExtResource("23_pm3ni")
+volume_db = -7.087
+autoplay = true
+bus = &"music"
+
+[node name="dangermusicadd" type="AudioStreamPlayer" parent="." unique_id=78346466]
+process_mode = 3
+stream = ExtResource("25_og1vs")
+volume_db = -80.0
+bus = &"music"
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]

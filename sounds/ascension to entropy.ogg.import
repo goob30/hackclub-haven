@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dgujl000wk7g5"
+path="res://.godot/imported/ascension to entropy.ogg-92b0e0d10a9a21c760e69ae04f5818c1.oggvorbisstr"
+
+[deps]
+
+source_file="res://sounds/ascension to entropy.ogg"
+dest_files=["res://.godot/imported/ascension to entropy.ogg-92b0e0d10a9a21c760e69ae04f5818c1.oggvorbisstr"]
+
+[params]
+
+loop=true
+loop_offset=5.34
+bpm=0
+beat_count=0
+bar_beats=4

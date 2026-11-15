@@ -26,6 +26,8 @@ var slowmo_active: bool = false
 var combo: int = 0             
 var _parry_ready: bool = true  
 
+const MUSIC_INTRO := 5.34
+
 signal slowmo_changed(active: bool)
 signal combo_changed(combo: int)
 signal parry_succeeded
@@ -61,6 +63,8 @@ var muzzle_flash := PixelFlash.new()
 @onready var arms = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Arms
 @onready var sound_footsteps = $SoundFootsteps
 @onready var blaster_cooldown = $Cooldown
+@onready var main_music: AudioStreamPlayer = get_node_or_null("../mainmusic")
+@onready var danger_music: AudioStreamPlayer = get_node_or_null("../dangermusicadd")
 
 @export var crosshair: TextureRect
 
@@ -120,6 +124,7 @@ func _process(delta):
 	shake = move_toward(shake, 0.0, delta / maxf(Engine.time_scale, 0.001) * 6.0)
 	camera.h_offset = randf_range(-1.0, 1.0) * shake * 0.2
 	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
+	_update_danger_music(delta)
 
 	# Handle functions
 	handle_controls(delta)
@@ -166,6 +171,7 @@ func _process(delta):
 
 func _exit_tree():
 	Engine.time_scale = 1.0
+	Audio.reset_muffle()
 
 # Mouse movement
 
@@ -453,4 +459,22 @@ func reset_combo():
 
 func set_slowmo(active: bool):
 	slowmo_active = active
+	Audio.set_slowmo(active)
 	slowmo_changed.emit(active)
+
+# Danger layer fades in at low health, kept in sync with the main track after its intro
+func _update_danger_music(delta: float) -> void:
+	if not main_music or not danger_music:
+		return
+	var main_pos := main_music.get_playback_position()
+	if main_pos < MUSIC_INTRO:
+		if danger_music.playing:
+			danger_music.stop()
+	else:
+		var expected := main_pos - MUSIC_INTRO
+		if not danger_music.playing:
+			danger_music.play(expected)
+		elif absf(danger_music.get_playback_position() - expected) > 0.03:
+			danger_music.seek(expected)
+	var target_db := -10.0 if health < 35 else -80.0
+	danger_music.volume_db = move_toward(danger_music.volume_db, target_db, 70.0 * delta)
