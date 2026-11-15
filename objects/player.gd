@@ -73,7 +73,13 @@ func _ready():
 	weapon = weapons[weapon_index] # Weapon must never be nil
 	initiate_change_weapon(weapon_index)
 
+var shake := 0.0
+
 func _process(delta):
+	shake = move_toward(shake, 0.0, delta * 6.0)
+	camera.h_offset = randf_range(-1.0, 1.0) * shake * 0.2
+	camera.v_offset = randf_range(-1.0, 1.0) * shake * 0.2
+
 	# Handle functions
 	handle_controls(delta)
 	handle_gravity(delta)
@@ -209,6 +215,8 @@ func action_shoot():
 	if Input.is_action_pressed("shoot"):
 		if is_instance_valid(bullet): return # Only one bullet in flight at a time
 		if !blaster_cooldown.is_stopped(): return # Cooldown for shooting
+		var model = container.get_child(0) if container.get_child_count() > 0 else null
+		if model and model.has_method("can_fire") and not model.can_fire(): return # Out of ammo / reloading
 		
 		Audio.play(weapon.sound_shoot)
 		
@@ -218,6 +226,9 @@ func action_shoot():
 		muzzle.position = container.position - weapon.muzzle_position
 		muzzle_flash.position = muzzle.position
 		muzzle_flash.restart()
+		shake = 1.0
+		if model and model.has_method("play_shoot"):
+			model.play_shoot(weapon.cooldown)
 		
 		blaster_cooldown.start(weapon.cooldown)
 		
