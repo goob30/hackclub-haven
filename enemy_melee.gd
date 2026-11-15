@@ -13,6 +13,17 @@ static var _mist_process: ShaderMaterial
 @export var size_scale := 2.0
 @export var reverse_facing := false
 
+@export_group("Climbing")
+@export var climb_speed := 3.0
+@export var climb_push := 1.0
+@export var climb_grace := 0.3
+@export var climb_max_normal_y := 0.4
+@export var climb_player_above := 0.5
+@export var climb_tilt_degrees := 90.0
+@export var climb_tilt_speed := 10.0
+# Local point the visual pivots around when tilting onto a wall.
+@export var climb_pivot := Vector3(0.0, 0.14, -0.14)
+
 var player: Node3D
 var raycast: RayCast3D
 var attack_timer: Timer
@@ -24,6 +35,13 @@ var hit_particles: GPUParticles3D
 var destroyed := false
 var is_biting := false
 var cooldown := 0.0
+
+var climbing := false
+var _on_climb_wall := false
+var _climb_normal := Vector3.ZERO
+var _climb_timer := 0.0
+var _tilt := 0.0
+var _tilt_pivot: Node3D
 
 
 func _ready() -> void:
@@ -43,6 +61,14 @@ func _ready() -> void:
 	bite_particles = find_child("BiteParticles", true, false) as GPUParticles3D
 	bite_point = find_child("BitePoint", true, false) as Marker3D
 	hit_particles = find_child("HitParticles", true, false) as GPUParticles3D
+
+	# Wrap the visual so it can tilt without fighting walk_animation's bob.
+	var visual := get_node_or_null("Total") as Node3D
+	if visual != null:
+		_tilt_pivot = Node3D.new()
+		_tilt_pivot.name = "ClimbPivot"
+		add_child(_tilt_pivot)
+		visual.reparent(_tilt_pivot, false)
 
 	if raycast != null:
 		raycast.enabled = true
@@ -71,35 +97,100 @@ func _physics_process(delta: float) -> void:
 		if destroyed or not is_inside_tree():
 			return
 
-	if not is_on_floor():
-		velocity += get_gravity() * delta
-	elif velocity.y < 0.0:
-		velocity.y = 0.0
+	var has_player := is_instance_valid(player) and player.is_inside_tree()
+	var offset := Vector3.ZERO
+	if has_player:
+		offset = player.global_position - global_position
+	var horizontal := Vector3(offset.x, 0.0, offset.z)
+	var chasing := has_player and horizontal.length() > stop_distance
+	_update_climb(delta, horizontal.normalized(), chasing, offset.y > climb_player_above)
 
-	if is_instance_valid(player) and player.is_inside_tree():
-		var offset := player.global_position - global_position
-		var horizontal := Vector3(offset.x, 0.0, offset.z)
+	if climbing:
+		var into_wall := -_climb_normal
+		if _on_climb_wall:
+			velocity = into_wall * climb_push + Vector3.UP * climb_speed
+		else:
+			# Lost the wall: push forward over the lip.
+			velocity = into_wall * move_speed + Vector3.UP * climb_speed
+		_face(into_wall)
+	else:
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+		elif velocity.y < 0.0:
+			velocity.y = 0.0
 
-		if horizontal.length() > 0.5:
-			var facing_direction := -horizontal if reverse_facing else horizontal
-			look_at(global_position + facing_direction, Vector3.UP, false)
+		if has_player:
+			if horizontal.length() > 0.5:
+				_face(horizontal)
 
-		if horizontal.length() <= stop_distance:
+			if not chasing:
+				velocity.x = 0.0
+				velocity.z = 0.0
+			else:
+				var direction := horizontal.normalized()
+				velocity.x = direction.x * move_speed
+				velocity.z = direction.z * move_speed
+		else:
 			velocity.x = 0.0
 			velocity.z = 0.0
-		else:
-			var direction := horizontal.normalized()
-			velocity.x = direction.x * move_speed
-			velocity.z = direction.z * move_speed
 
-		if raycast != null:
-			var aim_point := player.global_position + Vector3(0.0, 0.5, 0.0)
-			raycast.target_position = raycast.to_local(aim_point)
-	else:
-		velocity.x = 0.0
-		velocity.z = 0.0
+	if has_player and raycast != null:
+		var aim_point := player.global_position + Vector3(0.0, 0.5, 0.0)
+		raycast.target_position = raycast.to_local(aim_point)
 
+	_update_tilt(delta)
 	move_and_slide()
+
+
+func _face(direction: Vector3) -> void:
+	var facing_direction := -direction if reverse_facing else direction
+	look_at(global_position + facing_direction, Vector3.UP, false)
+
+
+func _update_climb(delta: float, direction: Vector3, chasing: bool, player_above: bool) -> void:
+	var wall := _find_climb_wall()
+	if wall != Vector3.ZERO:
+		var pushing := chasing and direction.dot(-wall) > 0.3
+		if pushing or (climbing and player_above):
+			climbing = true
+			_on_climb_wall = true
+			_climb_normal = wall
+			_climb_timer = climb_grace
+		else:
+			climbing = false
+	elif climbing:
+		_on_climb_wall = false
+		_climb_timer -= delta
+		if _climb_timer <= 0.0 or is_on_floor():
+			climbing = false
+
+
+func _find_climb_wall() -> Vector3:
+	for i in get_slide_collision_count():
+		var collision := get_slide_collision(i)
+		var normal := collision.get_normal()
+		if absf(normal.y) > climb_max_normal_y:
+			continue
+		var collider := collision.get_collider() as Node
+		if collider != null and (collider.is_in_group("player") or collider.is_in_group("enemy")):
+			continue
+		normal.y = 0.0
+		if normal.length_squared() > 0.0001:
+			return normal.normalized()
+	return Vector3.ZERO
+
+
+func _update_tilt(delta: float) -> void:
+	if _tilt_pivot == null:
+		return
+	var target := deg_to_rad(climb_tilt_degrees) if climbing else 0.0
+	var pivot := climb_pivot
+	if reverse_facing:
+		target = -target
+		pivot.z = -pivot.z
+	_tilt = lerpf(_tilt, target, 1.0 - exp(-climb_tilt_speed * delta))
+	var tilt_basis := Basis(Vector3.RIGHT, _tilt)
+	_tilt_pivot.transform = Transform3D(tilt_basis, pivot - tilt_basis * pivot)
 
 
 func _bite() -> void:

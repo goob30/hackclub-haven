@@ -20,6 +20,7 @@ func _ready() -> void:
 signal ammo_changed(ammo: int, capacity: int)
 
 const SHOTS := 6
+const RELOAD_SPEED := 0.5
 
 @export var shoot_speed: float = 2.0
 
@@ -41,13 +42,21 @@ func play_shoot() -> void:
 	_anim.play("Shoot", -1, shoot_speed)
 	_anim.seek(idx * seg, true)
 
+func reload() -> bool:
+	if not _anim or reloading or ammo >= SHOTS:
+		return false
+	reloading = true
+	_seg_end = -1.0
+	_anim.play("Reload", -1, RELOAD_SPEED)
+	return true
+
 func _process(_delta: float) -> void:
 	if _anim and _seg_end >= 0.0 and _anim.current_animation == "Shoot" and _anim.current_animation_position >= _seg_end:
 		_anim.pause()
 		_seg_end = -1.0
 		if ammo == 0:
 			reloading = true
-			_anim.play("Reload")
+			_anim.play("Reload", -1, RELOAD_SPEED)
 
 func _on_anim_finished(anim_name: StringName) -> void:
 	if anim_name == "Reload":

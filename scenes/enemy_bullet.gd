@@ -1,7 +1,7 @@
 class_name EnemyBullet
 extends CharacterBody3D
 
-@export var speed := 8
+@export var speed := 16
 @export var lifetime := 8.0
 
 var direction := Vector3.ZERO
@@ -17,6 +17,8 @@ func launch(
 ) -> void:
 	direction = flight_direction.normalized()
 	shooter = source
+	if source is PhysicsBody3D:
+		add_collision_exception_with(source)
 	damage_amount = damage
 	time_left = lifetime
 

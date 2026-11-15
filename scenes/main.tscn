@@ -4,12 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://dl2ed4gkybggf" path="res://objects/player.tscn" id="2_elriq"]
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" uid="uid://b2tyb5oleohda" path="res://fonts/shadow_of_xizor.ttf" id="3_w27de"]
-[ext_resource type="Shader" path="res://fonts/text_gradient.gdshader" id="4_grad"]
+[ext_resource type="Shader" uid="uid://dcivx1w1peqi1" path="res://fonts/text_gradient.gdshader" id="4_grad"]
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://chylygj11gwii" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape.tscn" id="8_tipki"]
 [ext_resource type="PackedScene" uid="uid://b73y0nhbt21j7" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_large_alt.tscn" id="9_85g3d"]
-[ext_resource type="PackedScene" uid="uid://cvwj2i2klphrx" path="res://SpiderEnemy.tscn" id="9_jkv2x"]
+[ext_resource type="Script" uid="uid://8romm2il42jy" path="res://scripts/round_manager.gd" id="9_rounds"]
 [ext_resource type="PackedScene" uid="uid://bpwde75ssif0y" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_vertical_stripes.tscn" id="10_choun"]
 [ext_resource type="PackedScene" uid="uid://b1hurdbhymgqw" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick.tscn" id="12_eb6dy"]
 [ext_resource type="PackedScene" uid="uid://xtrayq50sa4w" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_square_brick_alt.tscn" id="13_trceg"]
@@ -104,8 +104,7 @@ label_settings = SubResource("LabelSettings_fpmwk")
 vertical_alignment = 2
 
 [node name="Enemies" type="Node" parent="." unique_id=2021581775]
-
-[node name="SpiderMelee" parent="Enemies" unique_id=2110410114 instance=ExtResource("9_jkv2x")]
+script = ExtResource("9_rounds")
 
 [node name="Coliseum" parent="." unique_id=791044948 groups=["arena"] instance=ExtResource("6_tefeu")]
 segment_count = 9
@@ -156,7 +155,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -48.00001)
 
 [node name="road_1_Tjunction" parent="road_1_straight2" unique_id=1994094118 instance=ExtResource("19_0ld40")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 7.6293945e-06, 0, -44)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.00072288513, 0, -43.997684)
 
 [node name="road_1_straight6" parent="road_1_straight2" unique_id=615463438 instance=ExtResource("19_gqmmt")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -32)
@@ -244,5 +243,3 @@ mesh = ExtResource("26_vxglm")
 script = ExtResource("25_autocol")
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
-
-[editable path="Enemies/SpiderMelee"]

@@ -340,6 +340,11 @@ func initiate_change_weapon(index):
 	tween.tween_property(container, "position", container_offset - Vector3(0, 1, 0), 0.1)
 	tween.tween_callback(change_weapon) # Changes the model
 
+func reload_weapon() -> void:
+	for n in container.get_children():
+		if n.has_method("reload") and n.reload():
+			Audio.play("sounds/revolver_reload.mp3")
+
 # Switches the weapon model (off-screen)
 
 func change_weapon():

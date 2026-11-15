@@ -36,6 +36,8 @@ func _process(delta: float) -> void:
 		return
 
 	var speed := Vector2(body.velocity.x, body.velocity.z).length()
+	if body.get("climbing"):
+		speed = body.velocity.length()
 	var movement := clampf(speed / maxf(walk_speed, 0.01), 0.0, 1.0)
 
 	_phase += delta * walk_frequency * movement
