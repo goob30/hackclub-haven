@@ -4,7 +4,7 @@ const KEEP := ["REV_Cylinder", "REV_Frame", "REV_Handle", "REV_Trigger", "Hammer
 
 func _ready() -> void:
 	var gltf := get_node("Model")
-	gltf.scale = Vector3.ONE * 4.0
+	gltf.scale = Vector3.ONE * 6.0
 	for n in gltf.get_children():
 		if n.name != "RevolverRig":
 			n.queue_free()

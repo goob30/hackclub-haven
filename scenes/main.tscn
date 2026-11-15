@@ -4,9 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://dl2ed4gkybggf" path="res://objects/player.tscn" id="2_elriq"]
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" uid="uid://biqtga8moh7ah" path="res://fonts/lilita_one_regular.ttf" id="3_w27de"]
-[ext_resource type="Script" path="res://arena/coliseum.gd" id="12_coliseum"]
-[ext_resource type="Script" path="res://scripts/enemy_spawner.gd" id="13_spawner"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
+[ext_resource type="Script" uid="uid://br361ke8qrs4e" path="res://arena/coliseum.gd" id="12_coliseum"]
+[ext_resource type="Script" uid="uid://cqx6ijrryh85q" path="res://scripts/enemy_spawner.gd" id="13_spawner"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpmwk"]
 font = ExtResource("3_w27de")

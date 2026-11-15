@@ -53,6 +53,7 @@ signal health_updated
 @onready var camera = $Head/Camera
 @onready var raycast = $Head/Camera/RayCast
 @onready var muzzle = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Muzzle
+var muzzle_flash := PixelFlash.new()
 @onready var container = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Container
 @onready var sound_footsteps = $SoundFootsteps
 @onready var blaster_cooldown = $Cooldown
@@ -63,6 +64,10 @@ signal health_updated
 
 func _ready():
 	add_to_group("player")
+	muzzle.visible = false
+	muzzle.get_parent().add_child(muzzle_flash)
+	muzzle_flash.position = Vector3(0, 0, 10)
+	muzzle_flash.set_emitting(true)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 	weapon = weapons[weapon_index] # Weapon must never be nil
@@ -209,11 +214,10 @@ func action_shoot():
 		
 		# Set muzzle flash position, play animation
 		
-		muzzle.play("default")
-		
-		muzzle.rotation_degrees.z = randf_range(-45, 45)
-		muzzle.scale = Vector3.ONE * randf_range(0.40, 0.75)
+
 		muzzle.position = container.position - weapon.muzzle_position
+		muzzle_flash.position = muzzle.position
+		muzzle_flash.restart()
 		
 		blaster_cooldown.start(weapon.cooldown)
 		
@@ -238,14 +242,6 @@ func action_shoot():
 		new_bullet.launch(spawn_pos, aim_point - spawn_pos)
 		bullet = new_bullet
 		
-		var knockback = random_vec2(weapon.min_knockback, weapon.max_knockback)
-		# print('knockback', knockback)
-		container.position.z += 0.25 # Knockback of weapon visual
-		camera.rotation.x += knockback.x # Knockback of camera
-		rotation.y += knockback.y
-		rotation_target.x += knockback.x
-		rotation_target.y += knockback.y
-		movement_velocity += Vector3(0, 0, weapon.knockback) # Knockback
 
 # Toggle between available weapons (listed in 'weapons')
 
