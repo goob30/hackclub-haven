@@ -44,6 +44,8 @@ var jumps_remaining: int
 var container_offset = Vector3(1.2, -1.1, -2.75)
 
 var tween: Tween
+var arms_base_position := Vector3.ZERO
+var arms_anim: AnimationPlayer
 
 const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 var bullet: Projectile3D
@@ -56,6 +58,7 @@ signal ammo_changed(ammo: int, capacity: int)
 @onready var muzzle = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Muzzle
 var muzzle_flash := PixelFlash.new()
 @onready var container = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Container
+@onready var arms = $Head/Camera/SubViewportContainer/SubViewport/CameraItem/Arms
 @onready var sound_footsteps = $SoundFootsteps
 @onready var blaster_cooldown = $Cooldown
 
@@ -65,6 +68,14 @@ var muzzle_flash := PixelFlash.new()
 
 func _ready():
 	add_to_group("player")
+	arms_base_position = arms.position
+	for mesh in arms.find_children("*", "MeshInstance3D"):
+		mesh.layers = 2
+	arms.visible = false
+	arms_anim = arms.find_child("AnimationPlayer", true, false)
+	hide_right_arm()
+	if arms_anim:
+		arms_anim.animation_finished.connect(func(_n): arms.visible = false)
 	muzzle.visible = false
 	muzzle.get_parent().add_child(muzzle_flash)
 	muzzle_flash.position = Vector3(0, 0, 10)
@@ -99,6 +110,7 @@ func _process(delta):
 	
 	# Rotation 
 	container.position = lerp(container.position, container_offset - (basis.inverse() * applied_velocity / 30), delta * 10)
+	arms.position = arms_base_position + (container.position - container_offset) * 0.4
 	
 	# Movement sound
 	
@@ -316,10 +328,27 @@ func damage(amount):
 		Engine.time_scale = 1.0
 		get_tree().reload_current_scene() # Reset when out of health
 
+func hide_right_arm():
+	var skels := arms.find_children("*", "Skeleton3D")
+	var skel: Skeleton3D = skels[0] if skels.size() > 0 else null
+	if skel and arms_anim:
+		var anim := arms_anim.get_animation("jab_L")
+		for i in range(anim.get_track_count() - 1, -1, -1):
+			if str(anim.track_get_path(i).get_concatenated_subnames()).ends_with("R"):
+				anim.remove_track(i)
+		for b in skel.get_bone_count():
+			var bn := skel.get_bone_name(b)
+			if bn.begins_with("shoulder") and bn.ends_with("R"):
+				skel.set_bone_pose_scale(b, Vector3.ZERO)
+
 func action_parry():
 	if not _parry_ready: return
 	if not is_instance_valid(bullet): return
 	if bullet.state != Projectile3D.State.RETURNING: return
+	if arms_anim:
+		arms.visible = true
+		arms_anim.stop()
+		arms_anim.play("jab_L", -1, 3.0)
 
 	_parry_ready = false
 	get_tree().create_timer(parry_cooldown, true, false, true).timeout.connect(_on_parry_cooldown_done)
