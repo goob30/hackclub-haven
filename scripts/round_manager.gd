@@ -164,7 +164,7 @@ static func make_dust(ext: Vector3) -> GPUParticles3D:
 	var dust := GPUParticles3D.new()
 	dust.process_material = _dust_process(ext)
 	dust.draw_pass_1 = _get_dust_mesh()
-	dust.amount = clampi(int(maxf(ext.x, ext.z) * 30.0), 80, 800)
+	dust.amount = clampi(int(maxf(ext.x, ext.z) * 3.75), 10, 100)
 	dust.lifetime = DUST_LIFETIME
 	dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	dust.visibility_aabb = AABB(Vector3(-40, -10, -40), Vector3(80, 30, 80))

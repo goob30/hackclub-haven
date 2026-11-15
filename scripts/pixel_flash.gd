@@ -45,7 +45,7 @@ func _base(mat: Material, size: float, amount: int, lifetime: float) -> GPUParti
 	quad.size = Vector2(size, size)
 	quad.material = mat
 	var p := GPUParticles3D.new()
-	p.amount = amount
+	p.amount = maxi(1, int(amount * 0.25))
 	p.lifetime = lifetime
 	p.one_shot = true
 	p.explosiveness = 1.0

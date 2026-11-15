@@ -131,8 +131,8 @@ func destroy() -> void:
 	destroyed = true
 	set_physics_process(false)
 	Audio.play("sounds/enemy_death.wav")
-	Blood.splatter(global_position, 60, DRONE_BLOOD)
-	Blood.mist(global_position, DRONE_BLOOD)
+	Blood.splatter(global_position, 30, DRONE_BLOOD)
+	Blood.mist(global_position, DRONE_BLOOD, 0.5)
 	queue_free()
 
 

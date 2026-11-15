@@ -25,7 +25,7 @@ func _ready() -> void:
 	warm_up()
 	var trail := GPUParticles3D.new()
 	trail.name = "BloodTrail"
-	trail.amount = 20
+	trail.amount = 5
 	trail.lifetime = 0.25
 	trail.fixed_fps = 12
 	trail.interpolate = false

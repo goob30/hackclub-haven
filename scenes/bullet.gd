@@ -195,7 +195,7 @@ func _make_fire_trail() -> GPUParticles3D:
 	warm_up()
 	var fire := GPUParticles3D.new()
 	fire.name = "FireTrail"
-	fire.amount = 20
+	fire.amount = 5
 	fire.lifetime = 0.25
 	fire.fixed_fps = 12
 	fire.interpolate = false

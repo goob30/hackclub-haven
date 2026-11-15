@@ -1439,7 +1439,7 @@ shape = SubResource("SphereShape3D_vamlu")
 [node name="BiteParticles" type="GPUParticles3D" parent="." unique_id=104482664]
 cast_shadow = 0
 emitting = false
-amount = 60
+amount = 15
 lifetime = 0.4
 one_shot = true
 explosiveness = 1.0
@@ -1450,7 +1450,7 @@ draw_pass_1 = SubResource("SphereMesh_lljo6")
 cast_shadow = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 emitting = false
-amount = 30
+amount = 8
 lifetime = 0.4
 one_shot = true
 explosiveness = 1.0

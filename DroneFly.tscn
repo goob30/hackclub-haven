@@ -68,6 +68,7 @@ enabled = false
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=601171282]
 cast_shadow = 0
+amount = 2
 emitting = false
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_ntn57")

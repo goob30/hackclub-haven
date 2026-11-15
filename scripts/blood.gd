@@ -15,9 +15,9 @@ static func splatter(pos: Vector3, amount := 60, tex: Texture2D = BLOOD_TEX) -> 
 	_emit(pos, _get_meshes(tex)[0], _splat_process, amount, 0.4, 0.4)
 
 
-static func mist(pos: Vector3, tex: Texture2D = BLOOD_TEX) -> void:
+static func mist(pos: Vector3, tex: Texture2D = BLOOD_TEX, density := 1.0) -> void:
 	_build()
-	_emit(pos, _get_meshes(tex)[1], _mist_process, 80, 0.8, 0.95)
+	_emit(pos, _get_meshes(tex)[1], _mist_process, int(80 * density), 0.8, 0.95)
 
 
 # Loading screen entry: builds the caches for a texture and emits both effects once
@@ -64,7 +64,7 @@ static func _emit(pos: Vector3, mesh: Mesh, process: ShaderMaterial, amount: int
 	p.process_material = process
 	p.draw_pass_1 = mesh
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	p.amount = amount
+	p.amount = maxi(1, int(amount * 0.25))
 	p.lifetime = lifetime
 	p.one_shot = true
 	p.explosiveness = explosiveness

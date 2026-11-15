@@ -295,7 +295,7 @@ func _spawn_mist() -> void:
 	mist.process_material = _mist_process
 	mist.draw_pass_1 = _mist_mesh
 	mist.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mist.amount = 80
+	mist.amount = 10
 	mist.lifetime = 0.8
 	mist.one_shot = true
 	mist.explosiveness = 0.95
