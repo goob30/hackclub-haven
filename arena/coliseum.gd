@@ -175,6 +175,7 @@ func _rebuild() -> void:
 		ground.position.y = - ground_thickness * 0.5
 
 func _ready() -> void:
+	add_to_group("arena")
 	BUILDING_NODES = [
 	get_node("../flat_Lshape"),
 	get_node("../flat_Lshape_brick"),
