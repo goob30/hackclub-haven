@@ -2,12 +2,17 @@ extends Control
 
 const MAP := preload("res://scenes/main.tscn")
 const SETTINGS := preload("res://scenes/ui/settings.tscn")
+const AUTO_COLLISION := preload("res://scripts/auto_collision.gd")
 const STRIP := ["Player", "HUD", "Enemies", "PauseLayer", "mainmusic", "dangermusicadd"]
 
 @export var orbit_radius := 32.0
 @export var orbit_height := 22.0
 @export var orbit_speed := 0.12
 @export var look_target := Vector3.ZERO
+@export_group("Background cost")
+@export var background_shadows := false
+## 2 renders the backdrop at half resolution
+@export_range(1, 4) var background_shrink := 1
 
 var _cam: Camera3D
 var _angle := 0.0
@@ -18,19 +23,15 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	var holder := SubViewportContainer.new()
 	holder.stretch = true
+	holder.stretch_shrink = background_shrink
 	holder.set_anchors_preset(Control.PRESET_FULL_RECT)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(holder)
 	move_child(holder, 0)
 	var vp := SubViewport.new()
+	vp.positional_shadow_atlas_size = 0
 	holder.add_child(vp)
-	var map := MAP.instantiate()
-	for n in STRIP:
-		var node := map.get_node_or_null(n)
-		if node:
-			map.remove_child(node)
-			node.free()
-	vp.add_child(map)
+	vp.add_child(make_backdrop(background_shadows))
 	_cam = Camera3D.new()
 	_cam.fov = 70.0
 	vp.add_child(_cam)
@@ -42,6 +43,28 @@ func _ready() -> void:
 	_settings = SETTINGS.instantiate()
 	_settings.visible = false
 	add_child(_settings)
+
+
+# The map is only scenery here: no collision, no per-frame logic, optional sun shadows.
+# Static so the loading screen can reuse it for shader warm-up
+static func make_backdrop(shadows: bool) -> Node:
+	var map := MAP.instantiate()
+	for n in STRIP:
+		var node := map.get_node_or_null(n)
+		if node:
+			map.remove_child(node)
+			node.free()
+	for n in map.find_children("*", "", true, false):
+		if n.get_script() == AUTO_COLLISION:
+			n.set_script(null)
+	var arena := map.get_node_or_null("Coliseum")
+	if arena:
+		arena.set("walls_have_collision", false)
+	var sun := map.get_node_or_null("Sun") as DirectionalLight3D
+	if sun:
+		sun.shadow_enabled = shadows
+	map.process_mode = Node.PROCESS_MODE_DISABLED
+	return map
 
 
 func _process(delta: float) -> void:

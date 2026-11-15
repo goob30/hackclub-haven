@@ -33,6 +33,7 @@ const DEFAULT_JUMP_STRENGTH := 11.0
 const DEFAULT_JUMPS := 2
 const JUMP_FPS := 60.0
 const LANDING_MARGIN := 0.3
+const BOUNDS_CHECK_INTERVAL := 6 # physics frames
 
 var BUILDING_NODES: Array
 
@@ -81,6 +82,7 @@ var BUILDING_NODES: Array
 		_queue_rebuild()
 
 var _dirty := false
+var _bounds_tick := 0
 
 # Target world Y for every building, keeping each roof within jump reach
 func pick_building_heights() -> Array[float]:
@@ -129,6 +131,9 @@ func _max_jump_height() -> float:
 
 func _physics_process(_delta: float) -> void:
 	if Engine.is_editor_hint():
+		return
+	_bounds_tick += 1
+	if _bounds_tick % BOUNDS_CHECK_INTERVAL != 0:
 		return
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		if enemy is Node3D and enemy.has_method("destroy") and not is_inside_bounds(enemy.global_position):

@@ -16,20 +16,23 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="haven2"
 config/tags=PackedStringArray("starterkit")
-run/main_scene="res://scenes/tutorial.tscn"
-config/features=PackedStringArray("4.7", "Forward Plus")
-boot_splash/bg_color=Color(0.92549, 0.92549, 0.960784, 1)
-boot_splash/image="res://splash-screen.png"
+run/main_scene="res://scenes/ui/loading.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/show_image=false
+boot_splash/use_filter=false
 config/icon="res://icon.png"
 
 [autoload]
 
 Audio="*res://scripts/audio.gd"
+AssetCache="*res://scripts/asset_cache.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/dpi/allow_hidpi.web=false
 
 [editor]
 
@@ -43,7 +46,6 @@ import/blender/enabled=false
 [gui]
 
 theme/custom_font="res://fonts/shadow_of_xizor.ttf"
-
 
 [input]
 
@@ -108,12 +110,6 @@ mouse_capture={
 "events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
 ]
 }
-pause={
-"deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
-, Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":6,"pressure":0.0,"pressed":true,"script":null)
-]
-}
 mouse_capture_exit={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
@@ -137,15 +133,20 @@ parry={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":70,"key_label":0,"unicode":102,"location":0,"echo":false,"script":null)
 ]
 }
+pause={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":6,"pressure":0.0,"pressed":true,"script":null)
+]
+}
 
 [rendering]
 
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+renderer/rendering_method.web="gl_compatibility"
+lights_and_shadows/directional_shadow/size=512
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0
-lights_and_shadows/directional_shadow/size=512
-
-anti_aliasing/quality/screen_space_aa=1
-lights_and_shadows/positional_shadow/atlas_size=2048
+lights_and_shadows/positional_shadow/atlas_size=1024
 lights_and_shadows/positional_shadow/atlas_quadrant_0_subdiv=1
-environment/ssao/quality=1
-environment/volumetric_fog/volume_depth=48

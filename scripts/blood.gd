@@ -20,6 +20,12 @@ static func mist(pos: Vector3, tex: Texture2D = BLOOD_TEX) -> void:
 	_emit(pos, _get_meshes(tex)[1], _mist_process, 80, 0.8, 0.95)
 
 
+# Loading screen entry: builds the caches for a texture and emits both effects once
+static func warm_up(pos: Vector3, tex: Texture2D = BLOOD_TEX) -> void:
+	splatter(pos, 60, tex)
+	mist(pos, tex)
+
+
 # [splatter mesh, mist mesh] for a texture, built once
 static func _get_meshes(tex: Texture2D) -> Array:
 	if _meshes.has(tex):

@@ -70,8 +70,9 @@ func _ready() -> void:
 		add_child(_tilt_pivot)
 		visual.reparent(_tilt_pivot, false)
 
+	# Only queried on demand in _can_bite_player
 	if raycast != null:
-		raycast.enabled = true
+		raycast.enabled = false
 	else:
 		push_error("No RayCast3D or RayCast was found under the spider.")
 
@@ -133,10 +134,6 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = 0.0
 			velocity.z = 0.0
-
-	if has_player and raycast != null:
-		var aim_point := player.global_position + Vector3(0.0, 0.5, 0.0)
-		raycast.target_position = raycast.to_local(aim_point)
 
 	_update_tilt(delta)
 	move_and_slide()
@@ -275,6 +272,11 @@ func destroy() -> void:
 	destroyed = true
 	_spawn_mist()
 	queue_free()
+
+
+# Loading screen entry: builds the mist cache and shows one burst
+func warm_up() -> void:
+	_spawn_mist()
 
 
 func _spawn_mist() -> void:

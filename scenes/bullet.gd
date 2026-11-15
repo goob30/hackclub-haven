@@ -186,9 +186,13 @@ func _build_visuals() -> void:
 	_fire = _make_fire_trail()
 	add_child(_fire)
 
-func _make_fire_trail() -> GPUParticles3D:
+# Loading screen entry: builds the shared trail resources
+static func warm_up() -> void:
 	if not _trail_mesh:
 		_build_trail_resources()
+
+func _make_fire_trail() -> GPUParticles3D:
+	warm_up()
 	var fire := GPUParticles3D.new()
 	fire.name = "FireTrail"
 	fire.amount = 20
@@ -209,7 +213,7 @@ static func _build_trail_resources() -> void:
 
 	var quad_mat := StandardMaterial3D.new()
 	quad_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	quad_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_HASH
+	quad_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	quad_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	quad_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	quad_mat.vertex_color_use_as_albedo = true

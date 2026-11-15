@@ -111,6 +111,7 @@ func _build_hurt() -> void:
 	_hurt.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_hurt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hurt.material = mat
+	_hurt.visible = false # only drawn while flashing
 	add_child(_hurt)
 	move_child(_hurt, 0)
 
@@ -119,8 +120,10 @@ func _flash_hurt() -> void:
 		_hurt_tween.kill()
 	var mat := _hurt.material as ShaderMaterial
 	mat.set_shader_parameter("strength", 1.0)
+	_hurt.visible = true
 	_hurt_tween = create_tween().set_ignore_time_scale(true)
 	_hurt_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), 1.0, 0.0, 0.5)
+	_hurt_tween.tween_callback(_hurt.hide)
 
 func _on_combo_changed(combo: int):
 	if _combo_tween:
@@ -201,6 +204,7 @@ func _build_vignette() -> void:
 	_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mat.set_shader_parameter("strength", 0.0)
 	_vignette.material = mat
+	_vignette.visible = false # only drawn during slow-mo
 	add_child(_vignette)
 	move_child(_vignette, 0)
 
@@ -237,4 +241,7 @@ func _on_slowmo_changed(active: bool) -> void:
 	_vignette_tween = create_tween().set_ignore_time_scale(true)
 	var mat := _vignette.material as ShaderMaterial
 	var from: float = mat.get_shader_parameter("strength")
+	_vignette.visible = true
 	_vignette_tween.tween_method(func(v: float): mat.set_shader_parameter("strength", v), from, VIGNETTE_STRENGTH if active else 0.0, 0.12 if active else 0.2)
+	if not active:
+		_vignette_tween.tween_callback(_vignette.hide)

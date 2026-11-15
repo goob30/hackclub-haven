@@ -15,9 +15,14 @@ var damage_amount := 5
 var time_left := 1.5
 
 
-func _ready() -> void:
+# Loading screen entry: builds the shared trail resources
+static func warm_up() -> void:
 	if not _trail_mesh:
 		_build_trail_resources()
+
+
+func _ready() -> void:
+	warm_up()
 	var trail := GPUParticles3D.new()
 	trail.name = "BloodTrail"
 	trail.amount = 20
@@ -37,7 +42,7 @@ func _ready() -> void:
 static func _build_trail_resources() -> void:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_HASH
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	mat.vertex_color_use_as_albedo = true

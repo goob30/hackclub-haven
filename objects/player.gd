@@ -49,6 +49,8 @@ var _beam_forced := false
 var out_of_ammo := false
 var _refill_pending := false # round start reload not finished yet
 const BEAM_SHADER := preload("res://sprites/beam_dither.gdshader")
+const VIEWMODEL_SHADER := preload("res://shaders/viewmodel_adjust.gdshader")
+const DANGER_RESYNC_INTERVAL := 0.5
 const BEAM_TEXTURE := preload("res://sprites/laser_beam_from_god.png")
 var gravity := 0.0
 
@@ -105,7 +107,10 @@ func _ready():
 
 # Weapon camera skips the expensive screen effects (invisible at arm's length)
 func _setup_item_environment():
-	var world_env: Environment = get_world_3d().environment
+	setup_item_view($Head/Camera/SubViewportContainer as SubViewportContainer, muzzle.get_parent() as Camera3D, get_world_3d().environment)
+
+# Static so the loading screen can build the same weapon view for warm-up
+static func setup_item_view(holder: SubViewportContainer, item_cam: Camera3D, world_env: Environment) -> void:
 	if world_env == null:
 		return
 	var env := world_env.duplicate() as Environment
@@ -115,11 +120,18 @@ func _setup_item_environment():
 	env.sdfgi_enabled = false
 	env.fog_enabled = false
 	env.volumetric_fog_enabled = false
+	env.glow_enabled = false
+	# Contrast/saturation go through the container shader instead of a post pass
+	env.adjustment_enabled = false
+	var item_mat := ShaderMaterial.new()
+	item_mat.shader = VIEWMODEL_SHADER
+	holder.material = item_mat
 	# Own lighting so the night sky doesn't black out the weapon
 	var sky_mat := PanoramaSkyMaterial.new()
 	sky_mat.panorama = preload("res://sprites/skybox.png")
 	sky_mat.energy_multiplier = 0.5
 	env.sky = Sky.new()
+	env.sky.radiance_size = Sky.RADIANCE_SIZE_128
 	env.sky.sky_material = sky_mat
 	env.background_mode = Environment.BG_SKY
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
@@ -127,7 +139,7 @@ func _setup_item_environment():
 	env.ambient_light_color = Color(0.5, 0.55, 0.7)
 	env.ambient_light_energy = 1.0
 	env.ambient_light_sky_contribution = 0.0
-	(muzzle.get_parent() as Camera3D).environment = env
+	item_cam.environment = env
 
 var shake := 0.0
 
@@ -163,11 +175,9 @@ func _process(delta):
 	
 	# Movement sound
 	
-	sound_footsteps.stream_paused = true
-	
-	if is_on_floor():
-		if abs(velocity.x) > 1 or abs(velocity.z) > 1:
-			sound_footsteps.stream_paused = false
+	var walking: bool = is_on_floor() and (abs(velocity.x) > 1 or abs(velocity.z) > 1)
+	if sound_footsteps.stream_paused == walking:
+		sound_footsteps.stream_paused = not walking
 	
 	# Landing after jump or falling
 	
@@ -401,9 +411,12 @@ func change_weapon():
 		
 	crosshair.texture = weapon.crosshair
 
+var _round_manager
+
 func _in_round_transition() -> bool:
-	var rm = get_tree().get_first_node_in_group("round_manager")
-	return rm != null and rm.in_transition()
+	if not is_instance_valid(_round_manager):
+		_round_manager = get_tree().get_first_node_in_group("round_manager")
+	return _round_manager != null and _round_manager.in_transition()
 
 func heal_full() -> void:
 	health = 100
@@ -430,7 +443,7 @@ func _beam_allowed() -> bool:
 		return not dead
 	if not auto_beam or not out_of_ammo or _refill_pending or dead or _in_round_transition():
 		return false
-	return not get_tree().get_nodes_in_group("enemy").is_empty()
+	return get_tree().get_node_count_in_group("enemy") > 0
 
 func _check_beam_death() -> void:
 	if beam_active or is_instance_valid(bullet) or not _beam_allowed():
@@ -447,17 +460,9 @@ func _beam_death() -> void:
 	Engine.time_scale = 1.0
 	Audio.reset_muffle()
 	$Head/Camera/SubViewportContainer.visible = false
-	var mat := ShaderMaterial.new()
-	mat.shader = BEAM_SHADER
-	mat.render_priority = 100
-	mat.set_shader_parameter("tex", BEAM_TEXTURE)
-	var size := 8.0
-	var quad := QuadMesh.new()
-	quad.size = Vector2(size, size * 10.0)
-	var beam := MeshInstance3D.new()
-	beam.mesh = quad
-	beam.material_override = mat
-	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var size := BEAM_SIZE
+	var beam := make_beam()
+	var mat := beam.material_override as ShaderMaterial
 	var fwd: Vector3 = -camera.global_transform.basis.z
 	fwd.y = 0.0
 	fwd = fwd.normalized()
@@ -486,6 +491,22 @@ func _beam_death() -> void:
 		var fade := create_tween()
 		fade.tween_method(func(v: float): mat.set_shader_parameter("fade", v), 1.0, 0.0, 1.4)
 		fade.tween_callback(beam.queue_free))
+
+const BEAM_SIZE := 8.0
+
+# Static so the loading screen can draw it once ahead of time
+static func make_beam() -> MeshInstance3D:
+	var mat := ShaderMaterial.new()
+	mat.shader = BEAM_SHADER
+	mat.render_priority = 100
+	mat.set_shader_parameter("tex", BEAM_TEXTURE)
+	var quad := QuadMesh.new()
+	quad.size = Vector2(BEAM_SIZE, BEAM_SIZE * 10.0)
+	var beam := MeshInstance3D.new()
+	beam.mesh = quad
+	beam.material_override = mat
+	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return beam
 
 func _die() -> void:
 	dead = true
@@ -588,10 +609,13 @@ func set_slowmo(active: bool):
 	Audio.set_slowmo(active)
 	slowmo_changed.emit(active)
 
+var _danger_resync_wait := 0.0
+
 # Danger layer fades in at low health, kept in sync with the main track after its intro
 func _update_danger_music(delta: float) -> void:
 	if not main_music or not danger_music:
 		return
+	_danger_resync_wait -= delta / maxf(Engine.time_scale, 0.001)
 	var main_pos := main_music.get_playback_position()
 	if main_pos < MUSIC_INTRO:
 		if danger_music.playing:
@@ -600,7 +624,11 @@ func _update_danger_music(delta: float) -> void:
 		var expected := main_pos - MUSIC_INTRO
 		if not danger_music.playing:
 			danger_music.play(expected)
-		elif absf(danger_music.get_playback_position() - expected) > 0.03:
+			_danger_resync_wait = DANGER_RESYNC_INTERVAL
+		elif _danger_resync_wait <= 0.0 and absf(danger_music.get_playback_position() - expected) > 0.03:
+			# Rate limited so a seek can't retrigger every frame
 			danger_music.seek(expected)
+			_danger_resync_wait = DANGER_RESYNC_INTERVAL
 	var target_db := -10.0 if health < 35 else -80.0
-	danger_music.volume_db = move_toward(danger_music.volume_db, target_db, 70.0 * delta)
+	if not is_equal_approx(danger_music.volume_db, target_db):
+		danger_music.volume_db = move_toward(danger_music.volume_db, target_db, 70.0 * delta)

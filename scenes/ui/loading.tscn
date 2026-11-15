@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/loading.gd" id="1_load"]
+[ext_resource type="Shader" uid="uid://bhqdivbfmw6wg" path="res://arena/assets/Buildings Prebuild/Ready scenes/new_shader.gdshader" id="2_text"]
+[ext_resource type="Shader" uid="uid://bnp0esp8cxa4k" path="res://buttonshader.gdshader" id="3_bar"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_text"]
+shader = ExtResource("2_text")
+shader_parameter/pixel_size = 4.0
+shader_parameter/threshold = 0.4
+shader_parameter/contrast = 5.0
+shader_parameter/spread = 0.5
+shader_parameter/halo_amount = 0.35
+shader_parameter/halo_radius = 1.5
+shader_parameter/noise_amount = 0.25
+shader_parameter/noise_speed = 0.0
+shader_parameter/levels = 5
+shader_parameter/opacity = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
+shader = ExtResource("3_bar")
+shader_parameter/pixel_size = 4.0
+shader_parameter/block_taps = 3
+shader_parameter/spread = 0.5
+shader_parameter/coverage_gamma = 1.6
+shader_parameter/sharpen = 0.8
+shader_parameter/sharpen_radius = 2.0
+shader_parameter/center_weight = 0.35
+shader_parameter/threshold = 0.4
+shader_parameter/contrast = 5.0
+shader_parameter/edge_midpoint = 0.5
+shader_parameter/halo_amount = 0.35
+shader_parameter/halo_radius = 1.5
+shader_parameter/halo_samples = 8
+shader_parameter/halo_angle_offset = 0.0
+shader_parameter/halo_variation = 0.6
+shader_parameter/halo_base = 0.7
+shader_parameter/halo_noise_scale = 1.7
+shader_parameter/noise_amount = 0.25
+shader_parameter/noise_speed = 0.0
+shader_parameter/noise_edge_power = 1.0
+shader_parameter/noise_seed = Vector2(127.1, 311.7)
+shader_parameter/levels = 5
+shader_parameter/level_rounding = 0.5
+shader_parameter/effect_strength = 0.5
+shader_parameter/opacity = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back"]
+bg_color = Color(0.05236323, 0.052332446, 0.22716853, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.56078434, 0.34117648, 0.32156864, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Loading" type="Node"]
+script = ExtResource("1_load")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Background" type="ColorRect" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.015, 0.05, 1)
+
+[node name="Center" type="CenterContainer" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box" type="VBoxContainer" parent="UI/Center"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="Title" type="Label" parent="UI/Center/Box"]
+material = SubResource("ShaderMaterial_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56078434, 0.34117648, 0.32156864, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5411765)
+theme_override_constants/shadow_offset_x = 11
+theme_override_constants/shadow_offset_y = 9
+theme_override_constants/shadow_outline_size = 25
+theme_override_font_sizes/font_size = 120
+text = "BEATDOWN"
+horizontal_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="UI/Center/Box"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_bar")
+custom_minimum_size = Vector2(640, 48)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_back")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+show_percentage = false
+
+[node name="Percent" type="Label" parent="UI/Center/Box"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_text")
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "LOADING 0%"
+horizontal_alignment = 1

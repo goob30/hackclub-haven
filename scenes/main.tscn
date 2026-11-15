@@ -32,9 +32,13 @@
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
-shader_parameter/light_levels = 12
-shader_parameter/color_levels = 32
+shader_parameter/light_levels = 9
+shader_parameter/color_levels = 18
 shader_parameter/floor_light = 0.02
+shader_parameter/contrast = 1.1
+shader_parameter/saturation = 0.85
+shader_parameter/pixel_size = 1.33
+shader_parameter/dither = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grad"]
 shader = ExtResource("4_grad")

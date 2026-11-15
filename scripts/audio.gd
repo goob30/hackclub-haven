@@ -18,6 +18,7 @@ var sfx_volume := 1.0:
 
 var available = []
 var queue = []
+var _streams := {}
 
 const OPEN_HZ := 20500.0
 const MUFFLED_HZ := 1300.0
@@ -58,9 +59,29 @@ func _process(_delta):
 	if not queue.is_empty() and not available.is_empty():
 		var p = available.pop_front()
 		var path: String = queue.pop_front()
-		p.stream = load(path)
+		p.stream = _get_stream(path)
 		p.pitch_scale = 1.0 if FIXED_PITCH.has(path) else randf_range(0.9, 1.1)
 		p.play()
+
+# Same path format as play, used by the loading screen
+func preload_sound(sound_path: String) -> void:
+	for s in sound_path.split(","):
+		preload_stream(_get_stream("res://" + s.strip_edges()))
+
+# Web plays streams as samples; registering early avoids decoding on first play
+func preload_stream(stream: AudioStream) -> void:
+	if stream == null or not OS.has_feature("web") or not stream.can_be_sampled():
+		return
+	if not AudioServer.is_stream_registered_as_sample(stream):
+		AudioServer.register_stream_as_sample(stream)
+
+# Loaded once and kept, so replays never hit the disk
+func _get_stream(path: String) -> AudioStream:
+	var stream: AudioStream = _streams.get(path)
+	if stream == null:
+		stream = load(path) as AudioStream
+		_streams[path] = stream
+	return stream
 
 func set_slowmo(on: bool) -> void:
 	_slowmo = on

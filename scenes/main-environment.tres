@@ -10,6 +10,7 @@ sun_angle_max = 8.0
 
 [sub_resource type="Sky" id="Sky_7bk1c"]
 sky_material = SubResource("Sky_mat")
+radiance_size = 1
 
 [resource]
 background_mode = 2
@@ -18,17 +19,10 @@ ambient_light_source = 3
 ambient_light_color = Color(0.12, 0.17, 0.3, 1)
 ambient_light_energy = 0.35
 tonemap_mode = 2
-ssao_radius = 0.45
-ssao_intensity = 1.5
-ssao_power = 5.0
 glow_intensity = 0.8
 glow_bloom = 0.1
 fog_light_color = Color(0.05, 0.08, 0.14, 1)
 fog_light_energy = 0.8
 fog_density = 0.02
-volumetric_fog_density = 0.015
-volumetric_fog_albedo = Color(0.5, 0.6, 0.8, 1)
-volumetric_fog_length = 48.0
-adjustment_enabled = true
 adjustment_contrast = 1.1
 adjustment_saturation = 0.85

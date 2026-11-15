@@ -32,6 +32,7 @@ const ARROW_PIXEL_SIZE := 0.0015
 
 static var _arrow_tex: ImageTexture
 static var _dust_mesh: QuadMesh
+static var _dust_ramp: GradientTexture1D
 
 var round_number := 0
 var _waiting := false
@@ -54,7 +55,7 @@ func in_transition() -> bool:
 func _process(_delta: float) -> void:
 	if _waiting or round_number == 0:
 		return
-	if get_tree().get_nodes_in_group("enemy").is_empty():
+	if get_tree().get_node_count_in_group("enemy") == 0:
 		_waiting = true
 		await get_tree().create_timer(ROUND_DELAY, false).timeout
 		_start_round()
@@ -146,15 +147,7 @@ func _add_dust(b: Node3D, ground_y: float) -> void:
 	for side in sides:
 		var pos: Vector3 = b.global_transform * side[0]
 		pos.y = ground_y
-		var ext: Vector3 = side[1]
-		var dust := GPUParticles3D.new()
-		dust.process_material = _dust_process(ext)
-		dust.draw_pass_1 = _get_dust_mesh()
-		dust.amount = clampi(int(maxf(ext.x, ext.z) * 30.0), 80, 800)
-		dust.lifetime = DUST_LIFETIME
-		dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		dust.visibility_aabb = AABB(Vector3(-40, -10, -40), Vector3(80, 30, 80))
-		dust.emitting = true
+		var dust := make_dust(side[1])
 		add_child(dust)
 		dust.global_transform = Transform3D(yaw, pos)
 		get_tree().create_timer(SHIFT_TIME - DUST_LIFETIME, false).timeout.connect(func():
@@ -163,7 +156,20 @@ func _add_dust(b: Node3D, ground_y: float) -> void:
 		get_tree().create_timer(SHIFT_TIME + 0.5, false).timeout.connect(dust.queue_free)
 
 
-func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
+# Static so the loading screen can build it ahead of time
+static func make_dust(ext: Vector3) -> GPUParticles3D:
+	var dust := GPUParticles3D.new()
+	dust.process_material = _dust_process(ext)
+	dust.draw_pass_1 = _get_dust_mesh()
+	dust.amount = clampi(int(maxf(ext.x, ext.z) * 30.0), 80, 800)
+	dust.lifetime = DUST_LIFETIME
+	dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	dust.visibility_aabb = AABB(Vector3(-40, -10, -40), Vector3(80, 30, 80))
+	dust.emitting = true
+	return dust
+
+
+static func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
 	var m := ParticleProcessMaterial.new()
 	m.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
 	m.emission_box_extents = extents
@@ -174,17 +180,18 @@ func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
 	m.gravity = Vector3(0, -36.0, 0)
 	m.scale_min = 0.6
 	m.scale_max = 1.8
-	var g := Gradient.new()
-	g.set_color(0, Color(1, 1, 1, 1.0))
-	g.set_color(1, Color(1, 1, 1, 0.0))
-	g.add_point(0.35, Color(1, 1, 1, 1.0))
-	var tex := GradientTexture1D.new()
-	tex.gradient = g
-	m.color_ramp = tex
+	if _dust_ramp == null:
+		var g := Gradient.new()
+		g.set_color(0, Color(1, 1, 1, 1.0))
+		g.set_color(1, Color(1, 1, 1, 0.0))
+		g.add_point(0.35, Color(1, 1, 1, 1.0))
+		_dust_ramp = GradientTexture1D.new()
+		_dust_ramp.gradient = g
+	m.color_ramp = _dust_ramp
 	return m
 
 
-func _get_dust_mesh() -> QuadMesh:
+static func _get_dust_mesh() -> QuadMesh:
 	if _dust_mesh:
 		return _dust_mesh
 	var mat := ShaderMaterial.new()
@@ -201,6 +208,15 @@ func _spawn(kind: Kind) -> void:
 	if spot == null:
 		_spawn(Kind.SPIDER)
 		return
+	var enemy := make_enemy(kind)
+	if kind == Kind.DRONE:
+		spot.y += 1.5
+	enemy.position = spot
+	add_child(enemy)
+
+
+# Static so the loading screen can spawn the same setup for warm-up
+static func make_enemy(kind: Kind) -> Node3D:
 	var enemy := [DRONE, SPIDER, DEMON][kind].instantiate() as Node3D
 	if kind == Kind.DEMON:
 		enemy.set("bullet_scene", ENEMY_BULLET)
@@ -208,14 +224,12 @@ func _spawn(kind: Kind) -> void:
 		enemy.set("bullet_scene", ENEMY_BULLET)
 		enemy.set("attack_range", INF)
 		enemy.scale = Vector3.ONE * DRONE_SCALE
-		spot.y += 1.5
-	enemy.position = spot
 	_add_arrow(enemy)
-	add_child(enemy)
+	return enemy
 
 
 # Always-visible red arrow above the enemy's head, constant on-screen size
-func _add_arrow(enemy: Node3D) -> void:
+static func _add_arrow(enemy: Node3D) -> void:
 	var top := -INF
 	for mi in enemy.find_children("*", "MeshInstance3D", true, false):
 		if mi.name.begins_with("WGT_"):
@@ -248,7 +262,7 @@ func _add_arrow(enemy: Node3D) -> void:
 	enemy.add_child(arrow)
 
 
-func _get_arrow_texture() -> ImageTexture:
+static func _get_arrow_texture() -> ImageTexture:
 	if _arrow_tex:
 		return _arrow_tex
 	const N := 32
@@ -272,6 +286,8 @@ func _find_spot(roof_only := false) -> Variant:
 	sphere.radius = CLEARANCE_RADIUS
 	var fallback := Vector3.ZERO
 	var buildings: Array = arena.BUILDING_NODES
+	var shape := PhysicsShapeQueryParameters3D.new()
+	shape.shape = sphere
 
 	for i in SPAWN_ATTEMPTS * (4 if roof_only else 1):
 		var r := arena.get_inner_radius() * sqrt(randf()) * 0.9
@@ -287,8 +303,6 @@ func _find_spot(roof_only := false) -> Variant:
 		fallback = pos
 		if player and pos.distance_to(player.global_position) < MIN_PLAYER_DISTANCE:
 			continue
-		var shape := PhysicsShapeQueryParameters3D.new()
-		shape.shape = sphere
 		shape.transform = Transform3D(Basis(), pos + Vector3(0, CLEARANCE_RADIUS + 0.1, 0))
 		if not space.intersect_shape(shape, 1).is_empty():
 			continue
