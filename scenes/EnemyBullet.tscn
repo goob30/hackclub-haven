@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dg6h5uopjapqr"]
+
+[ext_resource type="Script" uid="uid://vqpnfq1v5tq1" path="res://scenes/enemy_bullet.gd" id="1_63f26"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_myfey"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_myfey"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1823632028]
+transform = Transform3D(0.105, 0, 0, 0, 0.105, 0, 0, 0, 0.105, 0, 0, 0)
+script = ExtResource("1_63f26")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1796773698]
+shape = SubResource("SphereShape3D_myfey")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1623148529]
+mesh = SubResource("SphereMesh_myfey")

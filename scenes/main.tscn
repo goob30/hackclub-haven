@@ -5,6 +5,9 @@
 [ext_resource type="Script" uid="uid://by0qn28x1i1jj" path="res://scripts/hud.gd" id="3_s8mkj"]
 [ext_resource type="FontFile" path="res://fonts/shadow_of_xizor.ttf" id="3_w27de"]
 [ext_resource type="Shader" path="res://fonts/text_gradient.gdshader" id="4_grad"]
+[ext_resource type="PackedScene" uid="uid://dg6h5uopjapqr" path="res://scenes/EnemyBullet.tscn" id="5_eb6dy"]
+[ext_resource type="Script" uid="uid://cit2uerl6aq6c" path="res://walk_animation.gd" id="6_a8y0u"]
+[ext_resource type="PackedScene" uid="uid://cvwj2i2klphrx" path="res://SpiderEnemy.tscn" id="9_jkv2x"]
 [ext_resource type="PackedScene" uid="uid://btftbios0gv8" path="res://scenes/coliseum.tscn" id="6_tefeu"]
 [ext_resource type="PackedScene" uid="uid://cb4bfj6rexuv2" path="res://arena/assets/Buildings Prebuild/Ready scenes/flat_lshape_brick.tscn" id="7_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://d2g78tpqbyf5g" path="res://objects/enemy.tscn" id="8_7ty2f"]
@@ -77,21 +80,23 @@ vertical_alignment = 2
 script = ExtResource("13_spawner")
 player = NodePath("../Player")
 
+[node name="SpiderMelee" parent="Enemies" unique_id=2110410114 instance=ExtResource("9_jkv2x")]
+
+[node name="LegAnim" type="Node3D" parent="Enemies/SpiderMelee" unique_id=226215614 node_paths=PackedStringArray("body", "body_visual", "gait_group_a", "gait_group_b")]
+script = ExtResource("6_a8y0u")
+body = NodePath("..")
+body_visual = NodePath("../Total")
+gait_group_a = [NodePath("../Total/LeftLegs/LeftLeg1/LowerLeg7"), NodePath("../Total/LeftLegs/LeftLeg3/LowerLeg/LowerLeg_1"), NodePath("../Total/RightLegs/RightLeg2/UpperLeg_5"), NodePath("../Total/RightLegs/RightLeg5/UpperLeg_7")]
+gait_group_b = [NodePath("../Total/LeftLegs/LeftLeg2/UpperLeg_2"), NodePath("../Total/LeftLegs/LeftLeg4/UpperLeg_1"), NodePath("../Total/RightLegs/RightLeg1/UpperLeg_4"), NodePath("../Total/RightLegs/RightLeg4/UpperLeg_6")]
+
+[node name="EnemyBullet" type="Node3D" parent="Enemies" unique_id=741858025]
+
+[node name="CharacterBody3D" parent="Enemies/EnemyBullet" unique_id=1823632028 instance=ExtResource("5_eb6dy")]
+
 [node name="enemy-flying" parent="Enemies" unique_id=532550342 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 2.5, -6)
 player = NodePath("../../Player")
-
-[node name="enemy-flying2" parent="Enemies" unique_id=342903539 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -9.5, 2.5, 1.5)
-player = NodePath("../../Player")
-
-[node name="enemy-flying3" parent="Enemies" unique_id=1201559634 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 5.5, 3.5, 9)
-player = NodePath("../../Player")
-
-[node name="enemy-flying4" parent="Enemies" unique_id=816910819 node_paths=PackedStringArray("player") instance=ExtResource("8_7ty2f")]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 15.5, 4, -7.5)
-player = NodePath("../../Player")
+bullet_scene = ExtResource("5_eb6dy")
 
 [node name="Coliseum" parent="." unique_id=791044948 groups=["arena"] instance=ExtResource("6_tefeu")]
 segment_count = 9
@@ -124,3 +129,5 @@ transform = Transform3D(0.32139376, 0, -0.38302216, 0, 0.5, 0, 0.38302216, 0, 0.
 transform = Transform3D(0.49135754, 0.0012568533, 0.0925535, -0.0002722125, 0.49997136, -0.0053442726, -0.092561625, 0.005201507, 0.49133006, -22.63896, 0, 5.39346)
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]
+
+[editable path="Enemies/SpiderMelee"]
