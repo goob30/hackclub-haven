@@ -36,7 +36,7 @@ var _banner: Label
 func _ready() -> void:
 	_build_label()
 	_waiting = true
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(1.0, false).timeout
 	_start_round()
 
 
@@ -45,7 +45,7 @@ func _process(_delta: float) -> void:
 		return
 	if get_tree().get_nodes_in_group("enemy").is_empty():
 		_waiting = true
-		await get_tree().create_timer(ROUND_DELAY).timeout
+		await get_tree().create_timer(ROUND_DELAY, false).timeout
 		_start_round()
 
 
@@ -57,7 +57,7 @@ func _start_round() -> void:
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_method("reload_weapon"):
 		player.reload_weapon()
-	await get_tree().create_timer(BANNER_TIME).timeout
+	await get_tree().create_timer(BANNER_TIME, false).timeout
 	_banner.visible = false
 	var budget := round_number + BASE_BUDGET
 	while budget > 0:

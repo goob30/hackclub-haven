@@ -25,6 +25,8 @@
 [ext_resource type="ArrayMesh" uid="uid://dyctaohlx52vk" path="res://arena/assets/Vehicles/Car2.obj" id="26_2wyq8"]
 [ext_resource type="ArrayMesh" uid="uid://bs75u8ltfb7nn" path="res://arena/assets/Vehicles/Car.obj" id="26_vxglm"]
 [ext_resource type="Shader" uid="uid://c1q4muuk582jh" path="res://shaders/light_steps.gdshader" id="ls_shader"]
+[ext_resource type="PackedScene" uid="uid://cgr81sg436y6r" path="res://scenes/ui/pause.tscn" id="17_muem4"]
+[ext_resource type="Script" uid="uid://cdxsxfg407jex" path="res://scenes/ui/pause.gd" id="18_dp3eg"]
 
 [sub_resource type="ShaderMaterial" id="LightSteps_mat"]
 shader = ExtResource("ls_shader")
@@ -241,5 +243,10 @@ script = ExtResource("25_autocol")
 transform = Transform3D(-0.48604566, 0.051767744, 0.1052603, 0.04341204, 0.49620196, -0.04357787, -0.10897259, -0.03322254, -0.4868483, -7.8955956, -0.12168181, -13.573565)
 mesh = ExtResource("26_vxglm")
 script = ExtResource("25_autocol")
+
+[node name="pausemenu" parent="." unique_id=334462521 instance=ExtResource("17_muem4")]
+process_mode = 3
+visible = false
+script = ExtResource("18_dp3eg")
 
 [connection signal="health_updated" from="Player" to="HUD" method="_on_health_updated"]

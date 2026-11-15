@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://cgr81sg436y6r"]
+
+[ext_resource type="Shader" uid="uid://bhqdivbfmw6wg" path="res://arena/assets/Buildings Prebuild/Ready scenes/new_shader.gdshader" id="1_xld5c"]
+[ext_resource type="Script" uid="uid://clg2yviwfw3i" path="res://scenes/ui/pauselabel.gd" id="2_k23cl"]
+[ext_resource type="Shader" uid="uid://bnp0esp8cxa4k" path="res://buttonshader.gdshader" id="3_qgos8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yf5fn"]
+bg_color = Color(0.16470589, 0.16470589, 0.16470589, 0.36862746)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xld5c"]
+shader = ExtResource("1_xld5c")
+shader_parameter/pixel_size = 4.0
+shader_parameter/threshold = 0.4
+shader_parameter/contrast = 5.0
+shader_parameter/spread = 0.5
+shader_parameter/halo_amount = 0.35
+shader_parameter/halo_radius = 1.5
+shader_parameter/noise_amount = 0.25
+shader_parameter/noise_speed = 0.0
+shader_parameter/levels = 5
+shader_parameter/opacity = 1.0
+
+[sub_resource type="Animation" id="Animation_qgos8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_xld5c"]
+resource_name = "float"
+length = 6.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_k23cl"]
+_data = {
+&"RESET": SubResource("Animation_qgos8"),
+&"float": SubResource("Animation_xld5c")
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k23cl"]
+shader = ExtResource("3_qgos8")
+shader_parameter/pixel_size = 4.0
+shader_parameter/threshold = 0.4
+shader_parameter/contrast = 5.0
+shader_parameter/spread = 0.5
+shader_parameter/halo_amount = 0.35
+shader_parameter/halo_radius = 1.5
+shader_parameter/noise_amount = 0.25
+shader_parameter/noise_speed = 0.0
+shader_parameter/levels = 5
+shader_parameter/opacity = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4v7s"]
+bg_color = Color(0.05236323, 0.052332446, 0.22716853, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="pausemenu" type="Control" unique_id=334462521]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1430070802]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_yf5fn")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1289149293]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -640.0
+offset_top = -360.0
+offset_right = 640.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1053589428]
+layout_mode = 2
+
+[node name="label control" type="Control" parent="CenterContainer/VBoxContainer" unique_id=165307178]
+custom_minimum_size = Vector2(387, 124)
+layout_mode = 2
+
+[node name="pauselabel" type="Label" parent="CenterContainer/VBoxContainer/label control" unique_id=1464093499]
+material = SubResource("ShaderMaterial_xld5c")
+layout_mode = 0
+offset_right = 347.0
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 90
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_k23cl")
+
+[node name="pauselabel" type="Label" parent="CenterContainer/VBoxContainer/label control/pauselabel" unique_id=2069376509]
+material = SubResource("ShaderMaterial_xld5c")
+layout_mode = 0
+offset_right = 347.0
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 90
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CenterContainer/VBoxContainer/label control/pauselabel/pauselabel" unique_id=943674414]
+libraries/ = SubResource("AnimationLibrary_k23cl")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CenterContainer/VBoxContainer/label control" unique_id=261192960]
+root_node = NodePath("../pauselabel")
+libraries/ = SubResource("AnimationLibrary_k23cl")
+
+[node name="margin" type="Control" parent="CenterContainer/VBoxContainer" unique_id=40777157]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="settingsbutton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=57618215]
+material = SubResource("ShaderMaterial_k23cl")
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_g4v7s")
+text = "SETTINGS"
+
+[node name="margin2" type="Control" parent="CenterContainer/VBoxContainer" unique_id=1578782439]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+
+[node name="exitbutton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=142953782]
+material = SubResource("ShaderMaterial_k23cl")
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxFlat_g4v7s")
+text = "EXIT TO MENU"
