@@ -78,6 +78,10 @@ var building_scenes: Array[PackedScene] = [ # Convert the GLBs into scenes and
 
 var _dirty := false
 
+func _ready() -> void:
+	add_to_group("arena")
+	_rebuild()
+
 func randomize_building_heights() -> void:
 	pass
 
