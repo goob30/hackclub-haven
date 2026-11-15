@@ -82,18 +82,33 @@ var BUILDING_NODES: Array
 
 var _dirty := false
 
-func randomize_building_heights() -> void:
+# Target world Y for every building, keeping each roof within jump reach
+func pick_building_heights() -> Array[float]:
 	randomize()
 	var ground := global_position.y
 	var reach := _max_jump_height()
+	var targets: Array[float] = []
 	for i in range(BUILDING_NODES.size()):
 		var node: Node3D = BUILDING_NODES[i]
-		node.global_position.y = ground
-		var roof := _roof_y(node) - ground
+		var roof := _roof_y(node) - node.global_position.y
 		var min_k := maxi(0, ceili((roof - reach) / FLOOR_HEIGHT))
 		var max_k := maxi(min_k, BUILDING_FLOORS[i])
-		node.global_position.y = ground - randi_range(min_k, max_k) * FLOOR_HEIGHT
-	
+		var current := roundi((ground - node.global_position.y) / FLOOR_HEIGHT)
+		var options: Array[int] = []
+		for k in range(min_k, max_k + 1):
+			if k != current:
+				options.append(k)
+		if options.is_empty():
+			options.append(min_k + 1 if current == min_k else min_k)
+		targets.append(ground - options[randi() % options.size()] * FLOOR_HEIGHT)
+	return targets
+
+
+func randomize_building_heights() -> void:
+	var targets := pick_building_heights()
+	for i in range(BUILDING_NODES.size()):
+		(BUILDING_NODES[i] as Node3D).global_position.y = targets[i]
+
 
 func _roof_y(node: Node3D) -> float:
 	var top := -INF

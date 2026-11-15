@@ -17,6 +17,10 @@ const DRONE_SCALE := 0.4
 const ROUND_DELAY := 1.0
 const BANNER_TIME := 2.0
 const SPAWN_SHAKE := 0.8
+const SHIFT_TIME := 2.0
+const SHIFT_SHAKE := 3.0
+const DUST_LIFETIME := 0.6
+const DUST_COLOR := Color(0.5, 0.46, 0.4)
 const MIN_PLAYER_DISTANCE := 12.0
 const CLEARANCE_RADIUS := 0.8
 const SPAWN_ATTEMPTS := 60
@@ -26,6 +30,7 @@ const ARROW_GAP := 0.5
 const ARROW_PIXEL_SIZE := 0.0015
 
 static var _arrow_tex: ImageTexture
+static var _dust_mesh: QuadMesh
 
 var round_number := 0
 var _waiting := false
@@ -57,7 +62,8 @@ func _start_round() -> void:
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_method("reload_weapon"):
 		player.reload_weapon()
-	await get_tree().create_timer(BANNER_TIME, false).timeout
+	_shift_buildings(player)
+	await get_tree().create_timer(maxf(BANNER_TIME, SHIFT_TIME), false).timeout
 	_banner.visible = false
 	var budget := round_number + BASE_BUDGET
 	while budget > 0:
@@ -72,6 +78,102 @@ func _start_round() -> void:
 	if player:
 		player.shake = SPAWN_SHAKE
 	_waiting = false
+
+
+# Buildings slide to new heights while dust pours off their base and the camera shakes
+func _shift_buildings(player: Node) -> void:
+	var arena := get_tree().get_first_node_in_group("arena") as Coliseum
+	if arena == null:
+		return
+	var targets := arena.pick_building_heights()
+	var ground_y := arena.global_position.y + 0.15
+	var tween := create_tween().set_parallel(true)
+	for i in arena.BUILDING_NODES.size():
+		var b: Node3D = arena.BUILDING_NODES[i]
+		if absf(targets[i] - b.global_position.y) < 0.05:
+			continue
+		_add_dust(b, ground_y)
+		tween.tween_property(b, "global_position:y", targets[i], SHIFT_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	if player:
+		tween.tween_method(func(t: float): player.shake = SHIFT_SHAKE * (1.0 - t * t), 0.0, 1.0, SHIFT_TIME)
+
+
+func _add_dust(b: Node3D, ground_y: float) -> void:
+	var box := AABB()
+	var first := true
+	var inv := b.global_transform.affine_inverse()
+	for mi in b.find_children("*", "MeshInstance3D", true, false):
+		var local: AABB = (inv * (mi as MeshInstance3D).global_transform) * (mi as MeshInstance3D).get_aabb()
+		box = local if first else box.merge(local)
+		first = false
+	if first:
+		return
+
+	var yaw := Basis(Vector3.UP, b.global_basis.orthonormalized().get_euler().y)
+	var sx := b.global_basis.x.length()
+	var sz := b.global_basis.z.length()
+	var c := box.get_center()
+	var hx := box.size.x * 0.5
+	var hz := box.size.z * 0.5
+	# [local center, half extents in world units]
+	var sides := [
+		[Vector3(c.x, 0, box.position.z), Vector3(hx * sx, 0.05, 0.2)],
+		[Vector3(c.x, 0, box.end.z), Vector3(hx * sx, 0.05, 0.2)],
+		[Vector3(box.position.x, 0, c.z), Vector3(0.2, 0.05, hz * sz)],
+		[Vector3(box.end.x, 0, c.z), Vector3(0.2, 0.05, hz * sz)],
+	]
+	for side in sides:
+		var pos: Vector3 = b.global_transform * side[0]
+		pos.y = ground_y
+		var ext: Vector3 = side[1]
+		var dust := GPUParticles3D.new()
+		dust.process_material = _dust_process(ext)
+		dust.draw_pass_1 = _get_dust_mesh()
+		dust.amount = clampi(int(maxf(ext.x, ext.z) * 30.0), 80, 800)
+		dust.lifetime = DUST_LIFETIME
+		dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		dust.visibility_aabb = AABB(Vector3(-40, -10, -40), Vector3(80, 30, 80))
+		dust.emitting = true
+		add_child(dust)
+		dust.global_transform = Transform3D(yaw, pos)
+		get_tree().create_timer(SHIFT_TIME + DUST_LIFETIME + 0.5, false).timeout.connect(dust.queue_free)
+
+
+func _dust_process(extents: Vector3) -> ParticleProcessMaterial:
+	var m := ParticleProcessMaterial.new()
+	m.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	m.emission_box_extents = extents
+	m.direction = Vector3.UP
+	m.spread = 55.0
+	m.initial_velocity_min = 2.0
+	m.initial_velocity_max = 6.0
+	m.gravity = Vector3(0, -1.5, 0)
+	m.damping_min = 1.0
+	m.damping_max = 2.5
+	m.scale_min = 0.6
+	m.scale_max = 1.8
+	var g := Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 0.9))
+	g.set_color(1, Color(1, 1, 1, 0.0))
+	var tex := GradientTexture1D.new()
+	tex.gradient = g
+	m.color_ramp = tex
+	return m
+
+
+func _get_dust_mesh() -> QuadMesh:
+	if _dust_mesh:
+		return _dust_mesh
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.vertex_color_use_as_albedo = true
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	mat.albedo_color = DUST_COLOR
+	_dust_mesh = QuadMesh.new()
+	_dust_mesh.size = Vector2(0.5, 0.5)
+	_dust_mesh.material = mat
+	return _dust_mesh
 
 
 func _spawn(kind: Kind) -> void:
@@ -171,7 +273,9 @@ func _find_spot(roof_only := false) -> Variant:
 		if not space.intersect_shape(shape, 1).is_empty():
 			continue
 		return pos
-	return null if roof_only else fallback
+	if roof_only:
+		return null
+	return fallback
 
 
 func _build_label() -> void:

@@ -106,7 +106,7 @@ func _fling() -> void:
 	_muzzle_particles.global_position = pos
 	_muzzle_particles.restart()
 	_muzzle_particles.emitting = true
-	Audio.play("sounds/enemy_attack.ogg")
+	Audio.play("sounds/enemy_shoot.wav")
 
 
 func damage(amount: int) -> void:

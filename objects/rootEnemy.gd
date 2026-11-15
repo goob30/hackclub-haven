@@ -118,7 +118,7 @@ func _try_fire() -> void:
 	muzzle_particles.emitting = true
 	muzzle_particles.restart()
 
-	Audio.play("sounds/enemy_attack.ogg")
+	Audio.play("sounds/enemy_shoot.wav")
 
 
 func damage(_amount: int) -> void:
