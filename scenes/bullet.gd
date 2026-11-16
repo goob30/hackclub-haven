@@ -66,6 +66,14 @@ func _move_outbound(delta: float) -> void:
 		query.exclude = [(player as CollisionObject3D).get_rid()]
 
 	var result := get_world_3d().direct_space_state.intersect_ray(query)
+	var skipped: Array[RID] = []
+	while not result.is_empty() and _is_passthrough(result.collider):
+		skipped.append(result.rid)
+		var ex: Array[RID] = []
+		ex.append_array(query.exclude)
+		ex.append_array(skipped)
+		query.exclude = ex
+		result = get_world_3d().direct_space_state.intersect_ray(query)
 	if not result.is_empty():
 		global_position = result.position
 		var collider = result.collider
@@ -77,6 +85,17 @@ func _move_outbound(delta: float) -> void:
 		return
 
 	global_position = to
+
+func _is_passthrough(collider: Object) -> bool:
+	if collider is EnemyBullet:
+		return true
+	var n := collider as Node
+	while n:
+		var nm := n.name.to_lower()
+		if nm.begins_with("road") or nm.begins_with("traffic_cone"):
+			return true
+		n = n.get_parent()
+	return false
 
 func _move_returning(delta: float) -> void:
 	if not is_instance_valid(player):
